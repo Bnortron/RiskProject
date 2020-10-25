@@ -362,6 +362,8 @@ public class RiskGame
                 dDice.removeHighest();
             }
             compareDice(aDice.getHighest(),dDice.getHighest());
+
+            //MAYBE ADD SOMETHING TO SHOW NUMBER OF ARMIES REMAINING AFTER ATTACK
         }
     }
 
