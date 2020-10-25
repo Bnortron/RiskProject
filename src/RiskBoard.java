@@ -114,7 +114,7 @@ public class RiskBoard
             for(int j = 1; j<adjacentCountries.length; ++j)
             {
                 adjList.add(mapCountries.get(adjacentCountries[j]));
-                System.out.println(adjacentCountries[j] + " added to: " + adjacentCountries[0]);
+                //System.out.println(adjacentCountries[j] + " added to: " + adjacentCountries[0]);
             }
         }
     }

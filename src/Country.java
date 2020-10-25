@@ -34,7 +34,7 @@ public class Country
         troops = 0;
 
         // Testing
-        System.out.println("Created: " + name);
+        //System.out.println("Created: " + name);
     }
 
     public void setTroops(int initialTroops)
