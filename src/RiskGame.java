@@ -12,6 +12,12 @@ import java.io.FileReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+
+/**
+ * @author Braden Norton
+ * @author Tyler Leung
+ * @author Braxton Martin
+ */
 public class RiskGame
 {
     // Game Parser
@@ -24,8 +30,8 @@ public class RiskGame
     // Int variables
     private int playerAmount; // Amount of players in game
     private int turnIndex; // Turn number
-    private int aDice; // Attacker dice
-    private int dDice; // Defender dice
+    private int attackRoll;
+    private int defendRoll;
     private int initialTroops;
     private int troops;
     private int aTroops; // Amount of attacker troops
@@ -69,7 +75,8 @@ public class RiskGame
 
     // Objects
     private RiskBoard board;
-    private Dice dice;
+    private Dice aDice;
+    private Dice dDice;
     private Player currPlayer;
     private Country countryA;
     private Country countryB;
@@ -192,7 +199,10 @@ public class RiskGame
         if(commandWord.equals("Q"))
         {
             quitRequested = quit(command);
-        }  
+        } else if (commandWord.equals("A"))
+        {
+            attackStage(command);
+        }
 
         // True = game ends
         return quitRequested;
@@ -295,6 +305,109 @@ public class RiskGame
         }
         else {
             return true;  // signal that we want to quit
+        }
+    }
+
+    /**
+     * check if you can attack possible country
+     * 
+     * UNFINISHED
+     * 
+     */
+    private boolean checkAdjacents(String country){
+        return true;
+    }
+
+    /**
+     * Check if you are attacking adjacent 
+     * 
+     * 
+     * @param command
+     */
+    private void attackStage(Command command){
+        if(!command.hasSecondWord()) {
+            System.out.println("Attack who?");
+        } else if(!checkAdjacents(command.getSecondWord())) {
+            System.out.println("Invalid Adjacent Country to Attack. Input another one.");
+            System.out.println("Here is a list of valid countries: ");
+            //GET LIST OF VALID ADJACENTS TO ATTACK
+        } else {
+            //Ask how many dices attacker would like to use
+            System.out.println("How many dice would the attacker like to use?");
+            Command aNumDice = parser.getCommand();
+            
+            //Create new dice object and roll those dice if valid attack
+            aDice = new Dice();
+            if(validAttack(Integer.parseInt(aNumDice.getCommandWord()))){
+                aDice.rollDice(Integer.parseInt(aNumDice.getCommandWord()));
+            }
+            aDice.printRolls();
+            
+            //Ask how many dices defender would like to use
+            System.out.println("How many dice would the defender like to use?");
+            Command dNumDice = parser.getCommand();
+
+            //Create new dice object and roll those dice
+            dDice = new Dice();
+            if(validDefend(Integer.parseInt(dNumDice.getCommandWord()))){
+                dDice.rollDice(Integer.parseInt(dNumDice.getCommandWord()));
+            }
+            dDice.printRolls();
+
+            //Compare Highest Rolls
+            compareDice(aDice.getHighest(),dDice.getHighest());
+            //If both attack and defend used more than 1 dice, remove highest and compare again.
+            if((Integer.parseInt(aNumDice.getCommandWord()) > 1) && (Integer.parseInt(dNumDice.getCommandWord()) > 1)){
+                aDice.removeHighest();
+                dDice.removeHighest();
+            }
+            compareDice(aDice.getHighest(),dDice.getHighest());
+        }
+    }
+
+    /**
+     * Checks if attack is valid. 
+     *
+     * @param numArmy
+     * @return true if valid attack
+     */
+    private boolean validAttack(int numArmy){
+        if (numArmy < 0){ //cant attack with 0
+            return false;
+        } else if(numArmy > aTroops){ //cant attack with more armies than you have
+            return false;
+        } else { //possible attack
+            return true;
+        }
+    }
+
+    /**
+     * Checks if defense is valid
+     * @param numArmy number of armies used to defend
+     * @return true if valid defend
+     */
+    private boolean validDefend(int numArmy){
+        if (numArmy > 2){ //max 2 armies
+            return false;
+        } else if (numArmy < 0){ //cant not defend
+            return false;
+        } else if (numArmy > dTroops){ //cant attack with 2 if only 1 army
+            return false;
+        } else{
+            return true;
+        }
+    }
+
+    private void compareDice(int aHigh, int dHigh){
+        if (aHigh > dHigh){
+            System.out.println("Attackers win! Defenders lose 1 army.");
+            dTroops -= 1;
+        } else if (aHigh == dHigh){
+            System.out.println("It was a tie! Attackers lose 1 army.");
+            aTroops -= 1;
+        } else {
+            System.out.println("Defenders win! Attackers lose 1 army.");
+            aTroops -= 1;
         }
     }
 }
