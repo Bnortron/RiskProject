@@ -276,7 +276,6 @@ public class RiskGame
         String adjacentInputs = adjacentSB.toString();
         adjacentsArray =  adjacentInputs.split("\t");
         System.out.println("Adjacents added: " + adjacentInputs);
-        System.out.println(adjacentsArray);
     }
 
     private void setInitialTroops(int players)
