@@ -192,7 +192,7 @@ public class RiskGame
         if(commandWord.equals("Q"))
         {
             quitRequested = quit(command);
-        }
+        }  
 
         // True = game ends
         return quitRequested;
@@ -276,6 +276,7 @@ public class RiskGame
         String adjacentInputs = adjacentSB.toString();
         adjacentsArray =  adjacentInputs.split("\t");
         System.out.println("Adjacents added: " + adjacentInputs);
+        System.out.println(adjacentsArray);
     }
 
     private void setInitialTroops(int players)
