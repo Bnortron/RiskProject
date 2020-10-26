@@ -1,7 +1,7 @@
 public class CommandWords
 {
     // a constant array that holds all valid command words
-    private static final String[] validCommands = { "Q", "A"};
+    private static final String[] validCommands = { "Q","q", "A", "a", "M", "m"};
 
     /**
      * Constructor - initialise the command words.

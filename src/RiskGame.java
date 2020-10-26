@@ -28,8 +28,7 @@ public class RiskGame
     private BufferedReader reader;
 
     // Int variables
-    private int playerAmount; // Amount of players in game
-    private int turnIndex; // Turn number
+    private int playerAmount; // Amount of players in game    private int turnIndex = 1; // Turn number
     private int attackRoll;
     private int defendRoll;
     private int initialTroops;
@@ -129,7 +128,7 @@ public class RiskGame
         // Main game loop
         while(! quitGame)
         {
-            System.out.println("Main game loop entered..\n");
+            System.out.println("Command: ");
             Command command = parser.getCommand();
             quitGame = processCommand(command);
         }
@@ -176,12 +175,20 @@ public class RiskGame
         }
 
         // Load RiskBoard with country, adjacents, and continent arrays
-        boardLoaded = board.load(countriesArray, adjacentsArray, continentsArray);
+        boardLoaded = board.load(countriesArray, continentsArray, continentsArray);
+     
 
         // Start game at reinforcement stage
+
+        for(Player p: players){
+            Random startNum = new Random();
+            String s = countriesArray[(startNum.nextInt(countriesArray.length))];
+            p.addCapturedCountry(board.getCountry(s));
+        }
     }
 
     public void mainMenu()
+
     {
         System.out.println("Welcome to the game of Risk!");
         System.out.println("Choose the number of players (2-6): \n");
@@ -196,14 +203,14 @@ public class RiskGame
         String commandWord = command.getCommandWord();
 
         // Commands
-        if(commandWord.equals("Q"))
-        {
-            quitRequested = quit(command);
-        } else if (commandWord.equals("A"))
-        {
+        if(command.isUnknown()){
+            return false;
+        }
+        if(commandWord.equals("Q")){
+              quitRequested = quit(command);
+        } else if (commandWord.equals("A")){
             attackStage(command);
         }
-
         // True = game ends
         return quitRequested;
     }
@@ -251,44 +258,56 @@ public class RiskGame
     {
         Scanner sc = new Scanner(new File("resources/Country.txt"));
         StringBuilder countrySB = new StringBuilder();
-        StringBuilder continentSB = new StringBuilder();
+        String arrC[];
 
         while(sc.hasNextLine())
         {
+            ArrayList<Country> c = new ArrayList<>();
             String s = sc.nextLine();
 
-            int i = s.indexOf("");
+            int i = s.indexOf("-");
             String firstWord = s.substring(0,i);
-            String restOfLine = s.substring(i);
+            String restOfLine = s.substring(i+2);
 
-            continentSB.append(firstWord);
             countrySB.append(restOfLine);
+
+            String countryInputs = countrySB.toString();
+            arrC = countryInputs.split(" , ");
+
+            for(String t : arrC){
+                c.add(new Country(t));
+                board.mapCountries.put(t,new Country(t));
+            }
+            Continent tempContinent = new Continent(firstWord, c);
+            continents.add(tempContinent);
+
+            board.addContinents(tempContinent);
         }
-
-        // Create array of Country names
-        String countryInputs = countrySB.toString();
-        countriesArray = countryInputs.split(" , ");
-        //System.out.println("Countries added: " + countryInputs);
-
-        String continentInputs = continentSB.toString();
-        continentsArray = continentInputs.split(" , ");
     }
 
     private void setAdjacents() throws Exception
     {
         Scanner sc = new Scanner(new File("resources/Adjacent.txt"));
-        StringBuilder adjacentSB = new StringBuilder();
+        String arr[];
 
         while(sc.hasNextLine())
         {
             String s = sc.nextLine();
-            adjacentSB.append(s);
-        }
 
-        // Create array of adjacent countries
-        String adjacentInputs = adjacentSB.toString();
-        adjacentsArray =  adjacentInputs.split("\t");
-        System.out.println("Adjacents added: " + adjacentInputs);
+            int i = s.indexOf("-");
+            String firstWord = s.substring(0,i);
+            String restOfLine = s.substring(i+2);
+
+            arr = restOfLine.split(",");
+
+            for(Country coun : countries){
+                if(firstWord == coun.getName()){
+                    for(String st : arr){
+                        board.mapCountries.get(firstWord).addAdjacents(board.mapCountries.get(st));
+                    }
+                }
+            }
+        }
     }
 
     private void setInitialTroops(int players)
@@ -317,8 +336,15 @@ public class RiskGame
      * UNFINISHED
      * 
      */
-    private boolean checkAdjacents(String country){
-        return true;
+    private boolean checkAdjacents(String defCountry, String attCountry){
+        Country dc = board.getCountry(defCountry);
+        Country ac = board.getCountry(attCountry);
+        for(Country con : ac.getAdjacents()){
+            if(con==dc)return true;
+            return false;
+        }
+            
+        return false;
     }
 
     /**
@@ -329,8 +355,12 @@ public class RiskGame
      */
     private void attackStage(Command command){
         if(!command.hasSecondWord()) {
-            System.out.println("Attack who?");
-        } else if(!checkAdjacents(command.getSecondWord())) {
+            System.out.println("Attack WHO from WHERE?");
+        } else if(!command.hasThirdWord()){
+            System.out.println("Attack who from WHERE?");
+        }else if(!checkAdjacents(command.getSecondWord(),command.getThirdWord())){
+
+
             System.out.println("Invalid Adjacent Country to Attack. Input another one.");
             System.out.println("Here is a list of valid countries: ");
             //GET LIST OF VALID ADJACENTS TO ATTACK

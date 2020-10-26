@@ -15,16 +15,14 @@ public class RiskBoard
 
     // String lists
     private String[] continentNames;
-    private String[] adjacentCountries;
 
     // ArrayLists
     private ArrayList<Country> countryList;
-    private ArrayList<Country> adjList;
     private ArrayList<Country> continentCountries;
     private ArrayList<Country> openCountry;
 
     // HashMaps
-    private HashMap<String, Country> mapCountries;
+    public HashMap<String, Country> mapCountries;
     private HashMap<String, Continent> mapContinents;
 
     /**
@@ -35,7 +33,7 @@ public class RiskBoard
         // initialise instance variables
     }
 
-    public boolean load(String[] countries, String[] continents, String[] adjacents)
+    public boolean load(String[] countries, String[] adjacents, String[] continents)
     {
         // Not loaded
         boardLoaded = false; // Board not loaded yet
@@ -49,33 +47,21 @@ public class RiskBoard
         continentCountries = new ArrayList<Country>();
         openCountry = new ArrayList<Country>();
 
-        // Load countries
-        loadCountries(countries);
-
-        // Load adjacent countries
-        loadAdjacents(adjacents);
-
-        // Load the continents
-        loadContinents(continents);
-
         // Board loaded
         boardLoaded = true;
         return boardLoaded;
     }
 
-    private void loadCountries(String[] countries)
+    public void loadCountries(String[] countries)
     {
         for(int i = 0; i<countries.length; ++i)
         {
             // Add new country to HashMap (Name, Country Object)
             mapCountries.put(countries[i], new Country(countries[i]));
-
-            // Add Country to Country ArrayList
-            countryList.add(mapCountries.get(countries[i]));
         }
     }
 
-    private void loadContinents(String[] continents)
+    public void addContinents(Continent continent)
     {
         // Use a .txt file that contains all the continents and the countries in them
         // The format is as follows:
@@ -84,39 +70,11 @@ public class RiskBoard
         // ...
         // New line each continent
         // Words separated by commas
-        for(int i = 0; i<continents.length; ++i)
-        {
-            // Split the 
-        }
+            mapContinents.put(continent.getName(), continent);
     }
 
-    private void loadAdjacents(String[] adjacents)
-    {
-        // Use a .txt file that contains all the adjacent countries of each country
-        // The format is as follows:
-        // Country1, Adjacent Country, Adjacent Country, Adjacent Country, ...
-        // Country2, Adjacent Country, Adjacent Country, Adjacent Country, ...
-        // ...
-        // New line for each Country
-        // Words separated by commas
-        for(int i = 0; i < adjacents.length; ++i)
-        {
-            // Remove commas from each line
-            adjacentCountries = adjacents[i].split(",");
-
-            // List of adjacent countries for country at line "i"
-            adjList = new ArrayList<Country>();
-
-            // Fill adjList with the countries on line i starting with the second country in line
-            // 1st word in line = country we want to find the adjacents for
-            // 2nd word in line = First adjacent country
-            // last word in line = last adjacent country for Country from first word
-            for(int j = 1; j<adjacentCountries.length; ++j)
-            {
-                adjList.add(mapCountries.get(adjacentCountries[j]));
-                //System.out.println(adjacentCountries[j] + " added to: " + adjacentCountries[0]);
-            }
-        }
+    public Country getCountry(String country){
+        return(mapCountries.get(country));
     }
 
 }

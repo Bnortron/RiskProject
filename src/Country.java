@@ -48,6 +48,10 @@ public class Country
         this.adjacents = adjacents;
     }
 
+    public void addAdjacents(Country c){
+        adjacents.add(c);
+    }
+
     // Getter Methods
 
     public String getName()
