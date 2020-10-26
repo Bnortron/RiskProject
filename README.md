@@ -13,13 +13,13 @@ Braden Norton - Base Skeleton of Classes
 
 Known Issues:
 
-No Actual Turns
+- No Actual Turns
 
-No Player Troop Initialization
+- No Player Troop Initialization
 
-No Working Combat
+- No Working Combat
 
-Doesn't Check Adjacent
+- Doesn't Check Adjacent
 
 
 Roadmap:
