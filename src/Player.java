@@ -20,6 +20,7 @@ public class Player
         this.name = name;
         this.troops = troops;
         this.turnPosition = turnPosition;
+        capturedCountries = new ArrayList<>();
     }
 
     /**

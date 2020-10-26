@@ -37,10 +37,11 @@ public class RiskParser
             word1 = tokenizer.next();      // get first word
             if(tokenizer.hasNext()) {
                 word2 = tokenizer.next();      // get second word
-            }
-            if(tokenizer.hasNext()) {
-                word3 = tokenizer.next();      // get second word
+            
+                if(tokenizer.hasNext()) {
+                 word3 = tokenizer.next();      // get second word
                 // note: we just ignore the rest of the input line.
+                }
             }
         }
 

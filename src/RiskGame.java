@@ -48,18 +48,8 @@ public class RiskGame
     private boolean territoryAttackable; // True = the territory can be attacked
     private boolean territoryReinforceable; // True = the territory can be reinforced
 
-    // String variables
-    private String country;
-    private String countryAName;
-    private String countryBName;
-    private String countryList = "country.txt"; // List of all countries in the game
-    private String continentsList = "continents.txt"; // List of all continents in the game
-    private String adjacentList = "adjacent.txt"; // List of all adjacent countries in the game
-
     // String lists
     private String[] countriesArray;
-    private String[] continentsArray = {"North America", "South America", "Europe", "Africa", "Asia", "Australia"};
-    private String[] adjacentsArray;
     private String[] territoryCaptured; // List of country names that have been captured
     private String[] territoryOpen; // List of country names that haven't been captured
 
@@ -68,9 +58,6 @@ public class RiskGame
     private ArrayList<Player> players; // List of player objects
     private ArrayList<Country> countries; // List of country objects
     private ArrayList<Continent> continents; // List of continent objects
-
-    // Random variable for dice
-    private Random rand;
 
     // Objects
     private RiskBoard board;
@@ -175,7 +162,7 @@ public class RiskGame
         }
 
         // Load RiskBoard with country, adjacents, and continent arrays
-        boardLoaded = board.load(countriesArray, continentsArray, continentsArray);
+       // boardLoaded = board.load(countriesArray, continentsArray, continentsArray);
      
 
         // Start game at reinforcement stage
@@ -183,7 +170,7 @@ public class RiskGame
         for(Player p: players){
             Random startNum = new Random();
             String s = countriesArray[(startNum.nextInt(countriesArray.length))];
-            p.addCapturedCountry(board.getCountry(s));
+            p.addCapturedCountry(board.mapCountries.get(s));
         }
     }
 
@@ -273,6 +260,11 @@ public class RiskGame
 
             String countryInputs = countrySB.toString();
             arrC = countryInputs.split(" , ");
+
+            String temp[]= new String [arrC.length + countriesArray.length];
+            System.arraycopy(countriesArray, 0 , temp, countriesArray.length,countriesArray.length);
+            System.arraycopy(arrC, 0 , temp, countriesArray.length,arrC.length);
+            countriesArray = temp;
 
             for(String t : arrC){
                 c.add(new Country(t));
