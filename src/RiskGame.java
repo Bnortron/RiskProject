@@ -1,17 +1,10 @@
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Random;
 import java.util.Scanner;
 
 import java.lang.StringBuilder;
-import java.lang.NumberFormatException;
 
 import java.io.File;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-
 
 /**
  * @author Braden Norton
@@ -23,12 +16,9 @@ public class RiskGame
     // Game Parser
     private RiskParser parser;
 
-    // Reading text file variables
-    private StringBuilder sb;
-    private BufferedReader reader;
-
     // Int variables
-    private int playerAmount; // Amount of players in game    private int turnIndex = 1; // Turn number
+    private int playerAmount; // Amount of players in game    
+    private int turnIndex = 1; // Turn number
     private int attackRoll;
     private int defendRoll;
     private int initialTroops;
@@ -160,6 +150,7 @@ public class RiskGame
         {
             System.out.println(e.getMessage());
         }
+    
 
         // Load RiskBoard with country, adjacents, and continent arrays
        // boardLoaded = board.load(countriesArray, continentsArray, continentsArray);
@@ -167,11 +158,11 @@ public class RiskGame
 
         // Start game at reinforcement stage
 
-        for(Player p: players){
-            Random startNum = new Random();
-            String s = countriesArray[(startNum.nextInt(countriesArray.length))];
-            p.addCapturedCountry(board.mapCountries.get(s));
-        }
+      //  for(Player p: players){
+        //    Random startNum = new Random();
+          //  String s = countriesArray[(startNum.nextInt(countriesArray.length))];
+           // p.addCapturedCountry(board.mapCountries.get(s));
+       // }
     }
 
     public void mainMenu()
@@ -244,8 +235,6 @@ public class RiskGame
     private void setC_C() throws Exception
     {
         Scanner sc = new Scanner(new File("resources/Country.txt"));
-        StringBuilder countrySB = new StringBuilder();
-        String arrC[];
 
         while(sc.hasNextLine())
         {
@@ -256,20 +245,16 @@ public class RiskGame
             String firstWord = s.substring(0,i);
             String restOfLine = s.substring(i+2);
 
-            countrySB.append(restOfLine);
+            String[] arrC = restOfLine.split(",");
 
-            String countryInputs = countrySB.toString();
-            arrC = countryInputs.split(" , ");
+            System.out.println(arrC.length);
 
-            String temp[]= new String [arrC.length + countriesArray.length];
-            System.arraycopy(countriesArray, 0 , temp, countriesArray.length,countriesArray.length);
-            System.arraycopy(arrC, 0 , temp, countriesArray.length,arrC.length);
-            countriesArray = temp;
-
-            for(String t : arrC){
+            for(String t: arrC){
+                System.out.println(t);
                 c.add(new Country(t));
-                board.mapCountries.put(t,new Country(t));
             }
+
+            System.out.println("Done");
             Continent tempContinent = new Continent(firstWord, c);
             continents.add(tempContinent);
 
@@ -295,7 +280,7 @@ public class RiskGame
             for(Country coun : countries){
                 if(firstWord == coun.getName()){
                     for(String st : arr){
-                        board.mapCountries.get(firstWord).addAdjacents(board.mapCountries.get(st));
+                        //board.mapCountries.get(firstWord).addAdjacents(board.mapCountries.get(st));
                     }
                 }
             }
