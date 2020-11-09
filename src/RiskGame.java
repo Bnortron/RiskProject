@@ -368,7 +368,9 @@ public class RiskGame
         //print turn number
     }
 
-    
+    private void changeTurn(){
+        //change turn
+    }
 
     private boolean quit(Command command)
     {
