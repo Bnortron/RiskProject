@@ -1,7 +1,8 @@
 # RiskProject
 
 # Changelog (11/09/20)
-Deliverables:
+# Deliverables:
+
 executable jar file (containing source code and javadoc)
 
 UML Class Diagram of MVC
@@ -13,7 +14,8 @@ User Manual Text File
 ReadMe Text File
 
 
-Authors:
+# Authors:
+
 Tyler Leung - Wrote Documentation, Helped on Country Setup, Wrote Troop Initialization and Country Assignment
 
 Braxton Martin - Added Turn Base System, Worked on Country Setup
@@ -21,7 +23,8 @@ Braxton Martin - Added Turn Base System, Worked on Country Setup
 Braden Norton - Made GUI
 
 
-Future Roadmap:
+# Future Roadmap:
+
 Fix attack
 
 Add an AI player
@@ -35,7 +38,7 @@ Save/Load Features
 Custom Maps
 
 
-Known Issues:
+# Known Issues:
 
 Unsure if attack works properly
 
