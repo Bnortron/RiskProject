@@ -26,6 +26,7 @@ public class RiskGame
     private int aTroopsLost; // Amount of troops the attacker lost
     private int dTroopsLost; // Amount of troops the defender lost
     private int currTurnNum= 0;
+    private int currPlayerNum;
     private int totalCountries = 42;
 
     // Boolean variables
@@ -367,8 +368,9 @@ public class RiskGame
         //print whos turn
         //print turn number
     }
-
-    
+    private void changeTurn(){
+        //change turn
+    }
 
     private boolean quit(Command command)
     {
