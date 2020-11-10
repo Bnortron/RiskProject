@@ -20,9 +20,6 @@ import java.io.IOException;
  */
 public class RiskGame
 {
-    // Game Parser
-    private RiskParser parser;
-
     // Reading text file variables
     private StringBuilder sb;
     private BufferedReader reader;
@@ -37,6 +34,7 @@ public class RiskGame
     private int dTroops; // Amount of defender troops
     private int aTroopsLost; // Amount of troops the attacker lost
     private int dTroopsLost; // Amount of troops the defender lost
+    private int totalCountries = 42;
 
     // Boolean variables
     private boolean quitGame; // True = Exit the game
@@ -72,70 +70,33 @@ public class RiskGame
      */
     public RiskGame()
     {
-        parser = new RiskParser();
+        continents = new ArrayList<>();
+        countries = new ArrayList<>();
     }
 
-    public void playRisk()
+    public void initialize(int n, ArrayList<String> s)
     {
-        // Set booleans
-        quitGame = false;
-        playersSelected = false;
-
-        // Print main menu
-        mainMenu();
-
-        // Player selection loop
-        while(! playersSelected)
-        {
-            Command command = parser.getCommand();
-            playersSelected = processPlayers(command);
-        }
-
-        // Number of players chosen
-        System.out.println("New game for " + playerAmount + " players!");
-        System.out.println("Enter player names");
-
-        // Get player names
+        // List of player names
         names = new ArrayList<String>();
-        for(int i = 0; i < playerAmount; ++i)
-        {
-            System.out.println("Player " + (i+1) + ":");
-            Command command = parser.getName();
-            String commandName = command.getCommandWord();
-            names.add(commandName);
-        }
+        this.names = s;
 
-        // Player names chosen
-        System.out.println("Names chosen!");
+        // Set number of players
+        setPlayers(n);
+        System.out.println("Players set!" + "(" + getPlayerAmount() + ")");
 
-        // Initialize game
-        System.out.println("Initializing game...\n");
-        initializeGame();
+        // Set initial troops
+        setInitialTroops(n);
+        System.out.println("Initial Troops set!" + "(" + getInitialTroops() + ")");
 
-        // Main game loop
-        while(! quitGame)
-        {
-            System.out.println("Command: ");
-            Command command = parser.getCommand();
-            quitGame = processCommand(command);
-        }
-
-        // Quit option selected
-        System.out.println("Game quit! Thanks for playing Risk!");
-    }
-
-    public void initializeGame()
-    {
-        // Create player list
+        // Create players
         players = new ArrayList<Player>();
-
-        // Create players and add them to player list
-        for(int i = 0; i < names.size(); ++i)
+        for(int i = 0; i < n; ++i)
         {
-            // Create new player and add them to players ArrayList
-            players.add(new Player(names.get(i),initialTroops,i));
-            System.out.println(names.get(i) + " added!");
+            Player p = new Player(names.get(i), getInitialTroops(), i);
+            players.add(p);
+            System.out.println("Turn Order: " + players.get(i).getName());
         }
+        currPlayer = players.get(0);
 
         // Initialize Board
         board = new RiskBoard();
@@ -145,6 +106,7 @@ public class RiskGame
         try
         {
             setC_C();
+            System.out.println(countries.size());
         }
         catch(Exception e)
         {
@@ -161,126 +123,107 @@ public class RiskGame
             System.out.println(e.getMessage());
         }
 
-        // Load RiskBoard with country, adjacents, and continent arrays
-       // boardLoaded = board.load(countriesArray, continentsArray, continentsArray);
-     
+        // Assign Countries & Troops
+        assignCountriesTroops();
+    }
 
-        // Start game at reinforcement stage
-
-        for(Player p: players){
-            Random startNum = new Random();
-            String s = countriesArray[(startNum.nextInt(countriesArray.length))];
-            p.addCapturedCountry(board.mapCountries.get(s));
+    /**
+     * Assign Countries To Player and Assign Troops to Each Country
+     *
+     * @author Tyler Leung
+     */
+    private void assignCountriesTroops(){
+        ArrayList<Country> tempList = countries;
+        Collections.shuffle(tempList); //Randomly Shuffle List
+        while (totalCountries != 0){
+            for(Player p : players){
+                if(totalCountries > 0){
+                    p.addCapturedCountry(tempList.get(totalCountries-1));
+                    totalCountries--;
+                }
+            }
+        }
+        for(Player p : players){
+            int assignTroops = p.getTroops();
+            while (assignTroops != 0){
+                for(Country c : p.getCapturedCountries()){
+                    if(assignTroops > 0){
+                        c.addTroops(1);
+                        assignTroops--;
+                    }
+                }
+            }
         }
     }
 
-    public void mainMenu()
-
+    /**
+     * Takes data from GUI and sets the amount of players
+     */
+    public void setPlayers(int n)
     {
-        System.out.println("Welcome to the game of Risk!");
-        System.out.println("Choose the number of players (2-6): \n");
+        this.playerAmount = n;
+        setInitialTroops(n);
     }
 
-    private boolean processCommand(Command command)
+    /**
+     * Gets the amount of players.
+     *
+     * @return int amount of players
+     */
+    public int getPlayerAmount()
     {
-        // Boolean to quit game when true
-        boolean quitRequested = false;
-
-        // Get command word
-        String commandWord = command.getCommandWord();
-
-        // Commands
-        if(command.isUnknown()){
-            return false;
-        }
-        if(commandWord.equals("Q")){
-              quitRequested = quit(command);
-        } else if (commandWord.equals("A")){
-            attackStage(command);
-        }
-        // True = game ends
-        return quitRequested;
+        return playerAmount;
     }
 
-    private boolean processPlayers(Command command)
+    public Player getCurrentPlayer()
     {
-        // True when players chosen
-        boolean pSelected = false;
-
-        // Test if command is valid
-        if(command.isUnknown()) {
-            System.out.println("You must enter a number between 2-6\n");
-            return false;
-        }
-
-        // Get command word
-        String commandWord = command.getCommandWord();
-
-        // Parse to int value
-        int num = Integer.parseInt(commandWord);
-
-        // Process command
-        pSelected = selectPlayers(num);
-
-        return pSelected;
+        return currPlayer;
     }
-    public boolean selectPlayers(int amount)
+
+    public void nextTurn()
     {
-        // Check if number is between 2 and 6
-        if(amount >= 2 && amount <= 6)
-        {
-            // Number entered is valid
-            playerAmount = amount;
-            return true;
-        }
-        else
-        {
-            // Number invalid
-            System.out.println("You must enter a number between 2 and 6\n");
-            return false;
-        }
+
     }
 
     private void setC_C() throws Exception
     {
         Scanner sc = new Scanner(new File("resources/Country.txt"));
-        StringBuilder countrySB = new StringBuilder();
-        String arrC[];
 
         while(sc.hasNextLine())
         {
             ArrayList<Country> c = new ArrayList<>();
             String s = sc.nextLine();
+            System.out.println(s);
 
             int i = s.indexOf("-");
             String firstWord = s.substring(0,i);
             String restOfLine = s.substring(i+2);
 
-            countrySB.append(restOfLine);
+            String[] arrC = restOfLine.split(",");
 
-            String countryInputs = countrySB.toString();
-            arrC = countryInputs.split(" , ");
 
-            String temp[]= new String [arrC.length + countriesArray.length];
-            System.arraycopy(countriesArray, 0 , temp, countriesArray.length,countriesArray.length);
-            System.arraycopy(arrC, 0 , temp, countriesArray.length,arrC.length);
-            countriesArray = temp;
-
-            for(String t : arrC){
+            for(String t: arrC){
+                System.out.println(t);
                 c.add(new Country(t));
-                board.mapCountries.put(t,new Country(t));
+                countries.add(new Country(t));
             }
+
             Continent tempContinent = new Continent(firstWord, c);
             continents.add(tempContinent);
 
-            board.addContinents(tempContinent);
         }
+
+        sc.close();
     }
 
+    /**
+     * @author Braxton Martin
+     * @author Tyler Leung
+     * @throws Exception
+     */
     private void setAdjacents() throws Exception
     {
         Scanner sc = new Scanner(new File("resources/Adjacent.txt"));
-        String arr[];
 
         while(sc.hasNextLine())
         {
@@ -290,12 +233,15 @@ public class RiskGame
             String firstWord = s.substring(0,i);
             String restOfLine = s.substring(i+2);
 
-            arr = restOfLine.split(",");
-
+            String[] arr = restOfLine.split(",");
             for(Country coun : countries){
-                if(firstWord == coun.getName()){
-                    for(String st : arr){
-                        board.mapCountries.get(firstWord).addAdjacents(board.mapCountries.get(st));
+                if(firstWord.equals(coun.getName())){
+                    for(Country c : countries){
+                        for(String adj : arr){
+                            if(adj.equals(c.getName())){
+                                coun.addAdjacents(c);
+                            }
+                        }
                     }
                 }
             }
@@ -311,22 +257,16 @@ public class RiskGame
         else if(players == 6) {initialTroops = 20;}
     }
 
-    private boolean quit(Command command)
+    public int getInitialTroops()
     {
-        if(command.hasSecondWord()) {
-            System.out.println("Quit what?" + "\n");
-            return false;
-        }
-        else {
-            return true;  // signal that we want to quit
-        }
+        return initialTroops;
     }
 
     /**
      * check if you can attack possible country
-     * 
+     *
      * UNFINISHED
-     * 
+     *
      */
     private boolean checkAdjacents(String defCountry, String attCountry){
         Country dc = board.getCountry(defCountry);
@@ -335,65 +275,67 @@ public class RiskGame
             if(con==dc)return true;
             return false;
         }
-            
+
         return false;
     }
 
     /**
-     * Check if you are attacking adjacent 
-     * 
-     * 
+     * Check if you are attacking adjacent
+     *
+     *
      * @param command
      */
-    private void attackStage(Command command){
-        if(!command.hasSecondWord()) {
-            System.out.println("Attack WHO from WHERE?");
-        } else if(!command.hasThirdWord()){
-            System.out.println("Attack who from WHERE?");
-        }else if(!checkAdjacents(command.getSecondWord(),command.getThirdWord())){
+    /**
+     private void attackStage(Command command){
+     if(!command.hasSecondWord()) {
+     System.out.println("Attack WHO from WHERE?");
+     } else if(!command.hasThirdWord()){
+     System.out.println("Attack who from WHERE?");
+     }else if(!checkAdjacents(command.getSecondWord(),command.getThirdWord())){
 
 
-            System.out.println("Invalid Adjacent Country to Attack. Input another one.");
-            System.out.println("Here is a list of valid countries: ");
-            //GET LIST OF VALID ADJACENTS TO ATTACK
-        } else {
-            //Ask how many dices attacker would like to use
-            System.out.println("How many dice would the attacker like to use?");
-            Command aNumDice = parser.getCommand();
-            
-            //Create new dice object and roll those dice if valid attack
-            aDice = new Dice();
-            if(validAttack(Integer.parseInt(aNumDice.getCommandWord()))){
-                aDice.rollDice(Integer.parseInt(aNumDice.getCommandWord()));
-            }
-            aDice.printRolls();
-            
-            //Ask how many dices defender would like to use
-            System.out.println("How many dice would the defender like to use?");
-            Command dNumDice = parser.getCommand();
+     System.out.println("Invalid Adjacent Country to Attack. Input another one.");
+     System.out.println("Here is a list of valid countries: ");
+     //GET LIST OF VALID ADJACENTS TO ATTACK
+     } else {
+     //Ask how many dices attacker would like to use
+     System.out.println("How many dice would the attacker like to use?");
+     Command aNumDice = parser.getCommand();
 
-            //Create new dice object and roll those dice
-            dDice = new Dice();
-            if(validDefend(Integer.parseInt(dNumDice.getCommandWord()))){
-                dDice.rollDice(Integer.parseInt(dNumDice.getCommandWord()));
-            }
-            dDice.printRolls();
+     //Create new dice object and roll those dice if valid attack
+     aDice = new Dice();
+     if(validAttack(Integer.parseInt(aNumDice.getCommandWord()))){
+     aDice.rollDice(Integer.parseInt(aNumDice.getCommandWord()));
+     }
+     aDice.printRolls();
 
-            //Compare Highest Rolls
-            compareDice(aDice.getHighest(),dDice.getHighest());
-            //If both attack and defend used more than 1 dice, remove highest and compare again.
-            if((Integer.parseInt(aNumDice.getCommandWord()) > 1) && (Integer.parseInt(dNumDice.getCommandWord()) > 1)){
-                aDice.removeHighest();
-                dDice.removeHighest();
-            }
-            compareDice(aDice.getHighest(),dDice.getHighest());
+     //Ask how many dices defender would like to use
+     System.out.println("How many dice would the defender like to use?");
+     Command dNumDice = parser.getCommand();
 
-            //MAYBE ADD SOMETHING TO SHOW NUMBER OF ARMIES REMAINING AFTER ATTACK
-        }
-    }
+     //Create new dice object and roll those dice
+     dDice = new Dice();
+     if(validDefend(Integer.parseInt(dNumDice.getCommandWord()))){
+     dDice.rollDice(Integer.parseInt(dNumDice.getCommandWord()));
+     }
+     dDice.printRolls();
+
+     //Compare Highest Rolls
+     compareDice(aDice.getHighest(),dDice.getHighest());
+     //If both attack and defend used more than 1 dice, remove highest and compare again.
+     if((Integer.parseInt(aNumDice.getCommandWord()) > 1) && (Integer.parseInt(dNumDice.getCommandWord()) > 1)){
+     aDice.removeHighest();
+     dDice.removeHighest();
+     }
+     compareDice(aDice.getHighest(),dDice.getHighest());
+
+     //MAYBE ADD SOMETHING TO SHOW NUMBER OF ARMIES REMAINING AFTER ATTACK
+     }
+     }
+     **/
 
     /**
-     * Checks if attack is valid. 
+     * Checks if attack is valid.
      *
      * @param numArmy
      * @return true if valid attack

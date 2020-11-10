@@ -84,7 +84,7 @@ public class Country
     public void addTroops(int amount)
     {
         troops = troops + amount;
-        System.out.println(owner.getName() + " added " + amount + " troops to " + name + ".");
+        //System.out.println(owner.getName() + " added " + amount + " troops to " + name + ".");
         System.out.println("Troops in " + name + ": " + troops);
     }
 

@@ -3,7 +3,7 @@ import java.util.*;
 
 /**
  * Dice Class used for Risk Game. Can roll dice and return highest value from rolls and print rolls.
- * 
+ *
  * @author Tyler Leung
  */
 public class Dice
