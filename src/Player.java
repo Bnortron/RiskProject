@@ -53,10 +53,14 @@ public class Player
         return troops;
     }
 
-    public void getCapturedCountries(){
+    public ArrayList<Country> getCapturedCountries(){
+        return capturedCountries;
+    }
+
+    public void printCapturedCountries(){
         System.out.println("Captured Countries by this player are: ");
         for(Country c : capturedCountries){
-            System.out.println(c.toString());
+            System.out.println(c.getName());
         }
     }
 
