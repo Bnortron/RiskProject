@@ -32,7 +32,7 @@ public class Country
         // Initially unowned & empty
         owned = false;
         troops = 0;
-
+        adjacents = new ArrayList<>();
         // Testing
         //System.out.println("Created: " + name);
     }
