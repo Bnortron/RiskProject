@@ -62,6 +62,7 @@ public class RiskGame
     private Dice aDice;
     private Dice dDice;
     private Player currPlayer;
+    private Player pFromName;
     private Country countryA;
     private Country countryB;
 
@@ -82,11 +83,9 @@ public class RiskGame
 
         // Set number of players
         setPlayers(n);
-        System.out.println("Players set!" + "(" + getPlayerAmount() + ")");
 
         // Set initial troops
         setInitialTroops(n);
-        System.out.println("Initial Troops set!" + "(" + getInitialTroops() + ")");
 
         // Create players
         players = new ArrayList<Player>();
@@ -96,6 +95,8 @@ public class RiskGame
             players.add(p);
             System.out.println("Turn Order: " + players.get(i).getName());
         }
+
+        // Set current player to player who has their turn first
         currPlayer = players.get(0);
 
         // Initialize Board
@@ -170,14 +171,27 @@ public class RiskGame
      *
      * @return int amount of players
      */
-    public int getPlayerAmount()
+    public Player getPlayerAtPos(int i)
     {
-        return playerAmount;
+        return players.get(i);
     }
 
     public Player getCurrentPlayer()
     {
         return currPlayer;
+    }
+
+    public Player getPlayerByName(String n)
+    {
+        for(int i=0; i<players.size(); ++i)
+        {
+            String s = players.get(i).getName();
+            if(s.equals(n))
+            {
+                pFromName = players.get(i);
+            }
+        }
+        return pFromName;
     }
 
     public void nextTurn()

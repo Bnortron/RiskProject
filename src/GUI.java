@@ -18,7 +18,7 @@ public class GUI extends JFrame implements ActionListener, ListSelectionListener
     private RiskGame game;
 
     // JFrame
-    private JFrame frame1, frame2, frame3, frame4, frame5, frame6, frame7, frame8;
+    private JFrame frame1, frame2, frame3, frame4, frame5, frame6, frame7, frame8,frame9;
 
     // ContentPane
     private Container contentPane;
@@ -40,7 +40,7 @@ public class GUI extends JFrame implements ActionListener, ListSelectionListener
     private JButton p2,p3,p4,p5,p6;
 
     // Player options for board
-    private JButton menu,state,attack,fortify,endTurn,back;
+    private JButton menu,state,attack,fortify,endTurn,back,back1,back2,back3,back4;
 
     // Player name input
     private JTextField in;
@@ -49,6 +49,7 @@ public class GUI extends JFrame implements ActionListener, ListSelectionListener
     // Number of players
     private int playerNumber;
     private int count;
+    private String pName;
 
     // All players set
     private boolean loaded;
@@ -59,7 +60,7 @@ public class GUI extends JFrame implements ActionListener, ListSelectionListener
     private Player currentPlayer;
 
     // Countries list
-    private JList ocList;
+    private JList ocList, pList,oList,aList;
 
     /**
      * Constructor for GUI menu
@@ -385,9 +386,128 @@ public class GUI extends JFrame implements ActionListener, ListSelectionListener
     private void mapStateGUI()
     {
         frame6 = new JFrame("State of Map");
-        Container contentPane = frame5.getContentPane();
-        contentPane.setLayout(new GridBagLayout());
+        Container contentPane = frame6.getContentPane();
+        contentPane.setLayout(new GridLayout(3,1));
 
+
+        JLabel pName = new JLabel("Select a player below to view their progress: ");
+        String[] s = names.toArray(new String[0]);
+        pList = new JList<String>(s);
+        pList.addListSelectionListener(this);
+        JScrollPane scroll = new JScrollPane(pList);
+
+        back1 = new JButton("Back");
+        back1.addActionListener(this);
+
+
+        contentPane.add(pName);
+        contentPane.add(scroll);
+        contentPane.add(back1);
+
+        // Finish frame set up
+        frame6.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        frame6.pack();
+        frame6.setResizable(false);
+        frame6.setVisible(true);
+    }
+
+    private void playerStateGUI(String n)
+    {
+        Player name = game.getPlayerByName(n);
+        frame7 = new JFrame("Player State");
+        Container contentPane = frame7.getContentPane();
+        contentPane.setLayout(new BoxLayout(contentPane,BoxLayout.Y_AXIS));
+
+        back2 = new JButton("Back");
+        back2.addActionListener(this);
+        contentPane.add(back2);
+
+        JLabel nl = new JLabel("Player: " + n);
+        JLabel cl = new JLabel("Countries: ");
+        contentPane.add(nl);
+        contentPane.add(cl);
+
+        for(int i=0; i<name.getCapturedCountries().size(); ++i)
+        {
+            JLabel troopsInC = new JLabel(name.getCapturedCountries().get(i).getName() + "(Troops: " + name.getCapturedCountries().get(i).getTroops() + ")");
+            contentPane.add(troopsInC);
+        }
+
+        // Finish frame set up
+        frame7.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        frame7.pack();
+        frame7.setResizable(false);
+        frame7.setVisible(true);
+    }
+
+    private void attackGUI()
+    {
+        frame8 = new JFrame("Attack Frame");
+        Container contentPane = frame8.getContentPane();
+        contentPane.setLayout(new BoxLayout(contentPane,BoxLayout.Y_AXIS));
+
+        JLabel attackableCountries = new JLabel("Click One of Your Owned Countries to See where you can Attack: ");
+
+        // Get owned countries
+        ArrayList<String> oc = new ArrayList<String>();
+        ArrayList<Country> c = new ArrayList<Country>(currentPlayer.getCapturedCountries());
+        for(int i = 0; i < c.size(); ++i)
+        {
+            oc.add(c.get(i).getName());
+        }
+        String[] s = oc.toArray(new String[0]);
+        oList = new JList<String>(s);
+        oList.addListSelectionListener(this);
+        JScrollPane scroll = new JScrollPane(oList);
+
+        back3 = new JButton("Back");
+        back3.addActionListener(this);
+
+        contentPane.add(back3);
+        contentPane.add(attackableCountries);
+        contentPane.add(scroll);
+
+        // Finish frame set up
+        frame8.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        frame8.pack();
+        frame8.setResizable(false);
+        frame8.setVisible(true);
+    }
+
+    private void attackingAC(Country c)
+    {
+
+        frame9 = new JFrame("Attacking");
+        Container contentPane = frame9.getContentPane();
+        contentPane.setLayout(new BoxLayout(contentPane,BoxLayout.Y_AXIS));
+
+        JLabel adj = new JLabel("Attackable Countries From " + c.getName() + ": ");
+
+        back4 = new JButton("Back");
+        back4.addActionListener(this);
+
+        ArrayList<String> oc = new ArrayList<String>();
+        for(int i=0;i<c.getAdjacents().size();++i)
+        {
+            if(!c.getAdjacents().get(i).isOwned())
+            {
+                oc.add(c.getName());
+            }
+        }
+        String[] s = oc.toArray(new String[0]);
+        aList = new JList<String>(s);
+        aList.addListSelectionListener(this);
+        JScrollPane scroll = new JScrollPane(aList);
+
+        contentPane.add(back4);
+        contentPane.add(adj);
+        contentPane.add(scroll);
+
+        // Finish frame set up
+        frame9.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        frame9.pack();
+        frame9.setResizable(false);
+        frame9.setVisible(true);
 
     }
 
@@ -532,14 +652,29 @@ public class GUI extends JFrame implements ActionListener, ListSelectionListener
             frame5.dispose();
         }
 
+        if(o == back1)
+        {
+            frame6.dispose();
+        }
+
+        if(o == back2)
+        {
+            frame7.dispose();
+        }
+
+        if(o == back3)
+        {
+            frame8.dispose();
+        }
+
         if(o == state)
         {
-
+            mapStateGUI();
         }
 
         if(o == attack)
         {
-
+            attackGUI();
         }
 
         if(o == fortify)
@@ -562,6 +697,23 @@ public class GUI extends JFrame implements ActionListener, ListSelectionListener
             if(!ocList.getValueIsAdjusting()) // when user has selected an item
             {
                 System.out.println("JList item selected: " + ocList.getSelectedValue());
+            }
+        }
+
+        if(o == pList)
+        {
+            if(!pList.getValueIsAdjusting()) // when user has selected an item
+            {
+                String s = (String) pList.getSelectedValue();
+                playerStateGUI(s);
+            }
+        }
+        if(o == oList)
+        {
+            if(!oList.getValueIsAdjusting()) // when user has selected an item
+            {
+                String c = (String) oList.getSelectedValue();
+                attackingAC(s);
             }
         }
     }
