@@ -713,7 +713,7 @@ public class GUI extends JFrame implements ActionListener, ListSelectionListener
             if(!oList.getValueIsAdjusting()) // when user has selected an item
             {
                 String c = (String) oList.getSelectedValue();
-                attackingAC(s);
+                //attackingAC(s);
             }
         }
     }
