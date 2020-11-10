@@ -1,0 +1,26 @@
+To begin playing this version of RISK, you must double click on the jar file that is provided or you can run the file in the command prompt. To run the file in the command prompt, you must:
+Open your command prompt of choice (cmd for Windows, Terminal for Linux/Mac)
+Find the path of the file (ex. /User/Documents/Risk/RiskGame.jar)
+Run java -jar “path of file” 
+
+This will then initialize the game and you will then be greeted by a main menu screen where you can select to start the game or quit. After clicking to start the game, you will then choose the number of players that you will be playing with. You can then enter the names for each player and press enter to submit each name. Once that is completed you are now free to begin playing the game.
+
+The game will automatically randomly assign each player an even amount of countries and assign troops to each country evenly. Player 1 will go first and it will then proceed in order. Each player can do 5 actions:
+
+Menu: This opens a menu to allow you to quit the game.
+
+Attack:  This will allow you to attack any country that is adjacent to one country that you own. To select which country you will be attacking from, click on that country from the list. You will then click on the adjacent country that you are attacking from the list.
+
+You must have at least one more army than the number of dice you are using. This will then prompt the user that will be defending to select their number of dice. They must have at least 2 armies to defend with 2 dice. Once this is all inputted, the game will then tell you the results of the battle and remove the lost troops. If the attackers have won, they will move the remaining troops into the defeated country and will now own that country.
+
+
+State of Board: This will output the state of the board into a textarea in the gui.
+
+
+Fortify: Not Currently Implemented. Will allow for the addition of troops to the selected country from the list.
+
+
+End Turn: This ends the turn of the current player and the next player will be able to proceed with their turn.
+
+
+Once a player has lost all of their countries, they will no longer have a turn and be eliminated from the game. Once a player has won the game, a popup message will appear announcing the winner and the game will then close.
