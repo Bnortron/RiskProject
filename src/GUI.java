@@ -1,7 +1,6 @@
 import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
-import java.util.List;
 import java.util.ArrayList;
 import java.util.*;
 import javax.swing.event.*;
@@ -62,9 +61,11 @@ public class GUI extends JFrame implements ActionListener, ListSelectionListener
     // Countries list
     private JList ocList, pList,oList,aList;
 
+
     /**
      * Constructor for GUI menu
      */
+
     public GUI()
     {
         // Create Risk Game

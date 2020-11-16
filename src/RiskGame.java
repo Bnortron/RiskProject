@@ -2,7 +2,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
 import java.util.Scanner;
-
+import java.util.Observable;
 import java.lang.StringBuilder;
 import java.lang.NumberFormatException;
 
@@ -18,7 +18,7 @@ import java.io.IOException;
  * @author Tyler Leung
  * @author Braxton Martin
  */
-public class RiskGame
+public class RiskGame extends Observable
 {
     // Reading text file variables
     private StringBuilder sb;
@@ -73,25 +73,25 @@ public class RiskGame
     {
         continents = new ArrayList<>();
         countries = new ArrayList<>();
+        players = new ArrayList<>();
     }
+
+    /**
+     * Takes data from GUI and sets the amount of players
+     */
+    public void setPlayers(int n)
+    {
+        this.playerAmount = n;
+        setInitialTroops(n);
+    }
+
+
 
     public void initialize(int n, ArrayList<String> s)
     {
-        // List of player names
-        names = new ArrayList<String>();
-        this.names = s;
-
-        // Set number of players
-        setPlayers(n);
-
-        // Set initial troops
-        setInitialTroops(n);
-
-        // Create players
-        players = new ArrayList<Player>();
         for(int i = 0; i < n; ++i)
         {
-            Player p = new Player(names.get(i), getInitialTroops(), i);
+            Player p = new Player(s.get(i), getInitialTroops(), i);
             players.add(p);
             System.out.println("Turn Order: " + players.get(i).getName());
         }
@@ -157,14 +157,6 @@ public class RiskGame
         }
     }
 
-    /**
-     * Takes data from GUI and sets the amount of players
-     */
-    public void setPlayers(int n)
-    {
-        this.playerAmount = n;
-        setInitialTroops(n);
-    }
 
     /**
      * Gets the amount of players.
