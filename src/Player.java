@@ -53,10 +53,28 @@ public class Player
         return troops;
     }
 
+    void addTroops(int n)
+    {
+        troops = troops + n;
+    }
+
+    void removeTroops(int n)
+    {
+        troops = troops - n;
+    }
+
     public ArrayList<Country> getCapturedCountries(){
         return capturedCountries;
     }
 
+    public ArrayList<String> capturedCountriesToString()
+    {
+        ArrayList<String> temp = new ArrayList<>();
+        for(Country c : capturedCountries){
+            temp.add(c.getName());
+        }
+        return temp;
+    }
     public void printCapturedCountries(){
         System.out.println("Captured Countries by this player are: ");
         for(Country c : capturedCountries){
@@ -66,6 +84,7 @@ public class Player
 
     public void addCapturedCountry(Country c){
         capturedCountries.add(c);
+        c.setOwner(this);
     }
 
     public void removeCapturedCountry(Country c){
