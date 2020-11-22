@@ -5,6 +5,8 @@ public class Player
     private String name;
     private int troops;
     private int turnPosition;
+    private int countryBonus;
+    private int continentBonus;
 
     private ArrayList<Country> capturedCountries;
 
@@ -63,7 +65,8 @@ public class Player
         troops = troops - n;
     }
 
-    public ArrayList<Country> getCapturedCountries(){
+    public ArrayList<Country> getCapturedCountries()
+    {
         return capturedCountries;
     }
 
@@ -75,19 +78,44 @@ public class Player
         }
         return temp;
     }
-    public void printCapturedCountries(){
+
+    public void printCapturedCountries()
+    {
         System.out.println("Captured Countries by this player are: ");
         for(Country c : capturedCountries){
             System.out.println(c.getName());
         }
     }
 
-    public void addCapturedCountry(Country c){
+    public void addCapturedCountry(Country c)
+    {
         capturedCountries.add(c);
         c.setOwner(this);
     }
 
     public void removeCapturedCountry(Country c){
         capturedCountries.remove(c);
+    }
+
+    void setCountryBonus(int n)
+    {
+        this.countryBonus = n;
+        System.out.println("Country Bonus: " + countryBonus);
+    }
+
+    void setContinentBonus(int n)
+    {
+        this.continentBonus = n;
+        System.out.println("Continent Bonus: " + continentBonus);
+    }
+
+    int getCountryBonus()
+    {
+        return this.countryBonus;
+    }
+
+    int getContinentBonus()
+    {
+        return this.continentBonus;
     }
 }

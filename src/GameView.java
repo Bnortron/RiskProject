@@ -21,7 +21,7 @@ import java.util.Observable;
 public class GameView extends JFrame
 {
     // JFrame
-    private JFrame mapState, attackFrame, diceF, battleF, fortifyF, setFortifyF;
+    private JFrame attackFrame, diceF, battleF, fortifyF, setFortifyF;
 
     // Boolean for open JFrames
     private boolean mapStateOpen = false;
@@ -30,7 +30,7 @@ public class GameView extends JFrame
     private boolean selectFortifyAmount = false;
 
     // JPanels
-    private JPanel mPanel,bPanel;
+    private JPanel mPanel,bPanel, topPanel, msPanel;
 
     // JButtons
     // Main menu buttons
@@ -63,35 +63,48 @@ public class GameView extends JFrame
 
     private JTextArea turn;
 
-    private DefaultListModel dList;
-
     private JScrollPane jp1,jp2;
 
     // Attack GUI
     private JTextField ocTroops, acTroops;
-    private int aResidingTroops;
+    private DefaultListModel currentPlayerOC,dList;
 
     // Battle GUI
     private JButton roll, exitBattle, selectDice;
     private JTextField att, def, attTroops, defTroops,attDiceAmount,defDiceAmount;
     private JTextArea results;
     private JComboBox attDice, defDice;
+    private DefaultListModel allowedAttDice, allowedDefDice;
 
     // Fortify GUI
     private JButton moveTroops, submitFortify;
     private JList owned,adj;
-    private DefaultListModel adjModel;
+    private DefaultListModel ocModel, adjModel;
     private JComboBox movableTroops;
     private JScrollPane ocSP, adjSP;
+
+    // Model Data to represent
+    private String cpName;
+    private ArrayList<Player> allPlayers;
+    private ArrayList<String> allPlayerNames;
+    private DefaultListModel p1OC, p2OC, p3OC,p4OC,p5OC,p6OC;
+
+    private int cpTroops;
+    private int cpCountryBonus;
+    private int cpContinentBonus;
 
     /**
      * Constructor for objects of class GUI
      */
     public GameView()
     {
+        // Data Initialization
+        allPlayerNames = new ArrayList<>();
+        allPlayers = new ArrayList<>();
+
         setTitle("Risk GUI");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setPreferredSize(new Dimension(300, 300));
+        //setPreferredSize(new Dimension(300, 300));
         setLocationRelativeTo(null);
         setResizable(false);
         add(menuGUI());
@@ -350,57 +363,31 @@ public class GameView extends JFrame
         return sixPanel;
     }
 
-    // fix 5 model calls
-    private JPanel boardGUI(RiskGame m)
+    private JPanel boardResultsGUI()
     {
-        this.model = m;
-        setSize(500,250);
         // Create Panel
-        bPanel = new JPanel();
-        bPanel.setLayout(new GridLayout(2,3));
+        topPanel = new JPanel();
+        topPanel.setLayout(new GridLayout(2,3));
 
-        // Current Players name
-        String s = m.getCurrentTurn().getName();
-
-        // JTextArea in JScrollPane
-        // Initally show turn order, then it'll display actions during player turns
-        turn = new JTextArea("Turn Order\n");
-        turn.setEditable(false);
-        turn.append("---------------\n");
-        JScrollPane jp = new JScrollPane(turn);
-        for(int i=0; i<m.getPlayerAmount(); ++i)
-        {
-            turn.append("Turn " + (i+1) + ": " + m.getPlayers().get(i).getName());
-            turn.append("\n");
-        }
-        turn.append("---------------\n");
-        JScrollBar sb = jp.getVerticalScrollBar();
-        sb.setValue( sb.getMaximum() );
-
-        // JLabels
-        //name = new JTextField(s + "'s turn");
-        //name.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder(m.getNames().get(1)+" Owns:"),BorderFactory.createEmptyBorder(5,5,5,5)));
-
-        troops = new JTextField("" + model.getCurrentTurn().getTroops());
+        // Display amount of owned troops
+        troops = new JTextField("" + cpTroops);
         troops.setEditable(false);
-        troops.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder(m.getCurrentTurn().getName()+"'s Troops"),BorderFactory.createEmptyBorder(5,5,5,5)));
+        troops.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder(cpName + "'s Troops"),BorderFactory.createEmptyBorder(5,5,5,5)));
         troops.setHorizontalAlignment(JTextField.CENTER);
 
-        countryTroops = new JTextField("" + m.getCountryBonus());
-        countryTroops.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder(m.getCurrentTurn().getName()+"'s Reinforcements"),BorderFactory.createEmptyBorder(5,5,5,5)));
+        // Display amount of bonus troops from owned countries
+        countryTroops = new JTextField("" + cpCountryBonus);
+        countryTroops.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder(cpName+ "'s Reinforcements"),BorderFactory.createEmptyBorder(5,5,5,5)));
         countryTroops.setHorizontalAlignment(JTextField.CENTER);
         countryTroops.setEditable(false);
 
-        continentTroops = new JTextField("" + m.getContinentBonus());
-        continentTroops.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder(m.getCurrentTurn().getName()+"'s Bonus Troops"),BorderFactory.createEmptyBorder(5,5,5,5)));
+        // Display amount of bonus troops from owned continents
+        continentTroops = new JTextField("" + cpContinentBonus);
+        continentTroops.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder(cpName + "'s Bonus Troops"),BorderFactory.createEmptyBorder(5,5,5,5)));
         continentTroops.setHorizontalAlignment(JTextField.CENTER);
         continentTroops.setEditable(false);
 
         // JButtons
-        // State of map
-        state = new JButton("State of Map");
-        state.setActionCommand("State");
-
         // Attack
         attack = new JButton("Attack");
         attack.setActionCommand("Attack");
@@ -413,39 +400,41 @@ public class GameView extends JFrame
         endTurn = new JButton("End Turn");
         endTurn.setActionCommand("End Turn");
 
-        JPanel left = new JPanel();
-        left.setLayout(new GridLayout(2,1));
-        left.add(state);
-        left.add(endTurn);
-
-        JPanel right = new JPanel();
-        right.setLayout(new GridLayout(2,1));
-        right.add(attack);
-        right.add(fortify);
-
         // Add components to panel
-        bPanel.add(troops);
-        bPanel.add(countryTroops);
-        bPanel.add(continentTroops);
-        bPanel.add(left);
-        bPanel.add(jp);
-        bPanel.add(right);
+        topPanel.add(attack);
+        topPanel.add(fortify);
+        topPanel.add(endTurn);
+        topPanel.add(troops);
+        topPanel.add(countryTroops);
+        topPanel.add(continentTroops);
 
         // Return Panel
-        return bPanel;
+        return topPanel;
     }
 
-    private void mapStateGUI(RiskGame m)
+
+    private JScrollPane boardGUI(String name)
     {
-        // Create JFrame
-        mapState = new JFrame("State of map");
-        mapState.setPreferredSize(new Dimension(400, 400));
+        // Create Panel
+        bPanel = new JPanel();
+
+        // JTextArea in JScrollPane
+        // Display actions during player turns
+        turn = new JTextArea("---------------\n");
+        turn.setEditable(false);
+        turn.append(name + "'s turn\n");
+        JScrollPane jp = new JScrollPane(turn);
+        turn.append("---------------\n");
+
+        // Return Panel
+        return jp;
+    }
 
 
-        JPanel msPanel = new JPanel();
+    private JPanel mapStateGUI()
+    {
+        msPanel = new JPanel();
         msPanel.setLayout(new BoxLayout(msPanel, BoxLayout.X_AXIS));
-        Container contentPane = mapState.getContentPane();
-        contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.X_AXIS));
 
 
         l1 = new JLabel("Troops:  ");
@@ -455,21 +444,26 @@ public class GameView extends JFrame
         l5 = new JLabel("Troops:  ");
         l6 = new JLabel("Troops:  ");
 
-        if(m.getPlayerAmount() >= 2)
+        if(allPlayerNames.size() >= 2)
         {
             // Set JPanel for each player
             JPanel player1 = new JPanel();
             player1.setLayout(new BoxLayout(player1, BoxLayout.Y_AXIS));
-            player1.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder(m.getNames().get(0) +" Owns:"),BorderFactory.createEmptyBorder(5,5,5,5)));
+            player1.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder(allPlayers.get(0).getName() +" Owns:"),BorderFactory.createEmptyBorder(5,5,5,5)));
 
             JPanel player2 = new JPanel();
             player2.setLayout(new BoxLayout(player2, BoxLayout.Y_AXIS));
-            player2.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder(m.getNames().get(1)+" Owns:"),BorderFactory.createEmptyBorder(5,5,5,5)));
+            player2.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder(allPlayers.get(1).getName()+" Owns:"),BorderFactory.createEmptyBorder(5,5,5,5)));
+
+            // DefaultModelLists
 
             // JList for each players owned countries
-            oc1 = new JList<String>(m.getPlayers().get(0).capturedCountriesToString().toArray(new String[0]));
+            p1OC = new DefaultListModel();
+            oc1 = new JList<>(p1OC);
             JScrollPane sp1 = new JScrollPane(oc1);
-            oc2 = new JList<String>(m.getPlayers().get(1).capturedCountriesToString().toArray(new String[0]));
+
+            p2OC = new DefaultListModel();
+            oc2 = new JList<String>(p2OC);
             JScrollPane sp2 = new JScrollPane(oc2);
 
             // Add Components to panels
@@ -480,49 +474,49 @@ public class GameView extends JFrame
             msPanel.add(player1);
             msPanel.add(player2);
 
-            if(m.getPlayerAmount() >=3 )
+            if(allPlayers.size() >=3 )
             {
-                mapState.setPreferredSize(new Dimension(600, 300));
                 JPanel player3 = new JPanel();
                 player3.setLayout(new BoxLayout(player3, BoxLayout.Y_AXIS));
-                player3.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder(m.getNames().get(2) +" Owns:"),BorderFactory.createEmptyBorder(5,5,5,5)));
-                oc3 = new JList<String>(m.getPlayers().get(2).capturedCountriesToString().toArray(new String[0]));
+                player3.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder(allPlayers.get(2).getName() +" Owns:"),BorderFactory.createEmptyBorder(5,5,5,5)));
+                p3OC = new DefaultListModel();
+                oc3 = new JList<>(p3OC);
                 JScrollPane sp3 = new JScrollPane(oc3);
                 player3.add(sp3);
                 player3.add(l3);
                 msPanel.add(player3);
 
-                if(m.getPlayerAmount() >=4)
+                if(allPlayers.size() >=4)
                 {
-                    mapState.setPreferredSize(new Dimension(800, 300));
                     JPanel player4 = new JPanel();
                     player4.setLayout(new BoxLayout(player4, BoxLayout.Y_AXIS));
-                    player4.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder(m.getNames().get(3) +" Owns:"),BorderFactory.createEmptyBorder(5,5,5,5)));
-                    oc4 = new JList<String>(m.getPlayers().get(3).capturedCountriesToString().toArray(new String[0]));
+                    player4.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder(allPlayers.get(3).getName() +" Owns:"),BorderFactory.createEmptyBorder(5,5,5,5)));
+                    p4OC = new DefaultListModel();
+                    oc4 = new JList<>(p4OC);
                     JScrollPane sp4 = new JScrollPane(oc4);
                     player4.add(sp4);
                     player4.add(l4);
                     msPanel.add(player4);
 
-                    if(m.getPlayerAmount() >= 5)
+                    if(allPlayers.size() >= 5)
                     {
-                        mapState.setPreferredSize(new Dimension(1000, 300));
                         JPanel player5 = new JPanel();
                         player5.setLayout(new BoxLayout(player5, BoxLayout.Y_AXIS));
-                        player5.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder(m.getNames().get(4) +" Owns:"),BorderFactory.createEmptyBorder(5,5,5,5)));
-                        oc5 = new JList<String>(m.getPlayers().get(4).capturedCountriesToString().toArray(new String[0]));
+                        player5.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder(allPlayers.get(4).getName() +" Owns:"),BorderFactory.createEmptyBorder(5,5,5,5)));
+                        p5OC = new DefaultListModel();
+                        oc5 = new JList<>(p5OC);
                         JScrollPane sp5 = new JScrollPane(oc5);
                         player5.add(sp5);
                         player5.add(l5);
                         msPanel.add(player5);
 
-                        if(m.getPlayerAmount() == 6)
+                        if(allPlayers.size() == 6)
                         {
-                            mapState.setPreferredSize(new Dimension(1200, 300));
                             JPanel player6 = new JPanel();
                             player6.setLayout(new BoxLayout(player6, BoxLayout.Y_AXIS));
-                            player6.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder(m.getNames().get(5) +" Owns:"),BorderFactory.createEmptyBorder(5,5,5,5)));
-                            oc6 = new JList<String>(m.getPlayers().get(5).capturedCountriesToString().toArray(new String[0]));
+                            player6.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder(allPlayers.get(5).getName() +" Owns:"),BorderFactory.createEmptyBorder(5,5,5,5)));
+                            p6OC = new DefaultListModel();
+                            oc6 = new JList<>(p6OC);
                             JScrollPane sp6 = new JScrollPane(oc6);
                             player6.add(sp6);
                             player6.add(l6);
@@ -534,15 +528,11 @@ public class GameView extends JFrame
             }
         }
 
-        contentPane.add(msPanel);
-        // Finish frame set up
-        mapState.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        mapState.pack();
-        mapState.setResizable(false);
-        mapState.setVisible(true);
+        return msPanel;
     }
 
-    private void attackGUI(RiskGame m)
+    //
+    private void attackGUI()
     {
         // Create Frame
         attackFrame = new JFrame();
@@ -579,7 +569,8 @@ public class GameView extends JFrame
 
         // Create JLists
         // Owned Countries
-        ocCurrent = new JList<String>(m.getCurrentTurn().capturedCountriesToString().toArray(new String[0]));
+        currentPlayerOC = new DefaultListModel();
+        ocCurrent = new JList<String>(currentPlayerOC);
         jp1 = new JScrollPane(ocCurrent);
 
         // Attackable countries
@@ -591,7 +582,7 @@ public class GameView extends JFrame
         back = new JButton("Cancel");
         back.setActionCommand("Cancel");
 
-        battle = new JButton("Attack");
+        battle = new JButton("Battle");
         battle.setActionCommand("Battle");
 
         // Add components
@@ -617,7 +608,8 @@ public class GameView extends JFrame
         attackFrame.setVisible(true);
     }
 
-    private void chooseDiceGUI(RiskGame m)
+    // 2 Combo boxes
+    private void chooseDiceGUI()
     {
         // Frame
         diceF = new JFrame();
@@ -632,13 +624,13 @@ public class GameView extends JFrame
         // JComboBox
         JPanel cbp1 = new JPanel();
         cbp1.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder("Attack Dice"),BorderFactory.createEmptyBorder(1,1,1,1)));
-        attDice = new JComboBox(m.allowedAttDice(m.getAttackerTroops()));
+        attDice = new JComboBox();
         attDice.setActionCommand("Attack Dice");
         cbp1.add(attDice);
 
         JPanel cbp2 = new JPanel();
         cbp2.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder("Defence Dice"),BorderFactory.createEmptyBorder(1,1,1,1)));
-        defDice = new JComboBox(m.allowedDefDice(m.getDefenderTroops()));
+        defDice = new JComboBox();
         defDice.setActionCommand("Defence Dice");
         cbp2.add(defDice);
 
@@ -659,7 +651,7 @@ public class GameView extends JFrame
         diceF.setVisible(true);
     }
 
-    private void battleGUI(RiskGame m)
+    private void battleGUI()
     {
         // Create JFrame
         battleF = new JFrame();
@@ -681,43 +673,43 @@ public class GameView extends JFrame
 
         // JTextFields
         // Attacking Country
-        att = new JTextField(m.getAttacker());
+        att = new JTextField();
         att.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder("Attacker"),BorderFactory.createEmptyBorder(1,1,1,1)));
         att.setHorizontalAlignment(JTextField.CENTER);
         att.setEditable(false);
 
         // Defending Country
-        def = new JTextField(m.getDefender());
+        def = new JTextField();
         def.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder("Defender"),BorderFactory.createEmptyBorder(1,1,1,1)));
         def.setHorizontalAlignment(JTextField.CENTER);
         def.setEditable(false);
 
         // Troops in attacking country
-        attTroops = new JTextField("" + model.getACountryTroops());
+        attTroops = new JTextField();
         attTroops.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder("Troops"),BorderFactory.createEmptyBorder(1,1,1,1)));
         attTroops.setHorizontalAlignment(JTextField.CENTER);
         attTroops.setEditable(false);
 
         // Troops in defending country
-        defTroops = new JTextField("" + model.getACountryTroops());
+        defTroops = new JTextField();
         defTroops.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder("Troops"),BorderFactory.createEmptyBorder(1,1,1,1)));
         defTroops.setHorizontalAlignment(JTextField.CENTER);
         defTroops.setEditable(false);
 
         // Attack Dice Amount
-        attDiceAmount = new JTextField("" + model.getAttDiceAmount());
+        attDiceAmount = new JTextField();
         attDiceAmount.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder("Dice"),BorderFactory.createEmptyBorder(1,1,1,1)));
         attDiceAmount.setHorizontalAlignment(JTextField.CENTER);
         attDiceAmount.setEditable(false);
 
         // Defence Dice Amount
-        defDiceAmount = new JTextField("" + model.getDefDiceAmount());
+        defDiceAmount = new JTextField();
         defDiceAmount.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder("Dice"),BorderFactory.createEmptyBorder(1,1,1,1)));
         defDiceAmount.setHorizontalAlignment(JTextField.CENTER);
         defDiceAmount.setEditable(false);
 
         // Results of roll
-        results = new JTextArea("Battle For " + model.getDefender()+"\n");
+        results = new JTextArea();
         results.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder("Results"),BorderFactory.createEmptyBorder(1,1,1,1)));
         results.setEditable(false);
 
@@ -757,7 +749,7 @@ public class GameView extends JFrame
         battleF.setVisible(true);
     }
 
-    private void fortifyGUI(RiskGame m)
+    private void fortifyGUI()
     {
         /**
          * // Fortify GUI
@@ -767,7 +759,6 @@ public class GameView extends JFrame
          * private JComboBox movableTroops;
          * private JScrollPane ocSP, adjSP;
          */
-        this.model = m;
 
         // Frame
         fortifyF = new JFrame();
@@ -779,7 +770,8 @@ public class GameView extends JFrame
         countriesListPanel.setLayout(new GridLayout(1,2));
 
         // Lists
-        owned = new JList<String>(model.getCurrentTurn().capturedCountriesToString().toArray(new String[0]));
+        ocModel = new DefaultListModel();
+        owned = new JList<String>(ocModel);
         ocSP = new JScrollPane(owned);
         ocSP.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder("Owned"),BorderFactory.createEmptyBorder(1,1,1,1)));
 
@@ -806,7 +798,7 @@ public class GameView extends JFrame
         fortifyF.setVisible(true);
     }
 
-    private void fortifyAmountGUI(RiskGame m)
+    private void fortifyAmountGUI()
     {
         // Frame
         setFortifyF = new JFrame();
@@ -820,8 +812,7 @@ public class GameView extends JFrame
         // ComboBox
         JPanel cb = new JPanel();
         cb.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder("Move"),BorderFactory.createEmptyBorder(1,1,1,1)));
-        ArrayList<String> validTroops = new ArrayList<>(model.getValidMovementAmount(model.getCurrentCountryName()));
-        movableTroops = new JComboBox(validTroops.toArray());
+        movableTroops = new JComboBox();
         movableTroops.setActionCommand("Movable Troops");
         cb.add(movableTroops);
 
@@ -842,11 +833,10 @@ public class GameView extends JFrame
      * This method uses a new JPanel for each option to keep the JFrame simple and uncluttered
      *
      * @param s, command word assigned to menu button
-     * @param m, Risk model of game that deals with data
      *
      * @author Braden Norton
      */
-    public void setPanel(String s, RiskGame m)
+    public void setPanel(String s)
     {
         //getContentPane().removeAll();
         if(s.equals("Start"))
@@ -893,9 +883,13 @@ public class GameView extends JFrame
         if(s.equals("Submit"))
         {
             getContentPane().removeAll();
-            setSize(750,200);
-            add(boardGUI(m));
-            revalidate();
+            JPanel boardPanel = new JPanel();
+            boardPanel.setLayout(new GridLayout(3,1));
+            boardPanel.add(boardResultsGUI());
+            boardPanel.add(boardGUI(cpName));
+            boardPanel.add(mapStateGUI());
+            add(boardPanel);
+            setSize(1000,500);
         }
         revalidate();
     }
@@ -905,68 +899,63 @@ public class GameView extends JFrame
      * Using an ActionListener/CommandWord setup, this method will open up the requested JFrame as a pop-up to the main board.
      *
      * @param s, commandWord assigned to the buttons
-     * @param m, model of main game
      *
      * @author Braden Norton
      */
-    void boardOptions(String s, RiskGame m)
+    void boardOptions(String s)
     {
-        if(s.equals("State"))
-        {
-            if(attackFrameOpen){attackFrame.dispose(); attackFrameOpen = false;}
-            mapStateGUI(m);
-            mapStateOpen = true;
-        }
         if(s.equals("Attack"))
         {
-            if(mapStateOpen){mapState.dispose(); mapStateOpen = false;}
-            attackGUI(m);
+            attackGUI();
             attackFrameOpen = true;
         }
         if(s.equals("Battle"))
         {
             attackFrame.dispose();
-            chooseDiceGUI(m);
+            chooseDiceGUI();
         }
         if(s.equals("Select Dice"))
         {
             diceF.dispose();
-            battleGUI(m);
+            battleGUI();
         }
         if(s.equals("Roll"))
         {
-            updateBattle(m);
             roll.setEnabled(false);
         }
         if(s.equals("Exit Battle"))
         {
             battleF.dispose();
-
-            // Print results to results window on main board
-            if(model.getAttackResult()){updateTurnArea(model.getCurrentTurn().getName() + " has claimed " + model.getDefender());}
-            else{updateTurnArea(model.getCurrentTurn().getName() + " has exited the attack!");}
-
-            // Adjust number of troops
-            setTroops(""+model.getCurrentTurn().getTroops());
             revalidate();
         }
         if(s.equals("Fortify"))
         {
-            fortifyGUI(m);
+            fortifyGUI();
         }
         if(s.equals("Move Troops"))
         {
             selectFortifyAmount = true;
             fortifyF.dispose();
-            fortifyAmountGUI(m);
+            fortifyAmountGUI();
         }
         if(s.equals("Submit Fortify"))
         {
             selectFortifyAmount = false;
             setFortifyF.dispose();
-            updateTurnArea(model.getCurrentCountryName() + " has fortified " + model.getFortifiedCountryName() + " by " + model.getFortifiedAmount() + " troops!");
             fortify.setEnabled(false);
             attack.setEnabled(false);
+        }
+        if(s.equals("End Turn"))
+        {
+            getContentPane().removeAll();
+            JPanel boardPanel = new JPanel();
+            boardPanel.setLayout(new GridLayout(3,1));
+            boardPanel.add(boardResultsGUI());
+            boardPanel.add(boardGUI(cpName));
+            boardPanel.add(mapStateGUI());
+            add(boardPanel);
+            setSize(1000,500);
+            revalidate();
         }
     }
 
@@ -1010,7 +999,6 @@ public class GameView extends JFrame
 
     public void boardActionListener(ActionListener o)
     {
-        state.addActionListener(o);
         attack.addActionListener(o);
         fortify.addActionListener(o);
         endTurn.addActionListener(o);
@@ -1026,22 +1014,22 @@ public class GameView extends JFrame
     {
         oc1.addListSelectionListener(o);
         oc2.addListSelectionListener(o);
-        if(model.getPlayerAmount() == 3)
+        if(allPlayers.size() == 3)
         {
             oc3.addListSelectionListener(o);
         }
-        if(model.getPlayerAmount() == 4)
+        if(allPlayers.size() == 4)
         {
             oc3.addListSelectionListener(o);
             oc4.addListSelectionListener(o);
         }
-        if(model.getPlayerAmount() == 5)
+        if(allPlayers.size() == 5)
         {
             oc3.addListSelectionListener(o);
             oc4.addListSelectionListener(o);
             oc5.addListSelectionListener(o);
         }
-        if(model.getPlayerAmount() == 6)
+        if(allPlayers.size() == 6)
         {
             oc3.addListSelectionListener(o);
             oc4.addListSelectionListener(o);
@@ -1103,6 +1091,7 @@ public class GameView extends JFrame
         adj.removeListSelectionListener(o);
     }
 
+
     /**
      * PlayerAmountGUI: Getter and setter methods
      *
@@ -1110,32 +1099,48 @@ public class GameView extends JFrame
      */
     public String getName1()
     {
+        allPlayerNames.add(name1.getText());
         return name1.getText();
     }
 
     public String getName2()
     {
+        allPlayerNames.add(name2.getText());
         return name2.getText();
     }
 
     public String getName3()
     {
+        allPlayerNames.add(name3.getText());
         return name3.getText();
     }
 
     public String getName4()
     {
+        allPlayerNames.add(name4.getText());
         return name4.getText();
     }
 
     public String getName5()
     {
+        allPlayerNames.add(name5.getText());
         return name5.getText();
     }
 
     public String getName6()
     {
+        allPlayerNames.add(name6.getText());
         return name6.getText();
+    }
+
+    void addPlayers(ArrayList<Player> p)
+    {
+        for(int i=0; i<p.size();++i)
+        {
+            allPlayers.add(p.get(i));
+            System.out.println(p.get(i).getName() + " added!");
+        }
+        System.out.println(allPlayers.size());
     }
 
     /**
@@ -1184,14 +1189,107 @@ public class GameView extends JFrame
      *
      * @author Braden Norton
      */
+    void setCurrentPlayerName(String s)
+    {
+        this.cpName = s;
+    }
+
+    void setCurrentPlayerTroops(int t)
+    {
+        this.cpTroops = t;
+        //troops.setText("" + cpTroops);
+    }
+
+    void setCurrentPlayerReinforcements(int country, int continent)
+    {
+        this.cpCountryBonus = country;
+        //countryTroops.setText(""+cpCountryBonus);
+
+        this.cpContinentBonus = continent;
+        //continentTroops.setText("" + cpContinentBonus);
+    }
+
     void updateTurnArea(String s)
     {
-        //turn.append("\n---------------");
         turn.append("\n"+s);
         turn.selectAll();
     }
 
     void setTroops(String s){ troops.setText("" + s); }
+
+
+    void updateP1OCList(ArrayList<String> a)
+    {
+        if(!p1OC.isEmpty())
+        {
+            p1OC.clear();
+        }
+
+        for(int i =0; i<a.size(); ++i)
+        {
+            p1OC.addElement(a.get(i));
+        }
+    }
+
+    void updateP2OCList(ArrayList<String> a)
+    {
+        if(!p2OC.isEmpty())
+        {
+            p2OC.clear();
+        }
+        for(int i =0; i<a.size(); ++i)
+        {
+            p2OC.addElement(a.get(i));
+        }
+    }
+
+    void updateP3OCList(ArrayList<String> a)
+    {
+        if(!p3OC.isEmpty())
+        {
+            p3OC.clear();
+        }
+        for(int i =0; i<a.size(); ++i)
+        {
+            p3OC.addElement(a.get(i));
+        }
+    }
+
+    void updateP4OCList(ArrayList<String> a)
+    {
+        if(!p4OC.isEmpty())
+        {
+            p4OC.clear();
+        }
+        for(int i =0; i<a.size(); ++i)
+        {
+            p4OC.addElement(a.get(i));
+        }
+    }
+
+    void updateP5OCList(ArrayList<String> a)
+    {
+        if(!p5OC.isEmpty())
+        {
+            p5OC.clear();
+        }
+        for(int i =0; i<a.size(); ++i)
+        {
+            p5OC.addElement(a.get(i));
+        }
+    }
+
+    void updateP6OCList(ArrayList<String> a)
+    {
+        if(!p6OC.isEmpty())
+        {
+            p6OC.clear();
+        }
+        for(int i =0; i<a.size(); ++i)
+        {
+            p6OC.addElement(a.get(i));
+        }
+    }
 
     /**
      * attackGUI: Getter and setter methods
@@ -1202,13 +1300,17 @@ public class GameView extends JFrame
 
     JList getACList() { return aCountries; }
 
-    int getOCListIndex() {return ocCurrent.getSelectedIndex();}
-
     String getOCListValue(){ return ocCurrent.getSelectedValue().toString();}
 
-    int getACListIndex() { return aCountries.getSelectedIndex();}
-
     String getACListValue() { return aCountries.getSelectedValue().toString();}
+
+    void updateOCList(ArrayList<String> l)
+    {
+        for(int i=0; i<l.size(); ++i)
+        {
+            currentPlayerOC.addElement(l.get(i));
+        }
+    }
 
     /**
      * Displays the possible attackable countries
@@ -1225,9 +1327,9 @@ public class GameView extends JFrame
         }
     }
 
-    void updateACTroops()
+    void updateACTroops(int t)
     {
-        acTroops.setText("" + model.getTroopsByName(aCountries.getSelectedValue().toString()));
+        acTroops.setText("" + t);
     }
 
     void setOCTroops(int s) { ocTroops.setText(""+s); }
@@ -1242,53 +1344,64 @@ public class GameView extends JFrame
 
     String getDDiceAmount() { return defDice.getSelectedItem().toString(); }
 
-    String getAttName() { return att.getText(); }
-
-    String getDefName() { return def.getText(); }
-
-    void setATroopAmount() { attTroops.setText("" + model.getACountryTroops()); }
-
-    void setDTroopAmount() { defTroops.setText("" + model.getDCountryTroops());}
-
-    /**
-     * Updates the results text area in battle gui frame with results of roll
-     * Displays: Attack dice roll, Defence dice roll, amount of attack troops lost, amount of defence troops lost
-     *
-     * @author Braden Norton
-     */
-    void updateResult()
-    {
-        results.setText("");
-        if(model.getAttDiceAmount() == 1 || model.getDefDiceAmount() == 1)
-        {
-            results.append("Attack Roll: " + model.getARolls(0)+"\n");
-            results.append("Defence Roll: " + model.getDRolls(0)+"\n");
-        }
-        else if((model.getAttDiceAmount() == 2) && (model.getDefDiceAmount() == 2))
-        {
-            results.append("Attack Roll: " + model.getARolls(0)+ ", " + model.getARolls(1) +"\n");
-            results.append("Defence Roll: " + model.getDRolls(0)+ ", " + model.getDRolls(1) +"\n");
-        }
-
-        results.append("Attack Losses: " + model.getAttLosses()+"\n");
-        results.append("Defence Losses: " + model.getDefLosses());
-    }
 
     /**
      * Updates the battleGUI to reflect changes game state changes from battle
      *
-     * @param m, model of the game
      *
      * @author Braden Norton
      */
-    private void updateBattle(RiskGame m)
+
+    void setAttDice(String[] s)
     {
-        this.model = m;
-        setATroopAmount();
-        setDTroopAmount();
-        updateResult();
+        for(int i=0; i<s.length; ++i)
+        {
+            attDice.addItem(s[i]);
+        }
     }
 
+    void setDefDice(String[] s)
+    {
+        for(int i=0; i<s.length; ++i)
+        {
+            defDice.addItem(s[i]);
+        }
+    }
+
+    void setAttackingCountry(String s)
+    {
+        att.setText(s);
+    }
+
+    void setDefendingCountry(String s)
+    {
+        def.setText(s);
+    }
+
+    void setTroopsInAttCountry(int t)
+    {
+        attTroops.setText("" + t);
+    }
+
+    void setTroopsInDefCountry(int t)
+    {
+        defTroops.setText("" + t);
+    }
+
+    void setAttDiceAmount(int t)
+    {
+        attDiceAmount.setText(""+t);
+    }
+
+    void setDefDiceAmount(int t)
+    {
+        defDiceAmount.setText(""+t);
+    }
+
+    void setRollResult(String s)
+    {
+        results.append(s);
+    }
     /**
      * fortifyGUI: Getter and setter methods
      *
@@ -1312,5 +1425,22 @@ public class GameView extends JFrame
             adjModel.addElement(a.get(i));
         }
     }
+
+    void setFortifyFromList(ArrayList<String> a)
+    {
+        for(int i=0; i<a.size();++i)
+        {
+            ocModel.addElement(a.get(i));
+        }
+    }
+
+    void setAmountToFortify(ArrayList<String> s)
+    {
+        for(int i=0; i<s.size();++i)
+        {
+            movableTroops.addItem(s.get(i));
+        }
+    }
+
 
 }

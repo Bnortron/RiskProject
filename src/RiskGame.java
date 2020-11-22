@@ -45,14 +45,18 @@ public class RiskGame
     private ArrayList<Country> countries;
     private ArrayList<Continent> continents;
 
+    // Initialization
+    private boolean initialized = false;
+
     // For Reinforcement Phase
-    private boolean reinforcementPhaseActive;
+    private boolean reinforcementPhaseActive = false;
 
     // For Attack Phase
     private String[] d1 = {"1"};
     private String[] d2 = {"1", "2"};
     private String[] d3 = {"1", "2", "3"};
     private Country aCountry, dCountry;
+    private String dCountryOwner;
     private int aTroops, dTroops, aDice, dDice, attLoss, defLoss, totalBattleRolls;
     // Original amount of troops in each country: aTroops, dTroops
     // Amount of troops involved in battle: aDice, dDice
@@ -67,6 +71,7 @@ public class RiskGame
     private String ccName, fcName;
     private Country cCountry, fCountry;
     private ArrayList<String> ownedAdjCountries;
+    private boolean fortifyPhaseActive = false;
 
     /**
      * Constructor for objects of class RiskGame
@@ -85,279 +90,6 @@ public class RiskGame
         System.out.println("Amount of players: " + names.size());
     }
 
-    void setPlayers(int n)
-    {
-        this.playerAmount = n;
-        setInitialTroops(n);
-    }
-
-    public int getPlayerAmount()
-    {
-        return playerAmount;
-    }
-
-    public ArrayList<String> getNames()
-    {
-        return names;
-    }
-
-    public ArrayList<Player> getPlayers()
-    {
-        return players;
-    }
-
-    public Player getCurrentTurn()
-    {
-        return currentPlayer;
-    }
-
-    public int getCountryBonus()
-    {
-        return countryBonus;
-    }
-
-    public int getContinentBonus()
-    {
-        return continentBonus;
-    }
-
-    public ArrayList<Country> getCurrentPlayerOC(){return currentPlayer.getCapturedCountries();}
-
-    // Get amount of troops used to attack
-    public int getAttackerTroops(){return aTroops;}
-
-    // Get amount of troops in defending country
-    public int getDefenderTroops() {return dTroops;}
-
-    int getTroopsByName(String s)
-    {
-        for(Country c: countries)
-        {
-            if(c.getName().equals(s)){return c.getTroops();}
-        }
-        // Country not found
-        return 0;
-    }
-
-    void setAttackCountry(String s)
-    {
-        for(Country c: countries){if(c.getName().equals(s)){this.aCountry = c;}}
-    }
-
-    void setDefendCountry(String s)
-    {
-        for(Country c: countries){if(c.getName().equals(s)){this.dCountry = c;}}
-    }
-
-    public String getAttacker(){return aCountry.getName();}
-
-    public String getDefender(){return dCountry.getName();}
-
-    // Get Troop Amount in Att Country
-    public int getACountryTroops(){return aCountry.getTroops();}
-
-    // Get Troop Amount in Def Country
-    public int getDCountryTroops() {return dCountry.getTroops();}
-
-    void setACountryTroops() {aTroops = aCountry.getTroops();}
-
-    void setDCountryTroops() {dTroops = dCountry.getTroops();}
-
-    // Set amount of dice/troops attacker is using (from GUI input)
-    void setAttDice(String s)
-    {
-        if(s.equals("3"))
-        {
-            aTroops = 3;
-            aDice = 3;
-        }
-        else if(s.equals("2"))
-        {
-            aTroops = 2;
-            aDice = 2;
-        }
-        else if(s.equals("1"))
-        {
-            aTroops = 1;
-            aDice = 1;
-        }
-        System.out.println("Attacking with " + aDice + " troops/dice");
-    }
-
-    // Set amount of dice defender is using (from GUI input)
-    void setDefDice(String s)
-    {
-        if(s.equals("2"))
-        {
-            dDice = 2;
-        }
-        else if(s.equals("1"))
-        {
-            dDice = 1;
-        }
-        System.out.println("Defence using " + dDice + " dice");
-    }
-
-    /**
-     * Set the amount of dice the attacker can use depending on troop amount in the attacking country
-     * Attacker can use up to maximum 3 dice, each dice represents 1 troop
-     * Territories must be occupied at all times, thus there must be at least one troops left behind in the country initiating attack
-     * Allowed attack troops from troops in attacking country:
-     *
-     * 4+ Troops in attacking country: Can attack w/3 troops = 3 dice
-     * 3 Troops in attacking country: Can attack w/2 troops = dice
-     * 2 Troops in attacking country: Can attack w/1 troop = 1 dice
-     *
-     * @param int troops, amount of troops in attacking country
-     *
-     * @author Braden Norton
-     */
-    public String[] allowedAttDice(int troops)
-    {
-        if(troops > 4) {return d3;}
-        else if(troops == 3){return d2;}
-        else if(troops == 2){return d1;} // Troops = 2
-        else{return null;}// not valid
-    }
-
-    /**
-     * Set amount of dice the defender uses depending on troop amount in the defending country
-     * Defender can use up to maximum 2 dice, each dice represents 1 troop
-     * Defenders must have at least 2 troops in defending country to roll 2 dice
-     * Allowed dice amount per troops in defending country:
-     *
-     * 2+ Troops in defending country: Allowed (up to) 2 dice
-     * 1 Troops in defending country: Allowed 1 dice
-     *
-     * @param int troops, amount of troops in defending country
-     *
-     * @author Braden Norton
-     */
-    public String[] allowedDefDice(int troops)
-    {
-        if(troops >= 2){return d2;}
-        else{return d1;} // Troops = 1
-    }
-
-    int getAttDiceAmount() { return aDice; }
-
-    int getDefDiceAmount() { return dDice; }
-
-    int getAttLosses() { return attLoss; }
-
-    int getDefLosses() { return defLoss; }
-
-    int getTotalBattleRolls() { return totalBattleRolls; }
-
-    void startAttackPhase() { attackPhaseActive = true; }
-
-    void endAttackPhase() {attackPhaseActive = false;}
-
-    /**
-     * Determine all possible attackable countries for a given country
-     *
-     *
-     * @param String s, Name of country that you want to attack from
-     * @return String[], list of countries that are eligible to be attacked from the given country
-     *
-     * @author Braden Norton
-     */
-    public String[] getAttackableCountries(String s)
-    {
-        ArrayList<String> acList = new ArrayList<>();
-        ownedAdjCountries = new ArrayList<>();
-        for(int i=0; i<getCurrentPlayerOC().size(); ++i)
-        {
-            if(getCurrentPlayerOC().get(i).getName().equals(s))
-            {
-                Country tc = getCurrentPlayerOC().get(i);
-                //System.out.println(tc.getName()+" Selected: "+tc.getAdjacents().size()+" adjacents");
-                for(int j=0; j<tc.getAdjacents().size(); ++j)
-                {
-                    Country tac = tc.getAdjacents().get(j);
-                    //System.out.println(tac.getName() + " Selected (Owner: "+tac.getOwner().getName()+")");
-                    if(tac.getOwner() != currentPlayer)
-                    {
-                        if(tc.getTroops() > 1)
-                        {
-                            acList.add(tac.getName());
-                        }
-                    }
-                    else
-                    {
-                        // If you own the adjacent country
-                        ownedAdjCountries.add(tac.getName());
-                    }
-                }
-            }
-        }
-        String[] arr = acList.toArray(new String[acList.size()]);
-        return arr;
-    }
-
-    /**
-     * Sets the amount of troops each player starts with based on the total amount of players
-     *
-     * @param int, Total number of players
-     *
-     * @author Braden Norton
-     */
-    void setInitialTroops(int players)
-    {
-        if(players == 2){ initialTroops = 50;}
-        else if(players == 3) {initialTroops = 35;}
-        else if(players == 4) {initialTroops = 30;}
-        else if(players == 5) {initialTroops = 25;}
-        else if(players == 6) {initialTroops = 20;}
-    }
-
-    /**
-     * Ends current players turn and starts the turn of next player based on turn position
-     * After all players have taken their turn, the turn positon resets back to the first player
-     *
-     * @author Braden Norton
-     */
-    void nextTurn()
-    {
-        int n = currentPlayer.getTurnPosition();
-        // Last player's turn
-        if(n == playerAmount)
-        {
-            // Turn order back to start
-            currentPlayer = players.get(0);
-        }
-        else
-        {
-            // Next players turn
-            currentPlayer = players.get(n+1);
-        }
-    }
-
-    public void continentBonus(Player p)
-    {
-        for(int i=0; i<continents.size(); ++i)
-        {
-            if(p.getCapturedCountries().containsAll(continents.get(i).getResidingCountries()))
-            {
-                p.addTroops(continents.get(i).getBonusTroops());
-                continentBonus = continents.get(i).getBonusTroops();
-            }
-        }
-    }
-
-    public void countryBonus(Player p)
-    {
-        if(p.getCapturedCountries().size() < 12)
-        {
-            p.addTroops(3);
-            countryBonus = 3;
-        }
-        else
-        {
-            p.addTroops((p.getCapturedCountries().size()) / 3);
-            countryBonus = (p.getCapturedCountries().size()) / 3;
-        }
-    }
 
     void initializeGame()
     {
@@ -400,10 +132,6 @@ public class RiskGame
 
         // Assign Countries & Troops
         assignCountriesTroops();
-
-        // Assign Bonuses
-        continentBonus(currentPlayer);
-        countryBonus(currentPlayer);
     }
 
     private void setC_C() throws Exception
@@ -540,10 +268,15 @@ public class RiskGame
      *
      * @author Braden Norton
      */
-    private void reinforcementStage()
+    void reinforcementStage(Player p)
     {
+        System.out.println("Reinforcement Stage Active!");
         //Give reinforcement troops
+        continentBonus(p);
+        p.setContinentBonus(continentBonus);
 
+        countryBonus(p);
+        p.setCountryBonus(countryBonus);
     }
 
     /**
@@ -554,9 +287,11 @@ public class RiskGame
      */
     void attackStage(String ac, String dc)
     {
+
         // Initialize
         attLoss = 0;
         defLoss = 0;
+        successfulAttack = false;
 
         // Set Attacking & Defending Countries
         setAttackCountry(ac);
@@ -663,6 +398,28 @@ public class RiskGame
     }
 
     /**
+     * Ends current players turn and starts the turn of next player based on turn position
+     * After all players have taken their turn, the turn positon resets back to the first player
+     *
+     * @author Braden Norton
+     */
+    void nextTurn()
+    {
+        int n = currentPlayer.getTurnPosition();
+        // Last player's turn
+        if(n+1 == playerAmount)
+        {
+            // Turn order back to start
+            currentPlayer = players.get(0);
+        }
+        else
+        {
+            // Next players turn
+            currentPlayer = players.get(n+1);
+        }
+    }
+
+    /**
      * Checks if attack is valid.
      *
      * @param numArmy
@@ -706,21 +463,6 @@ public class RiskGame
             System.out.println("Defenders win! Attackers lose 1 army.");
             aTroops -= 1;
         }
-    }
-
-    int getARolls(int i)
-    {
-        return aRolls.get(i);
-    }
-
-    int getDRolls(int i)
-    {
-        return dRolls.get(i);
-    }
-
-    boolean getAttackResult()
-    {
-        return successfulAttack;
     }
 
     /**
@@ -769,6 +511,292 @@ public class RiskGame
 
     String getFortifiedCountryName() { return fcName; }
 
+
+    /**
+     * Initialization: Getters & Setters
+     *
+     *
+     */
+    void setPlayers(int n)
+    {
+        this.playerAmount = n;
+        setInitialTroops(n);
+    }
+
+    /**
+     * Sets the amount of troops each player starts with based on the total amount of players
+     *
+     * @param players, Total number of players
+     *
+     * @author Braden Norton
+     */
+    void setInitialTroops(int players)
+    {
+        if(players == 2){ initialTroops = 50;}
+        else if(players == 3) {initialTroops = 35;}
+        else if(players == 4) {initialTroops = 30;}
+        else if(players == 5) {initialTroops = 25;}
+        else if(players == 6) {initialTroops = 20;}
+    }
+
+    public int getPlayerAmount()
+    {
+        return playerAmount;
+    }
+
+    public ArrayList<String> getNames()
+    {
+        return names;
+    }
+
+    public ArrayList<Player> getPlayers()
+    {
+        return players;
+    }
+
+    public Player getCurrentTurn()
+    {
+        return currentPlayer;
+    }
+
+    /**
+     * Reinforcement Getters & Setters
+     *
+     *
+     */
+    public void continentBonus(Player p)
+    {
+        for(int i=0; i<continents.size(); ++i)
+        {
+            if(p.getCapturedCountries().containsAll(continents.get(i).getResidingCountries()))
+            {
+                p.addTroops(continents.get(i).getBonusTroops());
+                continentBonus = continents.get(i).getBonusTroops();
+            }
+        }
+    }
+
+    public void countryBonus(Player p)
+    {
+        if(p.getCapturedCountries().size() < 12)
+        {
+            p.addTroops(3);
+            countryBonus = 3;
+        }
+        else
+        {
+            p.addTroops((p.getCapturedCountries().size()) / 3);
+            countryBonus = ((p.getCapturedCountries().size()) / 3);
+        }
+    }
+
+
+    /**
+     * Attack Stage: Getters & Setters
+     *
+     *
+     */
+
+    public ArrayList<Country> getCurrentPlayerOC(){return currentPlayer.getCapturedCountries();}
+
+    // Get amount of troops used to attack
+    public int getAttackerTroops(){return aTroops;}
+
+    // Get amount of troops in defending country
+    public int getDefenderTroops() {return dTroops;}
+
+    int getTroopsByName(String s)
+    {
+        for(Country c: countries)
+        {
+            if(c.getName().equals(s)){return c.getTroops();}
+        }
+        // Country not found
+        return 0;
+    }
+
+    void setAttackCountry(String s)
+    {
+        for(Country c: countries){if(c.getName().equals(s)){this.aCountry = c;}}
+    }
+
+    void setDefendCountry(String s)
+    {
+        for(Country c: countries){if(c.getName().equals(s)){this.dCountry = c;}}
+        dCountryOwner = this.dCountry.getOwner().getName();
+    }
+
+    public String getAttacker(){return aCountry.getName();}
+
+    public String getDefender(){return dCountry.getName();}
+
+    // Get Troop Amount in Att Country
+    public int getACountryTroops(){return aCountry.getTroops();}
+
+    // Get Troop Amount in Def Country
+    public int getDCountryTroops() {return dCountry.getTroops();}
+
+    void setACountryTroops() {aTroops = aCountry.getTroops();}
+
+    void setDCountryTroops() {dTroops = dCountry.getTroops();}
+
+    // Set amount of dice/troops attacker is using (from GUI input)
+    void setAttDice(String s)
+    {
+        if(s.equals("3"))
+        {
+            aTroops = 3;
+            aDice = 3;
+        }
+        else if(s.equals("2"))
+        {
+            aTroops = 2;
+            aDice = 2;
+        }
+        else if(s.equals("1"))
+        {
+            aTroops = 1;
+            aDice = 1;
+        }
+        System.out.println("Attacking with " + aDice + " troops/dice");
+    }
+
+    // Set amount of dice defender is using (from GUI input)
+    void setDefDice(String s)
+    {
+        if(s.equals("2"))
+        {
+            dDice = 2;
+        }
+        else if(s.equals("1"))
+        {
+            dDice = 1;
+        }
+        System.out.println("Defence using " + dDice + " dice");
+    }
+
+    /**
+     * Set the amount of dice the attacker can use depending on troop amount in the attacking country
+     * Attacker can use up to maximum 3 dice, each dice represents 1 troop
+     * Territories must be occupied at all times, thus there must be at least one troops left behind in the country initiating attack
+     * Allowed attack troops from troops in attacking country:
+     *
+     * 4+ Troops in attacking country: Can attack w/3 troops = 3 dice
+     * 3 Troops in attacking country: Can attack w/2 troops = dice
+     * 2 Troops in attacking country: Can attack w/1 troop = 1 dice
+     *
+     * @param troops, amount of troops in attacking country
+     *
+     * @author Braden Norton
+     */
+    public String[] allowedAttDice(int troops)
+    {
+        if(troops > 4) {return d3;}
+        else if(troops == 3){return d2;}
+        else if(troops == 2){return d1;} // Troops = 2
+        else{return null;}// not valid
+    }
+
+    /**
+     * Set amount of dice the defender uses depending on troop amount in the defending country
+     * Defender can use up to maximum 2 dice, each dice represents 1 troop
+     * Defenders must have at least 2 troops in defending country to roll 2 dice
+     * Allowed dice amount per troops in defending country:
+     *
+     * 2+ Troops in defending country: Allowed (up to) 2 dice
+     * 1 Troops in defending country: Allowed 1 dice
+     *
+     * @param troops, amount of troops in defending country
+     *
+     * @author Braden Norton
+     */
+    public String[] allowedDefDice(int troops)
+    {
+        if(troops >= 2){return d2;}
+        else{return d1;} // Troops = 1
+    }
+
+    int getAttDiceAmount() { return aDice; }
+
+    int getDefDiceAmount() { return dDice; }
+
+    int getAttLosses() { return attLoss; }
+
+    int getDefLosses() { return defLoss; }
+
+    int getTotalBattleRolls() { return totalBattleRolls; }
+
+    void startAttackPhase() { attackPhaseActive = true; }
+
+    void endAttackPhase() {attackPhaseActive = false;}
+
+    String getDefendingCountryOwner()
+    {
+        return dCountryOwner;
+    }
+
+    /**
+     * Determine all possible attackable countries for a given country
+     *
+     *
+     * @param s, Name of country that you want to attack from
+     * @return String[], list of countries that are eligible to be attacked from the given country
+     *
+     * @author Braden Norton
+     */
+    public String[] getAttackableCountries(String s)
+    {
+        ArrayList<String> acList = new ArrayList<>();
+        ownedAdjCountries = new ArrayList<>();
+        for(int i=0; i<getCurrentPlayerOC().size(); ++i)
+        {
+            if(getCurrentPlayerOC().get(i).getName().equals(s))
+            {
+                Country tc = getCurrentPlayerOC().get(i);
+                //System.out.println(tc.getName()+" Selected: "+tc.getAdjacents().size()+" adjacents");
+                for(int j=0; j<tc.getAdjacents().size(); ++j)
+                {
+                    Country tac = tc.getAdjacents().get(j);
+                    //System.out.println(tac.getName() + " Selected (Owner: "+tac.getOwner().getName()+")");
+                    if(tac.getOwner() != currentPlayer)
+                    {
+                        if(tc.getTroops() > 1)
+                        {
+                            acList.add(tac.getName());
+                        }
+                    }
+                    else
+                    {
+                        // If you own the adjacent country
+                        ownedAdjCountries.add(tac.getName());
+                    }
+                }
+            }
+        }
+        String[] arr = acList.toArray(new String[acList.size()]);
+        return arr;
+    }
+
+    int getARolls(int i)
+    {
+        return aRolls.get(i);
+    }
+
+    int getDRolls(int i)
+    {
+        return dRolls.get(i);
+    }
+
+    boolean getAttackResult()
+    {
+        return successfulAttack;
+    }
+
+    /**
+     * Fortify Phase: Setters and Getters
+     *
+     *
+     */
     ArrayList<String> getValidMovementAmount(String s)
     {
         // Run attackable adjacent countries method used in the attack phase
