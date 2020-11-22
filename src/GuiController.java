@@ -24,11 +24,7 @@ public class GuiController implements ActionListener, ListSelectionListener
     private boolean p4AI = false;
     private boolean p5AI = false;
     private boolean p6AI = false;
-
-
-    // List of player names
-    ArrayList<String> names;
-    ArrayList<Boolean> AI;
+    private ArrayList<Boolean> playerIsAi;
 
     /**
      * Constructor for controller
@@ -318,31 +314,43 @@ public class GuiController implements ActionListener, ListSelectionListener
     private void addNames()
     {
         model.addPlayer(view.getName1());
+        if(view.getCB1()){playerIsAi.add(true);}
+        else{playerIsAi.add(false);}
         //System.out.println("Name 1 added");
 
         model.addPlayer(view.getName2());
+        if(view.getCB2()){playerIsAi.add(true);}
+        else{playerIsAi.add(false);}
         //System.out.println("Name 2 added");
 
         if(!view.getName3().isEmpty())
         {
             //System.out.println("Name 3 added");
             model.addPlayer(view.getName3());
+            if(view.getCB3()){playerIsAi.add(true);}
+            else{playerIsAi.add(false);}
         }
         if(!view.getName4().isEmpty())
         {
             //System.out.println("Name 4 added");
             model.addPlayer(view.getName4());
+            if(view.getCB4()){playerIsAi.add(true);}
+            else{playerIsAi.add(false);}
         }
         if(!view.getName5().isEmpty())
         {
             //System.out.println("Name 5 added");
             model.addPlayer(view.getName5());
+            if(view.getCB5()){playerIsAi.add(true);}
+            else{playerIsAi.add(false);}
 
         }
         if(!view.getName6().isEmpty())
         {
             //System.out.println("Name 6 added");
             model.addPlayer(view.getName6());
+            if(view.getCB6()){playerIsAi.add(true);}
+            else{playerIsAi.add(false);}
         }
     }
 
@@ -375,8 +383,9 @@ public class GuiController implements ActionListener, ListSelectionListener
      */
     void namesSelected(String s)
     {
+        playerIsAi = new ArrayList<>();
         addNames();
-        model.initializeGame();
+        model.initializeGame(playerIsAi);
         view.addPlayers(model.getPlayers());
         model.reinforcementStage(model.getCurrentTurn());
         updateTurn();
@@ -384,6 +393,11 @@ public class GuiController implements ActionListener, ListSelectionListener
         view.boardActionListener(this);
         view.mapStateActionListener(this);
         updateOCLists();
+    }
+
+    void checkAI()
+    {
+        if(view.getCB1()){}
     }
 
     /**

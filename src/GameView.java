@@ -1266,6 +1266,7 @@ public class GameView extends JFrame
     public String getName1()
     {
         allPlayerNames.add(name1.getText());
+
         return name1.getText();
     }
 
@@ -1297,6 +1298,42 @@ public class GameView extends JFrame
     {
         allPlayerNames.add(name6.getText());
         return name6.getText();
+    }
+
+    Boolean getCB1()
+    {
+        if(ai1.isSelected()){return true;}
+        else{return false;}
+    }
+
+    Boolean getCB2()
+    {
+        if(ai2.isSelected()){return true;}
+        else{return false;}
+    }
+
+    Boolean getCB3()
+    {
+        if(ai3.isSelected()){return true;}
+        else{return false;}
+    }
+
+    Boolean getCB4()
+    {
+        if(ai4.isSelected()){return true;}
+        else{return false;}
+    }
+
+    Boolean getCB5()
+    {
+        if(ai5.isSelected()){return true;}
+        else{return false;}
+    }
+
+    Boolean getCB6()
+    {
+        if(ai6.isSelected()){return true;}
+        else{return false;}
     }
 
     void addPlayers(ArrayList<Player> p)

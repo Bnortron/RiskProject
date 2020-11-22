@@ -47,7 +47,6 @@ public class RiskGame
 
     // Initialization
     private boolean initialized = false;
-    private boolean p1,p2,p3,p4,p5,p6;
 
     // For Reinforcement Phase
     private boolean reinforcementPhaseActive = false;
@@ -81,6 +80,7 @@ public class RiskGame
     {
         names = new ArrayList<>();
         players = new ArrayList<>();
+
         continents = new ArrayList<>();
         countries = new ArrayList<>();
     }
@@ -92,16 +92,21 @@ public class RiskGame
     }
 
 
-    void initializeGame()
+
+    void initializeGame(ArrayList<Boolean> ai)
     {
         // Create Players
         int n = names.size();
         for(int i=0; i<n; ++i)
         {
-            Player p = new Player(names.get(i), initialTroops, i);
+            Player p = new Player(names.get(i), initialTroops,i, ai.get(i));
             players.add(p);
-            //System.out.println("Turn " + (i+1) + ": " + players.get(i).getName());
+            if(players.get(i).isAI())
+            {
+                System.out.println("Player " + players.get(i).getName() + " is AI.");
+            }
         }
+
 
         // Shuffle player names to establish random turn order
         Collections.shuffle(names);

@@ -18,11 +18,12 @@ public class Player
      * @param troops
      * @param turnPosition
      */
-    public Player(String name, int troops, int turnPosition)
+    public Player(String name, int troops, int turnPosition, boolean ai)
     {
         this.name = name;
         this.troops = troops;
         this.turnPosition = turnPosition;
+        this.AI = ai;
         capturedCountries = new ArrayList<>();
     }
 
@@ -118,11 +119,6 @@ public class Player
     int getContinentBonus()
     {
         return this.continentBonus;
-    }
-
-    void setAI()
-    {
-        AI = true;
     }
 
     boolean isAI()
