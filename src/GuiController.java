@@ -18,10 +18,17 @@ public class GuiController implements ActionListener, ListSelectionListener
     private GameView view;
 
     // Boolean
-    private boolean mapStateOpen = false;
+    private boolean p1AI = false;
+    private boolean p2AI = false;
+    private boolean p3AI = false;
+    private boolean p4AI = false;
+    private boolean p5AI = false;
+    private boolean p6AI = false;
+
 
     // List of player names
     ArrayList<String> names;
+    ArrayList<Boolean> AI;
 
     /**
      * Constructor for controller
@@ -46,7 +53,6 @@ public class GuiController implements ActionListener, ListSelectionListener
     public void actionPerformed(ActionEvent e)
     {
         String o = e.getActionCommand();
-
 
         if(o.equals("Start"))
         {
@@ -93,6 +99,36 @@ public class GuiController implements ActionListener, ListSelectionListener
             view.setPanel(o);
             view.playerNameActionListener(this);
         }
+        if(o.equals("Player1 AI"))
+        {
+            p1AI = true;
+        }
+        else{p1AI = false;}
+        if(o.equals("Player2 AI"))
+        {
+            p2AI = true;
+        }
+        else{p2AI = false;}
+        if(o.equals("Player3 AI"))
+        {
+            p3AI = true;
+        }
+        else{p3AI =false;}
+        if(o.equals("Player4 AI"))
+        {
+            p4AI = true;
+        }
+        else{p4AI = false;}
+        if(o.equals("Player5 AI"))
+        {
+            p5AI = true;
+        }
+        else{p5AI = false;}
+        if(o.equals("Player6 AI"))
+        {
+            p6AI = true;
+        }
+        else{p6AI = false;}
         if(o.equals("Submit"))
         {
             namesSelected(o);
@@ -301,6 +337,7 @@ public class GuiController implements ActionListener, ListSelectionListener
         {
             //System.out.println("Name 5 added");
             model.addPlayer(view.getName5());
+
         }
         if(!view.getName6().isEmpty())
         {

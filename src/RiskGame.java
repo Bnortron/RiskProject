@@ -47,6 +47,7 @@ public class RiskGame
 
     // Initialization
     private boolean initialized = false;
+    private boolean p1,p2,p3,p4,p5,p6;
 
     // For Reinforcement Phase
     private boolean reinforcementPhaseActive = false;
@@ -93,9 +94,6 @@ public class RiskGame
 
     void initializeGame()
     {
-        // Shuffle player names to establish random turn order
-        Collections.shuffle(names);
-
         // Create Players
         int n = names.size();
         for(int i=0; i<n; ++i)
@@ -104,6 +102,9 @@ public class RiskGame
             players.add(p);
             //System.out.println("Turn " + (i+1) + ": " + players.get(i).getName());
         }
+
+        // Shuffle player names to establish random turn order
+        Collections.shuffle(names);
 
         // Set current turn
         currentPlayer = players.get(0);

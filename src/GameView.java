@@ -39,6 +39,9 @@ public class GameView extends JFrame
     // Player amount buttons
     private JButton p2,p3,p4,p5,p6;
 
+    // AI Selection Buttons
+    private JCheckBox ai1, ai2, ai3, ai4, ai5, ai6;
+
     // Submit player name
     private JButton submit,menuReturn;
 
@@ -161,6 +164,25 @@ public class GameView extends JFrame
         players.setFont(new Font("Serif", Font.BOLD, 18));
         players.setHorizontalAlignment(JLabel.CENTER);
 
+        // AI Selection Buttons
+        ai1 = new JCheckBox("AI");
+        ai1.setActionCommand("Player1 AI");
+
+        ai2 = new JCheckBox("AI");
+        ai2.setActionCommand("Player2 AI");
+
+        ai3 = new JCheckBox("AI");
+        ai3.setActionCommand("Player3 AI");
+
+        ai4 = new JCheckBox("AI");
+        ai4.setActionCommand("Player4 AI");
+
+        ai5 = new JCheckBox("AI");
+        ai5.setActionCommand("Player5 AI");
+
+        ai6 = new JCheckBox("AI");
+        ai6.setActionCommand("Player6 AI");
+
         // Buttons
         p2 = new JButton("Two Players");
         p2.setActionCommand("Two");
@@ -227,17 +249,30 @@ public class GameView extends JFrame
     {
         // Main panel
         JPanel twoPanel = new JPanel();
-        twoPanel.setLayout(new GridLayout(3,1));
+        twoPanel.setLayout(new GridLayout(3,2));
+
+        // JPanel
+        JPanel tp = new JPanel();
+        tp.setLayout(new GridLayout(1,2));
+
+        JPanel tp2 = new JPanel();
+        tp2.setLayout(new GridLayout(1,2));
 
         // JLabels
         JLabel n1 = new JLabel("Player 1 Name: ");
         JLabel n2 = new JLabel("Player 2 Name: ");
 
         // Add components to panel
+        tp.add(name1);
+        tp.add(ai1);
+
+        tp2.add(name2);
+        tp2.add(ai2);
+
         twoPanel.add(n1);
-        twoPanel.add(name1);
+        twoPanel.add(tp);
         twoPanel.add(n2);
-        twoPanel.add(name2);
+        twoPanel.add(tp2);
         twoPanel.add(submit);
         twoPanel.add(menuReturn);
 
@@ -251,18 +286,38 @@ public class GameView extends JFrame
         JPanel threePanel = new JPanel();
         threePanel.setLayout(new GridLayout(4,2));
 
+
         // JLabels
         JLabel n1 = new JLabel("Player 1 Name: ");
         JLabel n2 = new JLabel("Player 2 Name: ");
         JLabel n3 = new JLabel("Player 3 Name: ");
 
+        // JPanel
+        JPanel tp = new JPanel();
+        tp.setLayout(new GridLayout(1,2));
+
+        JPanel tp2 = new JPanel();
+        tp2.setLayout(new GridLayout(1,2));
+
+        JPanel tp3 = new JPanel();
+        tp3.setLayout(new GridLayout(1,2));
+
         // Add components to panel
+        tp.add(name1);
+        tp.add(ai1);
+
+        tp2.add(name2);
+        tp2.add(ai2);
+
+        tp3.add(name3);
+        tp3.add(ai3);
+
         threePanel.add(n1);
-        threePanel.add(name1);
+        threePanel.add(tp);
         threePanel.add(n2);
-        threePanel.add(name2);
+        threePanel.add(tp2);
         threePanel.add(n3);
-        threePanel.add(name3);
+        threePanel.add(tp3);
         threePanel.add(submit);
         threePanel.add(menuReturn);
 
@@ -282,15 +337,46 @@ public class GameView extends JFrame
         JLabel n3 = new JLabel("Player 3 Name: ");
         JLabel n4 = new JLabel("Player 4 Name: ");
 
+        // JPanel
+        JPanel tp1 = new JPanel();
+        tp1.setLayout(new GridLayout(1,2));
+
+        JPanel tp2 = new JPanel();
+        tp2.setLayout(new GridLayout(1,2));
+
+        JPanel tp3 = new JPanel();
+        tp3.setLayout(new GridLayout(1,2));
+
+        JPanel tp4 = new JPanel();
+        tp4.setLayout(new GridLayout(1,2));
+
+        JPanel tp5 = new JPanel();
+        tp5.setLayout(new GridLayout(1,2));
+
+        JPanel tp6 = new JPanel();
+        tp6.setLayout(new GridLayout(1,2));
+
         // Add components to Panel
+        tp1.add(name1);
+        tp1.add(ai1);
+
+        tp2.add(name2);
+        tp2.add(ai2);
+
+        tp3.add(name3);
+        tp3.add(ai3);
+
+        tp4.add(name4);
+        tp4.add(ai4);
+
         fourPanel.add(n1);
-        fourPanel.add(name1);
+        fourPanel.add(tp1);
         fourPanel.add(n2);
-        fourPanel.add(name2);
+        fourPanel.add(tp2);
         fourPanel.add(n3);
-        fourPanel.add(name3);
+        fourPanel.add(tp3);
         fourPanel.add(n4);
-        fourPanel.add(name4);
+        fourPanel.add(tp4);
         fourPanel.add(submit);
         fourPanel.add(menuReturn);
 
@@ -311,17 +397,51 @@ public class GameView extends JFrame
         JLabel n4 = new JLabel("Player 4 Name: ");
         JLabel n5 = new JLabel("Player 5 Name: ");
 
+        // JPanel
+        JPanel tp1 = new JPanel();
+        tp1.setLayout(new GridLayout(1,2));
+
+        JPanel tp2 = new JPanel();
+        tp2.setLayout(new GridLayout(1,2));
+
+        JPanel tp3 = new JPanel();
+        tp3.setLayout(new GridLayout(1,2));
+
+        JPanel tp4 = new JPanel();
+        tp4.setLayout(new GridLayout(1,2));
+
+        JPanel tp5 = new JPanel();
+        tp5.setLayout(new GridLayout(1,2));
+
+        JPanel tp6 = new JPanel();
+        tp6.setLayout(new GridLayout(1,2));
+
         // Add components to Panel
+        tp1.add(name1);
+        tp1.add(ai1);
+
+        tp2.add(name2);
+        tp2.add(ai2);
+
+        tp3.add(name3);
+        tp3.add(ai3);
+
+        tp4.add(name4);
+        tp4.add(ai4);
+
+        tp5.add(name5);
+        tp5.add(ai5);
+
         fivePanel.add(n1);
-        fivePanel.add(name1);
+        fivePanel.add(tp1);
         fivePanel.add(n2);
-        fivePanel.add(name2);
+        fivePanel.add(tp2);
         fivePanel.add(n3);
-        fivePanel.add(name3);
+        fivePanel.add(tp3);
         fivePanel.add(n4);
-        fivePanel.add(name4);
+        fivePanel.add(tp4);
         fivePanel.add(n5);
-        fivePanel.add(name5);
+        fivePanel.add(tp5);
         fivePanel.add(submit);
         fivePanel.add(menuReturn);
 
@@ -343,19 +463,56 @@ public class GameView extends JFrame
         JLabel n5 = new JLabel("Player 5 Name: ");
         JLabel n6 = new JLabel("Player 6 Name: ");
 
+        // JPanel
+        JPanel tp1 = new JPanel();
+        tp1.setLayout(new GridLayout(1,2));
+
+        JPanel tp2 = new JPanel();
+        tp2.setLayout(new GridLayout(1,2));
+
+        JPanel tp3 = new JPanel();
+        tp3.setLayout(new GridLayout(1,2));
+
+        JPanel tp4 = new JPanel();
+        tp4.setLayout(new GridLayout(1,2));
+
+        JPanel tp5 = new JPanel();
+        tp5.setLayout(new GridLayout(1,2));
+
+        JPanel tp6 = new JPanel();
+        tp6.setLayout(new GridLayout(1,2));
+
         // Add components to Panel
+        tp1.add(name1);
+        tp1.add(ai1);
+
+        tp2.add(name2);
+        tp2.add(ai2);
+
+        tp3.add(name3);
+        tp3.add(ai3);
+
+        tp4.add(name4);
+        tp4.add(ai4);
+
+        tp5.add(name5);
+        tp5.add(ai5);
+
+        tp6.add(name6);
+        tp6.add(ai6);
+
         sixPanel.add(n1);
-        sixPanel.add(name1);
+        sixPanel.add(tp1);
         sixPanel.add(n2);
-        sixPanel.add(name2);
+        sixPanel.add(tp2);
         sixPanel.add(n3);
-        sixPanel.add(name3);
+        sixPanel.add(tp3);
         sixPanel.add(n4);
-        sixPanel.add(name4);
+        sixPanel.add(tp4);
         sixPanel.add(n5);
-        sixPanel.add(name5);
+        sixPanel.add(tp5);
         sixPanel.add(n6);
-        sixPanel.add(name6);
+        sixPanel.add(tp6);
         sixPanel.add(submit);
         sixPanel.add(menuReturn);
 
@@ -995,6 +1152,15 @@ public class GameView extends JFrame
         // Buttons
         submit.addActionListener(o);
         menuReturn.addActionListener(o);
+
+        // CheckBoxes
+        ai1.addActionListener(o);
+        ai2.addActionListener(o);
+        ai3.addActionListener(o);
+        ai4.addActionListener(o);
+        ai5.addActionListener(o);
+        ai6.addActionListener(o);
+
     }
 
     public void boardActionListener(ActionListener o)

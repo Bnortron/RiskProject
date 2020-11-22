@@ -7,6 +7,7 @@ public class Player
     private int turnPosition;
     private int countryBonus;
     private int continentBonus;
+    private boolean AI;
 
     private ArrayList<Country> capturedCountries;
 
@@ -117,5 +118,15 @@ public class Player
     int getContinentBonus()
     {
         return this.continentBonus;
+    }
+
+    void setAI()
+    {
+        AI = true;
+    }
+
+    boolean isAI()
+    {
+        return AI;
     }
 }
