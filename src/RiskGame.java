@@ -254,6 +254,7 @@ public class RiskGame
                 }
             }
         }
+        sc.close();
     }
 
     /**
@@ -818,4 +819,24 @@ public class RiskGame
     String getCurrentCountryName(){ return ccName; }
 
     String getFortifiedCountryName() { return fcName; }
+
+    /**
+     * When player is AI, randomize their turn.
+     * 
+     * @author Tyler Leung
+     */
+    public void aiTurn(){
+        for(Player p : players){
+            if(p.isAI()){ //if player is AI
+                Random random = new Random();
+                int randNum = random.nextInt(2); //Generate Random Number
+
+                if(randNum == 0){
+                    //Attack and End Turn
+                } else if(randNum == 1){
+                    //Move and End Turn
+                }
+            }
+        }
+    }
 }
