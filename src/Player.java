@@ -1,3 +1,5 @@
+package src;
+
 import java.util.*;
 
 public class Player
@@ -97,6 +99,10 @@ public class Player
 
     public void removeCapturedCountry(Country c){
         capturedCountries.remove(c);
+    }
+
+    public int numCapturedCountries(){
+        return capturedCountries.size();
     }
 
     void setCountryBonus(int n)

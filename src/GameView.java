@@ -1,3 +1,4 @@
+package src;
 import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
@@ -7,10 +8,7 @@ import javax.swing.*;
 import javax.swing.event.*;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import javax.swing.border.*;
 import javax.swing.DefaultListModel;
-import java.util.Observer;
-import java.util.Observable;
 
 /**
  * View class that represents the visualization of the data that RiskGame model contains

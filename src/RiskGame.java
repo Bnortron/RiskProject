@@ -1,3 +1,5 @@
+package src;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
@@ -73,6 +75,9 @@ public class RiskGame
     private ArrayList<String> ownedAdjCountries;
     private boolean fortifyPhaseActive = false;
 
+    //For Win Condition is met
+    private boolean winner = false;
+
     /**
      * Constructor for objects of class RiskGame
      */
@@ -99,6 +104,10 @@ public class RiskGame
     /**
      * Sets up the players, turn order, the map (loads countries/continents/adjacencies from text file), & deployment phase (randomly assigns countries to each player, & troops randomly to those countries)
      *
+     * @author Braden Norton
+     * @author Braxton Martin
+     * @author Tyler Leung
+     * 
      * @param ai: ArrayList of booleans that represent whether a given player is designated as an AI
      */
     void initializeGame(ArrayList<Boolean> ai)
@@ -157,7 +166,7 @@ public class RiskGame
      * When a continent is added, all the countries are added to the game as well in an arraylist of 42 countries
      * Additionally, the countries residing in the continent are added to an ArrayList held within the continent class
      *
-     *
+     *@author Braxton Martin
      *
      * @throws Exception: throws exception if text file not found
      */
@@ -447,6 +456,10 @@ public class RiskGame
      */
     void nextTurn()
     {
+         int winningPlayer = checkWin();
+         if(winningPlayer!= -1){
+            winner = true;
+         }
         int n = currentPlayer.getTurnPosition();
         // Last player's turn
         if(n+1 == playerAmount)
@@ -769,6 +782,21 @@ public class RiskGame
     {
         return successfulAttack;
     }
+
+    /**
+ * Checking to see if a win has occured
+ * 
+ * @author Braxton Martin
+ */
+public int checkWin(){
+    for(Player p : players){
+        int playerNum =0;
+        if(p.numCapturedCountries() == countries.size()) return playerNum; //Returns the player's index that won
+        playerNum++;
+    }
+    return -1; //No one wins yet
+
+}
 
     /**
      * Fortify Phase: Setters and Getters

@@ -1,6 +1,10 @@
+package src;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+
+import javax.swing.JOptionPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 /**
@@ -419,6 +423,7 @@ public class GuiController implements ActionListener, ListSelectionListener
         view.setCurrentPlayerName(p.getName());
         view.setCurrentPlayerTroops(p.getTroops());
         view.setCurrentPlayerReinforcements(p.getCountryBonus(), p.getContinentBonus());
+        
     }
 
     /**
@@ -564,6 +569,10 @@ public class GuiController implements ActionListener, ListSelectionListener
         model.endAttackPhase();
         view.boardOptions(s);
         updateMainBoardResults();
+        int winningPlayer = model.checkWin();
+        if(winningPlayer !=-1){
+            JOptionPane.showMessageDialog(view, model.getPlayers().get(winningPlayer).getName() + " has won the game of Risk!");
+        }
     }
 
     /**
