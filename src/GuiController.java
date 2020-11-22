@@ -564,14 +564,14 @@ public class GuiController implements ActionListener, ListSelectionListener
      *
      *
      */
-    void exitBattleSelected(String s)
+     private void exitBattleSelected(String s)
     {
         model.endAttackPhase();
         view.boardOptions(s);
         updateMainBoardResults();
-        int winningPlayer = model.checkWin();
-        if(winningPlayer !=-1){
-            JOptionPane.showMessageDialog(view, model.getPlayers().get(winningPlayer).getName() + " has won the game of Risk!");
+        if(model.checkWin()!=-1){
+            int playerNum = model.checkWin();
+            view.winPopup(model.getPlayers().get(playerNum).getName());
         }
     }
 

@@ -63,6 +63,9 @@ public class GameView extends JFrame
 
     private JScrollPane jp1,jp2;
 
+    //Win Popup
+    private JOptionPane winScreen;
+
     // Attack GUI
     private JTextField ocTroops, acTroops;
     private DefaultListModel currentPlayerOC,dList;
@@ -1651,6 +1654,19 @@ public class GameView extends JFrame
         {
             movableTroops.addItem(s.get(i));
         }
+    }
+
+    /**
+     * Shows the popup for the winning player
+     * 
+     * @author Braxton Martin
+     * 
+     * @param s The name of the winning player
+     */
+    void winPopup(String s){
+        winScreen = new JOptionPane();
+        winScreen.showMessageDialog(this, s + " has won the Game of Risk!");
+        System.exit(0);
     }
 
 
