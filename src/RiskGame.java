@@ -2,113 +2,132 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
 import java.util.Scanner;
-
+import java.util.Observable;
 import java.lang.StringBuilder;
 import java.lang.NumberFormatException;
-
 import java.io.File;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-
+import java.util.Observable;
 
 /**
+ * Model class for RiskGame that stores and processes game data
+ *
  * @author Braden Norton
- * @author Tyler Leung
- * @author Braxton Martin
+ * @version 11/17/20
  */
 public class RiskGame
 {
-    // Reading text file variables
-    private StringBuilder sb;
-    private BufferedReader reader;
+    /**
+     * TO DO:
+     *
+     * 1. Write AI logic
+     * 2. Set win conditions
+     * 3. Test cases
+     * 5. End of turn logic
+     * 6. Better documentation
+     * 7. Refined code/get rid of useless getters & setters
+     * 8. Make GUI look better
+     *
+     */
 
-    // Int variables
-    private int playerAmount; // Amount of players in game    private int turnIndex = 1; // Turn number
-    private int attackRoll;
-    private int defendRoll;
+    private int playerAmount;
     private int initialTroops;
-    private int troops;
-    private int aTroops; // Amount of attacker troops
-    private int dTroops; // Amount of defender troops
-    private int aTroopsLost; // Amount of troops the attacker lost
-    private int dTroopsLost; // Amount of troops the defender lost
-    private int currTurnNum = 0;
-    private int currPlayerNum =0;    
+    private int countryBonus;
+    private int continentBonus;
     private int totalCountries = 42;
+    private Player currentPlayer;
+    private ArrayList<String> names;
+    private ArrayList<String> fortifiableCountries;
+    private ArrayList<Player> players;
+    private ArrayList<Country> countries;
+    private ArrayList<Continent> continents;
 
-    // Boolean variables
-    private boolean quitGame; // True = Exit the game
-    private boolean playersSelected; // True = The amount of players have been accepted
-    private boolean boardLoaded;
-    private boolean reinforcementStage; // True = turn is in reinforcement stage
-    private boolean attackStage; // True = turn is in attack stage
-    private boolean moveStage; // True = turn is in move stage (final stage)
-    private boolean territoryAttackable; // True = the territory can be attacked
-    private boolean territoryReinforceable; // True = the territory can be reinforced
+    // Initialization
+    private boolean initialized = false;
 
-    // String lists
-    private String[] countriesArray;
-    private String[] territoryCaptured; // List of country names that have been captured
-    private String[] territoryOpen; // List of country names that haven't been captured
+    // For Reinforcement Phase
+    private boolean reinforcementPhaseActive = false;
 
-    // ArrayLists
-    private ArrayList<String> names; // List of player names
-    private ArrayList<Player> players; // List of player objects
-    private ArrayList<Country> countries; // List of country objects
-    private ArrayList<Continent> continents; // List of continent objects
+    // For Attack Phase
+    private String[] d1 = {"1"};
+    private String[] d2 = {"1", "2"};
+    private String[] d3 = {"1", "2", "3"};
+    private Country aCountry, dCountry;
+    private String dCountryOwner;
+    private int aTroops, dTroops, aDice, dDice, attLoss, defLoss, totalBattleRolls;
+    // Original amount of troops in each country: aTroops, dTroops
+    // Amount of troops involved in battle: aDice, dDice
+    private ArrayList<Integer> aRolls; // Highest rolls that attacker had
+    private ArrayList<Integer> dRolls; // Highest rolls that defender had
+    private Dice attackerDice, defenderDice;
+    private boolean attackPhaseActive = false;
+    private boolean successfulAttack = false;
 
-    // Objects
-    private RiskBoard board;
-    private Dice aDice;
-    private Dice dDice;
-    private Player currPlayer;
-    private Country countryA;
-    private Country countryB;
+    // For Fortify Phase
+    private int fortifyAmount;
+    private String ccName, fcName;
+    private Country cCountry, fCountry;
+    private ArrayList<String> ownedAdjCountries;
+    private boolean fortifyPhaseActive = false;
 
     /**
-     * Constructor
+     * Constructor for objects of class RiskGame
      */
     public RiskGame()
     {
+        names = new ArrayList<>();
+        players = new ArrayList<>();
+
         continents = new ArrayList<>();
         countries = new ArrayList<>();
     }
 
-    public void initialize(int n, ArrayList<String> s)
+    /**
+     * Adds player names to an array list as Strings
+     *
+     * @param s: player name
+     */
+    void addPlayer(String s)
     {
-        // List of player names
-        names = new ArrayList<String>();
-        this.names = s;
+        names.add(s);
+        System.out.println("Amount of players: " + names.size());
+    }
 
-        // Set number of players
-        setPlayers(n);
-        System.out.println("Players set!" + "(" + getPlayerAmount() + ")");
-
-        // Set initial troops
-        setInitialTroops(n);
-        System.out.println("Initial Troops set!" + "(" + getInitialTroops() + ")");
-
-        // Create players
-        players = new ArrayList<Player>();
-        for(int i = 0; i < n; ++i)
+    /**
+     * Sets up the players, turn order, the map (loads countries/continents/adjacencies from text file), & deployment phase (randomly assigns countries to each player, & troops randomly to those countries)
+     *
+     * @param ai: ArrayList of booleans that represent whether a given player is designated as an AI
+     */
+    void initializeGame(ArrayList<Boolean> ai)
+    {
+        // Create Players
+        int n = names.size();
+        for(int i=0; i<n; ++i)
         {
-            Player p = new Player(names.get(i), getInitialTroops(), i);
+            Player p = new Player(names.get(i), initialTroops,i, ai.get(i));
             players.add(p);
-            System.out.println("Turn Order: " + players.get(i).getName());
+            if(players.get(i).isAI())
+            {
+                System.out.println("Player " + players.get(i).getName() + " is AI.");
+            }
         }
-        currPlayer = players.get(0);
 
-        // Initialize Board
-        board = new RiskBoard();
-        boardLoaded = false;
 
+        // Shuffle player names to establish random turn order
+        Collections.shuffle(names);
+
+        // Set current turn
+        currentPlayer = players.get(0);
+
+        // Set Countries & Continents
         // Set up countries
         try
         {
             setC_C();
-            System.out.println(countries.size());
+            //System.out.println("Country Amount: " + countries.size());
         }
         catch(Exception e)
         {
@@ -130,65 +149,18 @@ public class RiskGame
     }
 
     /**
-     * Assign Countries To Player and Assign Troops to Each Country
+     * Parses a text file of continents/countries to an ArrayList, setting up the game map
+     * First word in each line of the text file is a continent
+     * the rest of the words in the line (separated by commas) are countries that reside within that continent
      *
-     * @author Tyler Leung
-     */
-    private void assignCountriesTroops(){
-        ArrayList<Country> tempList = countries;
-        Collections.shuffle(tempList); //Randomly Shuffle List
-        while (totalCountries != 0){
-            for(Player p : players){
-                if(totalCountries > 0){
-                    p.addCapturedCountry(tempList.get(totalCountries-1));
-                    totalCountries--;
-                }
-            }
-        }
-        for(Player p : players){
-            int assignTroops = p.getTroops();
-            while (assignTroops != 0){
-                for(Country c : p.getCapturedCountries()){
-                    if(assignTroops > 0){
-                        c.addTroops(1);
-                        assignTroops--;
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * Takes data from GUI and sets the amount of players
-     */
-    public void setPlayers(int n)
-    {
-        this.playerAmount = n;
-        setInitialTroops(n);
-    }
-
-    /**
-     * Gets the amount of players.
+     * This method adds creates a continent, which sets: The name, The countries it holds, Amount of bonus troops given for owning the whole continent
+     * When a continent is added, all the countries are added to the game as well in an arraylist of 42 countries
+     * Additionally, the countries residing in the continent are added to an ArrayList held within the continent class
      *
-     * @return int amount of players
+     *
+     *
+     * @throws Exception: throws exception if text file not found
      */
-    public int getPlayerAmount()
-    {
-        return playerAmount;
-    }
-
-    public Player getCurrentPlayer()
-    {
-        return currPlayer;
-    }
-
-    public void nextTurn()
-    {
-        currPlayerNum = (currPlayerNum +1)%players.size();
-        currPlayer = players.get(currPlayerNum);
-        currTurnNum++;
-    }
-
     private void setC_C() throws Exception
     {
         Scanner sc = new Scanner(new File("resources/Country.txt"));
@@ -197,7 +169,7 @@ public class RiskGame
         {
             ArrayList<Country> c = new ArrayList<>();
             String s = sc.nextLine();
-            System.out.println(s);
+            //System.out.println(s);
 
             int i = s.indexOf("-");
             String firstWord = s.substring(0,i);
@@ -205,15 +177,42 @@ public class RiskGame
 
             String[] arrC = restOfLine.split(",");
 
-
             for(String t: arrC){
-                System.out.println(t);
+                //System.out.println(t);
                 c.add(new Country(t));
                 countries.add(new Country(t));
             }
 
-            Continent tempContinent = new Continent(firstWord, c);
-            continents.add(tempContinent);
+            if(firstWord.equals("North America"))
+            {
+                Continent tempContinent = new Continent(firstWord, c,5);
+                continents.add(tempContinent);
+            }
+            if(firstWord.equals("South America"))
+            {
+                Continent tempContinent = new Continent(firstWord, c,2);
+                continents.add(tempContinent);
+            }
+            if(firstWord.equals("Europe"))
+            {
+                Continent tempContinent = new Continent(firstWord, c,5);
+                continents.add(tempContinent);
+            }
+            if(firstWord.equals("Africa"))
+            {
+                Continent tempContinent = new Continent(firstWord, c,3);
+                continents.add(tempContinent);
+            }
+            if(firstWord.equals("Asia"))
+            {
+                Continent tempContinent = new Continent(firstWord, c,7);
+                continents.add(tempContinent);
+            }
+            if(firstWord.equals("Australia"))
+            {
+                Continent tempContinent = new Continent(firstWord, c,2);
+                continents.add(tempContinent);
+            }
 
         }
 
@@ -221,6 +220,11 @@ public class RiskGame
     }
 
     /**
+     * Uses a scanner to parse a text file of adjacent countries for a selected country
+     *
+     * First word in each line is the selected country, and the following words in the same line are all the adjacent countries to that country
+     * The adjacent countries are stored in an ArrayList inside the country class for the country object from the first word of each line
+     *
      * @author Braxton Martin
      * @author Tyler Leung
      * @throws Exception
@@ -250,9 +254,261 @@ public class RiskGame
                 }
             }
         }
+        sc.close();
     }
 
-    private void setInitialTroops(int players)
+    /**
+     * Assign Countries To Player and Assign Troops to Each Country
+     *
+     * @author Tyler Leung
+     */
+    private void assignCountriesTroops(){
+        ArrayList<Country> tempList = new ArrayList<>();
+        tempList = countries;
+        Collections.shuffle(tempList); //Randomly Shuffle List
+        while (totalCountries != 0){
+            for(Player p : players){
+                if(totalCountries > 0){
+                    p.addCapturedCountry(tempList.get(totalCountries-1));
+                    totalCountries--;
+                }
+            }
+        }
+        for(Player p : players){
+            int assignTroops = p.getTroops();
+            while (assignTroops != 0){
+                for(Country c : p.getCapturedCountries()){
+                    if(assignTroops > 0){
+                        c.addTroops(1);
+                        assignTroops--;
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Reinforcement Stage: The start of players turn, where bonus troops are alotted depending on two factors
+     * 1. "Reinforcement Troops", which are proportional to # of territories held
+     * 2. "Bonus Troops", which are given for holding every territory in a continent
+     *
+     * @author Braden Norton
+     */
+    void reinforcementStage(Player p)
+    {
+        System.out.println("Reinforcement Stage Active!");
+        //Give reinforcement troops
+        continentBonus(p);
+        p.setContinentBonus(continentBonus);
+
+        countryBonus(p);
+        p.setCountryBonus(countryBonus);
+    }
+
+    /**
+     * Attack Stage: Player can decide to attack adjacent countries using dice
+     *
+     * Rules:
+     * Attacker & Defender must declare amount of dice they intent to roll before the battle starts
+     * Compare all the rolled dice, the highest roll wins the encounter
+     * If both the attacker & defender roll multiple dice, repeat above rule for the second highest dice
+     * If the highest rolls from the attacker and defender are equal, the tie goes to the defender
+     *
+     * Results:
+     * If the attacker wins the roll, the defender losses 1 troop from the territory under attack
+     * If the defender wins the roll, the attacker losses 1 troop from the territory under attack
+     * If the attacker eliminates all the defending troops in the territory under attack, he claims its ownership
+     * If the attacker claims ownership of a territory, they must place at least 1 troop less than the amount of troops remaining in attacking territory
+     * There is no limit on the amount of times a player can attack in a single turn
+     *
+     *
+     * @author Braden Norton
+     */
+    void attackStage(String ac, String dc)
+    {
+
+        // Initialize
+        attLoss = 0;
+        defLoss = 0;
+        successfulAttack = false;
+
+        // Set Attacking & Defending Countries
+        setAttackCountry(ac);
+        setDefendCountry(dc);
+
+        // Create Dice
+        attackerDice = new Dice();
+        defenderDice = new Dice();
+
+        // Roll Dice
+        attackerDice.rollDice(aDice);
+        defenderDice.rollDice(dDice);
+
+        // Add highest rolls to reference list
+        aRolls = new ArrayList<>();
+        aRolls.add(attackerDice.getHighest());
+        dRolls = new ArrayList<>();
+        dRolls.add(defenderDice.getHighest());
+
+        // Defender Rolled 1 Dice
+        // Compare Highest Rolls
+        if(attackerDice.getHighest() > defenderDice.getHighest())
+        {
+            defLoss++;
+        }
+        else if(attackerDice.getHighest() < defenderDice.getHighest())
+        {
+            attLoss++;
+        }
+        else if(attackerDice.getHighest() == defenderDice.getHighest())
+        {
+            attLoss++;
+        }
+
+        // Defender & Attacker Rolled at least 2 Dice
+        if(aDice > 1 && dDice > 1)
+        {
+            // Compare Second Highest Rolls
+            attackerDice.removeHighest();
+            aRolls.add(attackerDice.getHighest());
+
+            defenderDice.removeHighest();
+            dRolls.add(defenderDice.getHighest());
+            if(attackerDice.getHighest() > defenderDice.getHighest())
+            {
+                defLoss++;
+            }
+            else if(attackerDice.getHighest() < defenderDice.getHighest())
+            {
+                attLoss++;
+            }
+            else if(attackerDice.getHighest() == defenderDice.getHighest())
+            {
+                attLoss++;
+            }
+        }
+
+        // Adjust Troops
+        aCountry.removeTroops(attLoss);
+        dCountry.removeTroops(defLoss);
+
+        // Adjust defending country if all defence is eliminated
+        if(dCountry.getTroops() == 0)
+        {
+            successfulAttack = true;
+            // Check if defending player is eliminated
+            if(dCountry.getOwner().getCapturedCountries().size() == 0)
+            {
+                // Remove From Game
+                System.out.println(dCountry.getOwner().getName() + " is eliminated!");
+                players.remove(dCountry.getOwner().getTurnPosition());
+            }
+            // Set attacker as new owner of the country
+            dCountry.getOwner().removeCapturedCountry(dCountry);
+            currentPlayer.addCapturedCountry(dCountry);
+
+            // Add remaining troops from the encounter to newly captured country
+            // Logically: Attacking troops that weren't killed during battle will remain in that country once battle ends
+            dCountry.addTroops(aDice);
+            aCountry.removeTroops(aDice);
+        }
+
+        // Update Model with roll results
+        updateModel();
+    }
+
+    /**
+     * Fortify Stage: Player may move any number of troops from one territory to another adjacently placed territory
+     *
+     * Can only fortify one territory: Once the troops are moved, the players turn is over
+     * The player is not required to fortify in order to end their turn
+     *
+     * @author Braden Norton
+     */
+    void fortifyStage(String cc, String fc, int i)
+    {
+        // Set current & fortified country
+        setCurrentCountry(cc);
+        setFortifiedCountry(fc);
+
+        // Add troops to fortified country
+        fortifyAmount = i;
+        fCountry.addTroops(i);
+
+        // Remove troops from current country
+        cCountry.removeTroops(i);
+    }
+
+    /**
+     * Ends current players turn and starts the turn of next player based on turn position
+     * After all players have taken their turn, the turn positon resets back to the first player
+     *
+     * @author Braden Norton
+     */
+    void nextTurn()
+    {
+        int n = currentPlayer.getTurnPosition();
+        // Last player's turn
+        if(n+1 == playerAmount)
+        {
+            // Turn order back to start
+            currentPlayer = players.get(0);
+        }
+        else
+        {
+            // Next players turn
+            currentPlayer = players.get(n+1);
+        }
+    }
+
+    /**
+     * At the end of attack phase, update the model values
+     *
+     * @author Braden Norton
+     */
+    void updateModel()
+    {
+        // Attack Phase Variables: aTroops, dTroops, aDice, dDice, totalBattleRolls
+        if(attackPhaseActive)
+        {
+            System.out.println("\nAttack Phase Active");
+
+            setACountryTroops();
+            System.out.println("Attack Troops: " + aTroops);
+            setDCountryTroops();
+            System.out.println("Defence Troops: " + dTroops);
+
+            // Set dice amount
+            allowedAttDice(aTroops);
+            System.out.println("Allowed Attack Dice: " + aDice);
+            allowedDefDice(dTroops);
+            System.out.println("Allowed Defence Dice: " + dDice);
+
+            // Increment Total Rolls
+            totalBattleRolls++;
+        }
+    }
+
+
+    /**
+     * Initialization: Getters & Setters
+     *
+     *
+     */
+    void setPlayers(int n)
+    {
+        this.playerAmount = n;
+        setInitialTroops(n);
+    }
+
+    /**
+     * Sets the amount of troops each player starts with based on the total amount of players
+     *
+     * @param players, Total number of players
+     *
+     * @author Braden Norton
+     */
+    void setInitialTroops(int players)
     {
         if(players == 2){ initialTroops = 50;}
         else if(players == 3) {initialTroops = 35;}
@@ -261,119 +517,326 @@ public class RiskGame
         else if(players == 6) {initialTroops = 20;}
     }
 
-    public int getInitialTroops()
+    public int getPlayerAmount()
     {
-        return initialTroops;
+        return playerAmount;
+    }
+
+    public ArrayList<String> getNames()
+    {
+        return names;
+    }
+
+    public ArrayList<Player> getPlayers()
+    {
+        return players;
+    }
+
+    public Player getCurrentTurn()
+    {
+        return currentPlayer;
     }
 
     /**
-     * check if you can attack possible country
+     * Reinforcement Getters & Setters
      *
-     * UNFINISHED
      *
      */
-    private boolean checkAdjacents(String defCountry, String attCountry){
-        Country dc = board.getCountry(defCountry);
-        Country ac = board.getCountry(attCountry);
-        for(Country con : ac.getAdjacents()){
-            if(con==dc)return true;
-            return false;
-        }
-
-        return false;
-    }
-
-    /**
-     * Check if you are attacking adjacent
-     *
-     *
-     * @param command
-     */
-    /**
-     private void attackStage(Command command){
-     if(!command.hasSecondWord()) {
-     System.out.println("Attack WHO from WHERE?");
-     } else if(!command.hasThirdWord()){
-     System.out.println("Attack who from WHERE?");
-     }else if(!checkAdjacents(command.getSecondWord(),command.getThirdWord())){
-     System.out.println("Invalid Adjacent Country to Attack. Input another one.");
-     System.out.println("Here is a list of valid countries: ");
-     //GET LIST OF VALID ADJACENTS TO ATTACK
-     } else {
-     //Ask how many dices attacker would like to use
-     System.out.println("How many dice would the attacker like to use?");
-     Command aNumDice = parser.getCommand();
-     //Create new dice object and roll those dice if valid attack
-     aDice = new Dice();
-     if(validAttack(Integer.parseInt(aNumDice.getCommandWord()))){
-     aDice.rollDice(Integer.parseInt(aNumDice.getCommandWord()));
-     }
-     aDice.printRolls();
-     //Ask how many dices defender would like to use
-     System.out.println("How many dice would the defender like to use?");
-     Command dNumDice = parser.getCommand();
-     //Create new dice object and roll those dice
-     dDice = new Dice();
-     if(validDefend(Integer.parseInt(dNumDice.getCommandWord()))){
-     dDice.rollDice(Integer.parseInt(dNumDice.getCommandWord()));
-     }
-     dDice.printRolls();
-     //Compare Highest Rolls
-     compareDice(aDice.getHighest(),dDice.getHighest());
-     //If both attack and defend used more than 1 dice, remove highest and compare again.
-     if((Integer.parseInt(aNumDice.getCommandWord()) > 1) && (Integer.parseInt(dNumDice.getCommandWord()) > 1)){
-     aDice.removeHighest();
-     dDice.removeHighest();
-     }
-     compareDice(aDice.getHighest(),dDice.getHighest());
-     //MAYBE ADD SOMETHING TO SHOW NUMBER OF ARMIES REMAINING AFTER ATTACK
-     }
-     }
-     **/
-
-    /**
-     * Checks if attack is valid.
-     *
-     * @param numArmy
-     * @return true if valid attack
-     */
-    private boolean validAttack(int numArmy){
-        if (numArmy <= 0){ //cant attack with 0
-            return false;
-        } else if(numArmy > aTroops){ //cant attack with more armies than you have
-            return false;
-        } else { //possible attack
-            return true;
+    public void continentBonus(Player p)
+    {
+        for(int i=0; i<continents.size(); ++i)
+        {
+            if(p.getCapturedCountries().containsAll(continents.get(i).getResidingCountries()))
+            {
+                p.addTroops(continents.get(i).getBonusTroops());
+                continentBonus = continents.get(i).getBonusTroops();
+            }
         }
     }
 
-    /**
-     * Checks if defense is valid
-     * @param numArmy number of armies used to defend
-     * @return true if valid defend
-     */
-    private boolean validDefend(int numArmy){
-        if (numArmy > 2){ //max 2 armies
-            return false;
-        } else if (numArmy < 0){ //cant not defend
-            return false;
-        } else if (numArmy > dTroops){ //cant attack with 2 if only 1 army
-            return false;
-        } else{
-            return true;
+    public void countryBonus(Player p)
+    {
+        if(p.getCapturedCountries().size() < 12)
+        {
+            p.addTroops(3);
+            countryBonus = 3;
+        }
+        else
+        {
+            p.addTroops((p.getCapturedCountries().size()) / 3);
+            countryBonus = ((p.getCapturedCountries().size()) / 3);
         }
     }
 
-    private void compareDice(int aHigh, int dHigh){
-        if (aHigh > dHigh){
-            System.out.println("Attackers win! Defenders lose 1 army.");
-            dTroops -= 1;
-        } else if (aHigh == dHigh){
-            System.out.println("It was a tie! Attackers lose 1 army.");
-            aTroops -= 1;
-        } else {
-            System.out.println("Defenders win! Attackers lose 1 army.");
-            aTroops -= 1;
+
+    /**
+     * Attack Stage: Getters & Setters
+     *
+     *
+     */
+
+    public ArrayList<Country> getCurrentPlayerOC(){return currentPlayer.getCapturedCountries();}
+
+    // Get amount of troops used to attack
+    public int getAttackerTroops(){return aTroops;}
+
+    // Get amount of troops in defending country
+    public int getDefenderTroops() {return dTroops;}
+
+    int getTroopsByName(String s)
+    {
+        for(Country c: countries)
+        {
+            if(c.getName().equals(s)){return c.getTroops();}
+        }
+        // Country not found
+        return 0;
+    }
+
+    void setAttackCountry(String s)
+    {
+        for(Country c: countries){if(c.getName().equals(s)){this.aCountry = c;}}
+    }
+
+    void setDefendCountry(String s)
+    {
+        for(Country c: countries){if(c.getName().equals(s)){this.dCountry = c;}}
+        dCountryOwner = this.dCountry.getOwner().getName();
+    }
+
+    public String getAttacker(){return aCountry.getName();}
+
+    public String getDefender(){return dCountry.getName();}
+
+    // Get Troop Amount in Att Country
+    public int getACountryTroops(){return aCountry.getTroops();}
+
+    // Get Troop Amount in Def Country
+    public int getDCountryTroops() {return dCountry.getTroops();}
+
+    void setACountryTroops() {aTroops = aCountry.getTroops();}
+
+    void setDCountryTroops() {dTroops = dCountry.getTroops();}
+
+    // Set amount of dice/troops attacker is using (from GUI input)
+    void setAttDice(String s)
+    {
+        if(s.equals("3"))
+        {
+            aTroops = 3;
+            aDice = 3;
+        }
+        else if(s.equals("2"))
+        {
+            aTroops = 2;
+            aDice = 2;
+        }
+        else if(s.equals("1"))
+        {
+            aTroops = 1;
+            aDice = 1;
+        }
+        System.out.println("Attacking with " + aDice + " troops/dice");
+    }
+
+    // Set amount of dice defender is using (from GUI input)
+    void setDefDice(String s)
+    {
+        if(s.equals("2"))
+        {
+            dDice = 2;
+        }
+        else if(s.equals("1"))
+        {
+            dDice = 1;
+        }
+        System.out.println("Defence using " + dDice + " dice");
+    }
+
+    /**
+     * Set the amount of dice the attacker can use depending on troop amount in the attacking country
+     * Attacker can use up to maximum 3 dice, each dice represents 1 troop
+     * Territories must be occupied at all times, thus there must be at least one troops left behind in the country initiating attack
+     * Allowed attack troops from troops in attacking country:
+     *
+     * 4+ Troops in attacking country: Can attack w/3 troops = 3 dice
+     * 3 Troops in attacking country: Can attack w/2 troops = dice
+     * 2 Troops in attacking country: Can attack w/1 troop = 1 dice
+     *
+     * @param troops, amount of troops in attacking country
+     *
+     * @author Braden Norton
+     */
+    public String[] allowedAttDice(int troops)
+    {
+        if(troops > 4) {return d3;}
+        else if(troops == 3){return d2;}
+        else if(troops == 2){return d1;} // Troops = 2
+        else{return null;}// not valid
+    }
+
+    /**
+     * Set amount of dice the defender uses depending on troop amount in the defending country
+     * Defender can use up to maximum 2 dice, each dice represents 1 troop
+     * Defenders must have at least 2 troops in defending country to roll 2 dice
+     * Allowed dice amount per troops in defending country:
+     *
+     * 2+ Troops in defending country: Allowed (up to) 2 dice
+     * 1 Troops in defending country: Allowed 1 dice
+     *
+     * @param troops, amount of troops in defending country
+     *
+     * @author Braden Norton
+     */
+    public String[] allowedDefDice(int troops)
+    {
+        if(troops >= 2){return d2;}
+        else{return d1;} // Troops = 1
+    }
+
+    int getAttDiceAmount() { return aDice; }
+
+    int getDefDiceAmount() { return dDice; }
+
+    int getAttLosses() { return attLoss; }
+
+    int getDefLosses() { return defLoss; }
+
+    int getTotalBattleRolls() { return totalBattleRolls; }
+
+    void startAttackPhase() { attackPhaseActive = true; }
+
+    void endAttackPhase() {attackPhaseActive = false;}
+
+    String getDefendingCountryOwner()
+    {
+        return dCountryOwner;
+    }
+
+    /**
+     * Determine all possible attackable countries for a given country
+     *
+     *
+     * @param s, Name of country that you want to attack from
+     * @return String[], list of countries that are eligible to be attacked from the given country
+     *
+     * @author Braden Norton
+     */
+    public String[] getAttackableCountries(String s)
+    {
+        ArrayList<String> acList = new ArrayList<>();
+        ownedAdjCountries = new ArrayList<>();
+        for(int i=0; i<getCurrentPlayerOC().size(); ++i)
+        {
+            if(getCurrentPlayerOC().get(i).getName().equals(s))
+            {
+                Country tc = getCurrentPlayerOC().get(i);
+                //System.out.println(tc.getName()+" Selected: "+tc.getAdjacents().size()+" adjacents");
+                for(int j=0; j<tc.getAdjacents().size(); ++j)
+                {
+                    Country tac = tc.getAdjacents().get(j);
+                    //System.out.println(tac.getName() + " Selected (Owner: "+tac.getOwner().getName()+")");
+                    if(tac.getOwner() != currentPlayer)
+                    {
+                        if(tc.getTroops() > 1)
+                        {
+                            acList.add(tac.getName());
+                        }
+                    }
+                    else
+                    {
+                        // If you own the adjacent country
+                        ownedAdjCountries.add(tac.getName());
+                    }
+                }
+            }
+        }
+        String[] arr = acList.toArray(new String[acList.size()]);
+        return arr;
+    }
+
+    int getARolls(int i)
+    {
+        return aRolls.get(i);
+    }
+
+    int getDRolls(int i)
+    {
+        return dRolls.get(i);
+    }
+
+    boolean getAttackResult()
+    {
+        return successfulAttack;
+    }
+
+    /**
+     * Fortify Phase: Setters and Getters
+     *
+     *
+     */
+    ArrayList<String> getValidMovementAmount(String s)
+    {
+        // Run attackable adjacent countries method used in the attack phase
+        getAttackableCountries(s);
+
+        // List of all possible troop values
+        int cTroop = getTroopsByName(s);
+        ArrayList<String> temp = new ArrayList<>();
+        System.out.println("Troops: " + cTroop);
+        // Iterate until only 1 troop left in current country
+        for(int i=0; i< (cTroop - 1); ++i)
+        {
+            int t = i+1;
+            temp.add(t+"");
+        }
+        return temp;
+    }
+
+    ArrayList<String> getFortifiableCountries(String s)
+    {
+        getAttackableCountries(s);
+
+        return ownedAdjCountries;
+    }
+
+    int getFortifiedAmount() { return fortifyAmount; }
+
+    void setCurrentCountryName(String s) {ccName = s;}
+
+    void setFortifiedCountryName(String s){fcName = s;}
+
+    void setCurrentCountry(String s)
+    {
+        for(Country c: countries){if(c.getName().equals(s)){this.cCountry = c;}}
+    }
+
+    void setFortifiedCountry(String s)
+    {
+        for(Country c: countries){if(c.getName().equals(s)){this.fCountry = c;}}
+    }
+
+    String getCurrentCountryName(){ return ccName; }
+
+    String getFortifiedCountryName() { return fcName; }
+
+    /**
+     * When player is AI, randomize their turn.
+     * 
+     * @author Tyler Leung
+     */
+    public void aiTurn(){
+        for(Player p : players){
+            if(p.isAI()){ //if player is AI
+                Random random = new Random();
+                int randNum = random.nextInt(2); //Generate Random Number
+
+                if(randNum == 0){
+                    //Attack and End Turn
+                } else if(randNum == 1){
+                    //Move and End Turn
+                }
+            }
         }
     }
 }

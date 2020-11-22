@@ -20,7 +20,6 @@ public class Country
     private Player owner;
 
     // Setter Methods
-
     /**
      * Constructor for objects of class Country
      */
@@ -28,6 +27,9 @@ public class Country
     {
         // Assign name
         this.name = name;
+
+        // Initialize AL
+        adjacents = new ArrayList<>();
 
         // Initially unowned & empty
         owned = false;
@@ -53,7 +55,6 @@ public class Country
     }
 
     // Getter Methods
-
     public String getName()
     {
         return name;
@@ -69,6 +70,11 @@ public class Country
         return owned;
     }
 
+    void setOwner(Player p)
+    {
+        this.owner = p;
+    }
+
     public Player getOwner()
     {
         return owner;
@@ -80,18 +86,18 @@ public class Country
     }
 
     // Adjusting amount of troops
-
     public void addTroops(int amount)
     {
         troops = troops + amount;
         //System.out.println(owner.getName() + " added " + amount + " troops to " + name + ".");
-        System.out.println("Troops in " + name + ": " + troops);
+        //System.out.println("Troops in " + name + ": " + troops);
     }
 
     public void removeTroops(int amount)
     {
         troops = troops - amount;
-        System.out.println(owner.getName() + " lost " + amount + " troops in " + name + ".");
-        System.out.println("Troops in " + name + ": " + troops);
+        owner.removeTroops(amount);
+        //System.out.println(owner.getName() + " lost " + amount + " troops in " + name + ".");
+        //System.out.println("Troops in " + name + ": " + troops);
     }
 }
