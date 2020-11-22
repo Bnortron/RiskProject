@@ -133,6 +133,10 @@ public class GuiController implements ActionListener, ListSelectionListener
         {
             attackSelected(o);
         }
+        if(o.equals("Cancel"))
+        {
+            view.boardOptions(o);
+        }
         if(o.equals("Battle"))
         {
             battleSelected(o);
@@ -152,6 +156,10 @@ public class GuiController implements ActionListener, ListSelectionListener
         if(o.equals("Fortify"))
         {
             fortifySelected(o);
+        }
+        if(o.equals("Cancel Fortify"))
+        {
+            view.boardOptions(o);
         }
         if(o.equals("Move Troops"))
         {
@@ -408,7 +416,6 @@ public class GuiController implements ActionListener, ListSelectionListener
     void updateTurn()
     {
         Player p = model.getCurrentTurn();
-        System.out.println(model.getCurrentTurn().getName() + "'s turn!");
         view.setCurrentPlayerName(p.getName());
         view.setCurrentPlayerTroops(p.getTroops());
         view.setCurrentPlayerReinforcements(p.getCountryBonus(), p.getContinentBonus());

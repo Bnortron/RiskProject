@@ -53,9 +53,6 @@ public class GameView extends JFrame
     private JTextField name1,name2,name3,name4,name5,name6;
 
     // GUI For Game Board
-    // Game state
-    private RiskGame model;
-
     private JList playerList, oc1,oc2,oc3,oc4,oc5,oc6,ocCurrent,aCountries;
 
     private JButton back,battle;
@@ -80,7 +77,7 @@ public class GameView extends JFrame
     private DefaultListModel allowedAttDice, allowedDefDice;
 
     // Fortify GUI
-    private JButton moveTroops, submitFortify;
+    private JButton moveTroops, submitFortify,cancelFortify;
     private JList owned,adj;
     private DefaultListModel ocModel, adjModel;
     private JComboBox movableTroops;
@@ -938,15 +935,25 @@ public class GameView extends JFrame
         adjSP.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder("Fortifiable"),BorderFactory.createEmptyBorder(1,1,1,1)));
 
         // Button
+        // Button Panel
+        JPanel b = new JPanel();
+        b.setLayout(new GridLayout(1,2));
+
         moveTroops = new JButton("Move Troops");
         moveTroops.setActionCommand("Move Troops");
 
+        cancelFortify = new JButton("Cancel");
+        cancelFortify.setActionCommand("Cancel Fortify");
+
         // Set Content Pane
+        b.add(moveTroops);
+        b.add(cancelFortify);
+
         countriesListPanel.add(ocSP);
         countriesListPanel.add(adjSP);
 
         cp.add(countriesListPanel);
-        cp.add(moveTroops);
+        cp.add(b);
 
         // Finish Frame setup
         fortifyF.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -995,7 +1002,6 @@ public class GameView extends JFrame
      */
     public void setPanel(String s)
     {
-        //getContentPane().removeAll();
         if(s.equals("Start"))
         {
             getContentPane().removeAll();
@@ -1071,6 +1077,10 @@ public class GameView extends JFrame
             attackFrame.dispose();
             chooseDiceGUI();
         }
+        if(s.equals("Cancel"))
+        {
+            attackFrame.dispose();
+        }
         if(s.equals("Select Dice"))
         {
             diceF.dispose();
@@ -1088,6 +1098,10 @@ public class GameView extends JFrame
         if(s.equals("Fortify"))
         {
             fortifyGUI();
+        }
+        if(s.equals("Cancel Fortify"))
+        {
+            fortifyF.dispose();
         }
         if(s.equals("Move Troops"))
         {
@@ -1207,6 +1221,7 @@ public class GameView extends JFrame
     public void attackActionListener(ActionListener o)
     {
         battle.addActionListener(o);
+        back.addActionListener(o);
     }
 
     public void chooseDiceActionListener(ActionListener o)
@@ -1224,6 +1239,7 @@ public class GameView extends JFrame
             movableTroops.addActionListener(o);
         }
         moveTroops.addActionListener(o);
+        cancelFortify.addActionListener(o);
     }
 
     /**
@@ -1251,12 +1267,6 @@ public class GameView extends JFrame
         owned.addListSelectionListener(o);
         adj.addListSelectionListener(o);
     }
-
-    public void removeAdjActionListener(ListSelectionListener o)
-    {
-        adj.removeListSelectionListener(o);
-    }
-
 
     /**
      * PlayerAmountGUI: Getter and setter methods
