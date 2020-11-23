@@ -852,22 +852,6 @@ public class RiskGame
 
     String getFortifiedCountryName() { return fcName; }
 
-    /**
-     * Attack Turn
-     * @param ac Attacking Country
-     * @param dc Defending Country
-     * 
-     * @author Tyler Leung
-     */
-    public void attackTurn(String ac, String dc){
-        //Check Current Player
-        //Check Defending Player
-        if(!currentPlayer.isAI()){
-            attackStage(ac, dc);
-        } else {
-            aiAttackStage();
-        }
-    }
 
     /**
      * Generates random country if AI is the current player
