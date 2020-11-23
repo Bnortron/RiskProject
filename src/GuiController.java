@@ -516,8 +516,6 @@ public class GuiController implements ActionListener, ListSelectionListener
         view.setDefDiceAmount(model.getDefDiceAmount());
     }
 
-
-
     /**
      * Handles roll button selection
      *
@@ -674,15 +672,16 @@ public class GuiController implements ActionListener, ListSelectionListener
         int randNum = random.nextInt(2); //Generate Random Number
 
         if(randNum == 0){  //Attack and End Turn
+            //Select Defense Dice
             model.aiAttackStage();
-            //Let Defender Choose Num Dice
-            //Run Attack
-            //End Turn
+            endTurnSelected("End Turn");
 
         } else if(randNum == 1){//Move and End Turn
             //If Country Less Than 2 Troops
             //Move Troops From Owned Adjacent Country To Country Until It Has 2 Troops
-             //End Turn
+            model.aiFortify();
+            endTurnSelected("End Turn");
+            //End Turn
                     
         }
     } 

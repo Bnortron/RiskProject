@@ -996,4 +996,30 @@ public class RiskGame
             aDice = 1;
         }
     }
+
+    public void aiFortify(){
+        //Select Random Country
+        String fortifyCountry = randomAICountry();
+        //Find All Adjacent Country
+        ArrayList<String> fortifiableCountries = getFortifiableCountries(fortifyCountry);
+        //Check If Random Country Has Less Than 2 Troops
+        setCurrentCountry(fortifyCountry);
+        if(cCountry.getTroops() > 2 ){ //if random country has less than 2 troops
+            //Find First Adjacent That Has More Than 2
+            for(Country c : currentPlayer.getCapturedCountries()){ //for each country owned
+                for(String fC : fortifiableCountries){ //for each adjacent country
+                    if(c.getName().equals(fC) && c.getTroops() < 2){ //if the fortifiable country has more than 2 troops
+                        setFortifiedCountry(fC); //set country to be fortified
+                        //Transfer Troops Until Random Country Has 2
+                        if(cCountry.getTroops() == 2){ //If Country Has 2 Troops
+                            break;
+                        }else {
+                            fCountry.addTroops(1);
+                            cCountry.removeTroops(1);
+                        } 
+                    }
+                }
+            }
+        }
+    }
 }
