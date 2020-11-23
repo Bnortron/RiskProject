@@ -1,4 +1,6 @@
-package src;
+//package src;
+
+import java.util.Random;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -665,6 +667,30 @@ public class GuiController implements ActionListener, ListSelectionListener
         view.boardActionListener(this);
         view.mapStateActionListener(this);
         updateOCLists();
+    }
+
+    public void aiTurn(){
+        for(Player p : model.getPlayers()){
+            if (p.isAI()){
+                Random random = new Random();
+                int randNum = random.nextInt(2); //Generate Random Number
+
+                if(randNum == 0){  //Attack and End Turn
+                    //Set Random Number Of Dice
+                    //Set AI Attack To True
+                    //If AI Attack Is True, Show Popup for Which Player Is Defending
+                    //Let Defender Choose Num Dice
+                    //Run Attack
+                    //End Turn
+
+                } else if(randNum == 1){//Move and End Turn
+                    //If Country Less Than 2 Troops
+                    //Move Troops From Owned Adjacent Country To Country Until It Has 2 Troops
+                    //End Turn
+                    
+                }
+            }
+        }
     }
 }
 

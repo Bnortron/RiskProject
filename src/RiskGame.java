@@ -1,4 +1,4 @@
-package src;
+//package src;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -349,6 +349,11 @@ public class RiskGame
         attackerDice = new Dice();
         defenderDice = new Dice();
 
+        //Checks If Defender Is AI
+        if(dCountry.getOwner().isAI()){
+            setAIDefDice();
+        }
+
         // Roll Dice
         attackerDice.rollDice(aDice);
         defenderDice.rollDice(dDice);
@@ -673,7 +678,7 @@ public class RiskGame
      * Allowed attack troops from troops in attacking country:
      *
      * 4+ Troops in attacking country: Can attack w/3 troops = 3 dice
-     * 3 Troops in attacking country: Can attack w/2 troops = dice
+     * 3 Troops in attacking country: Can attack w/2 troops = 2 dice
      * 2 Troops in attacking country: Can attack w/1 troop = 1 dice
      *
      * @param troops, amount of troops in attacking country
@@ -784,19 +789,18 @@ public class RiskGame
     }
 
     /**
- * Checking to see if a win has occured
- * 
- * @author Braxton Martin
- */
-public int checkWin(){
-    for(Player p : players){
-        int playerNum =0;
-        if(p.numCapturedCountries() == countries.size()) return playerNum; //Returns the player's index that won
-        playerNum++;
+    * Checking to see if a win has occured
+    * 
+    * @author Braxton Martin
+    */
+    public int checkWin(){
+        for(Player p : players){
+            int playerNum =0;
+            if(p.numCapturedCountries() == countries.size()) return playerNum; //Returns the player's index that won
+            playerNum++;
+        }
+        return -1; //No one wins yet
     }
-    return -1; //No one wins yet
-
-}
 
     /**
      * Fortify Phase: Setters and Getters
@@ -849,22 +853,163 @@ public int checkWin(){
     String getFortifiedCountryName() { return fcName; }
 
     /**
-     * When player is AI, randomize their turn.
+     * Attack Turn
+     * @param ac Attacking Country
+     * @param dc Defending Country
      * 
      * @author Tyler Leung
      */
-    public void aiTurn(){
-        for(Player p : players){
-            if(p.isAI()){ //if player is AI
-                Random random = new Random();
-                int randNum = random.nextInt(2); //Generate Random Number
+    public void attackTurn(String ac, String dc){
+        //Check Current Player
+        //Check Defending Player
+        if(!currentPlayer.isAI()){
+            attackStage(ac, dc);
+        } else {
+            aiAttackStage();
+        }
+    }
 
-                if(randNum == 0){
-                    //Attack and End Turn
-                } else if(randNum == 1){
-                    //Move and End Turn
-                }
+    /**
+     * Generates random country if AI is the current player
+     * 
+     * @author Tyler Leung
+     * @return name of random country
+     */
+    public String randomAICountry(){
+        int numAICountry = currentPlayer.getCapturedCountries().size();
+        Random rnd = new Random();
+        int rndNum = rnd.nextInt(numAICountry);
+        String randomCountry = currentPlayer.getCapturedCountries().get(rndNum).getName();
+        return randomCountry;
+    }
+
+    /**
+     * Attack Logic For AI Attacking
+     * @param dc defending country
+     * @author Tyler Leung
+     */
+    public void aiAttackStage(){
+
+        //Re-Initialize For AI Attack
+        attLoss = 0;
+        defLoss = 0;
+        successfulAttack = false;
+        
+        //Choose Random Attacking Country and Random Viable Defending Country
+        String ac = randomAICountry();
+        setAttackCountry(ac);
+        Random rndIndex = new Random();
+        int rndDefend = rndIndex.nextInt(getAttackableCountries(ac).length);
+        String dc = getAttackableCountries(ac)[rndDefend-1];
+        setDefendCountry(dc);
+
+        //Create New Dice
+        attackerDice = new Dice();
+        defenderDice = new Dice();
+
+        //Roll Dice
+        setAIAtkDice();
+        attackerDice.rollDice(aDice); //Select Max Num Dice                                              
+        defenderDice.rollDice(dDice);
+
+        // Add highest rolls to reference list
+        aRolls = new ArrayList<>();
+        aRolls.add(attackerDice.getHighest());
+        dRolls = new ArrayList<>();
+        dRolls.add(defenderDice.getHighest());
+
+        // Defender Rolled 1 Dice
+        // Compare Highest Rolls
+        if(attackerDice.getHighest() > defenderDice.getHighest())
+        {
+            defLoss++;
+        }
+        else if(attackerDice.getHighest() < defenderDice.getHighest())
+        {
+            attLoss++;
+        }
+        else if(attackerDice.getHighest() == defenderDice.getHighest())
+        {
+            attLoss++;
+        }
+
+        // Defender & Attacker Rolled at least 2 Dice
+        if(aDice > 1 && dDice > 1)
+        {
+            // Compare Second Highest Rolls
+            attackerDice.removeHighest();
+            aRolls.add(attackerDice.getHighest());
+
+            defenderDice.removeHighest();
+            dRolls.add(defenderDice.getHighest());
+            if(attackerDice.getHighest() > defenderDice.getHighest())
+            {
+                defLoss++;
             }
+            else if(attackerDice.getHighest() < defenderDice.getHighest())
+            {
+                attLoss++;
+            }
+            else if(attackerDice.getHighest() == defenderDice.getHighest())
+            {
+                attLoss++;
+            }
+        }
+
+        // Adjust Troops
+        aCountry.removeTroops(attLoss);
+        dCountry.removeTroops(defLoss);
+
+        // Adjust defending country if all defence is eliminated
+        if(dCountry.getTroops() == 0)
+        {
+            successfulAttack = true;
+            // Check if defending player is eliminated
+            if(dCountry.getOwner().getCapturedCountries().size() == 0)
+            {
+                // Remove From Game
+                System.out.println(dCountry.getOwner().getName() + " is eliminated!");
+                players.remove(dCountry.getOwner().getTurnPosition());
+            }
+            // Set attacker as new owner of the country
+            dCountry.getOwner().removeCapturedCountry(dCountry);
+            currentPlayer.addCapturedCountry(dCountry);
+
+            // Add remaining troops from the encounter to newly captured country
+            // Logically: Attacking troops that weren't killed during battle will remain in that country once battle ends
+            dCountry.addTroops(aDice);
+            aCountry.removeTroops(aDice);
+        }
+
+        // Update Model with roll results
+        updateModel();
+    }
+
+    /**
+     * @author Tyler Leung
+     * @return Num Dice Used To Defend
+     */
+    public void setAIDefDice(){
+        if(dCountry.getTroops() >= 2){
+            dDice = 2;
+        }else {
+            dDice = 1;
+        }
+    }
+
+    /**
+     * @author Tyler Leung
+     * @return Num Dice Used To Attack
+     */
+    public void setAIAtkDice(){
+        if(aCountry.getTroops() > 4) {
+            aDice = 3;
+        }
+        else if(aCountry.getTroops() == 3){
+            aDice = 2;
+        }
+        else {
+            aDice = 1;
         }
     }
 }
