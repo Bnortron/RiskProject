@@ -675,14 +675,9 @@ public class GuiController implements ActionListener, ListSelectionListener
             //Select Defense Dice
             model.aiAttackStage();
             endTurnSelected("End Turn");
-
         } else if(randNum == 1){//Move and End Turn
-            //If Country Less Than 2 Troops
-            //Move Troops From Owned Adjacent Country To Country Until It Has 2 Troops
             model.aiFortify();
             endTurnSelected("End Turn");
-            //End Turn
-                    
         }
     } 
 }
