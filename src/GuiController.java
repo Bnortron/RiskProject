@@ -1,6 +1,12 @@
+//package src;
+
+import java.util.Random;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+
+import javax.swing.JOptionPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 /**
@@ -419,6 +425,7 @@ public class GuiController implements ActionListener, ListSelectionListener
         view.setCurrentPlayerName(p.getName());
         view.setCurrentPlayerTroops(p.getTroops());
         view.setCurrentPlayerReinforcements(p.getCountryBonus(), p.getContinentBonus());
+        
     }
 
     /**
@@ -509,8 +516,6 @@ public class GuiController implements ActionListener, ListSelectionListener
         view.setDefDiceAmount(model.getDefDiceAmount());
     }
 
-
-
     /**
      * Handles roll button selection
      *
@@ -559,11 +564,15 @@ public class GuiController implements ActionListener, ListSelectionListener
      *
      *
      */
-    void exitBattleSelected(String s)
+     private void exitBattleSelected(String s)
     {
         model.endAttackPhase();
         view.boardOptions(s);
         updateMainBoardResults();
+        if(model.checkWin()!=-1){
+            int playerNum = model.checkWin();
+            view.winPopup(model.getPlayers().get(playerNum).getName());
+        }
     }
 
     /**
@@ -657,5 +666,19 @@ public class GuiController implements ActionListener, ListSelectionListener
         view.mapStateActionListener(this);
         updateOCLists();
     }
+
+    public void aiTurn(){
+        Random random = new Random();
+        int randNum = random.nextInt(2); //Generate Random Number
+
+        if(randNum == 0){  //Attack and End Turn
+            //Select Defense Dice
+            model.aiAttackStage();
+            endTurnSelected("End Turn");
+        } else if(randNum == 1){//Move and End Turn
+            model.aiFortify();
+            endTurnSelected("End Turn");
+        }
+    } 
 }
 
