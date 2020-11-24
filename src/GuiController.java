@@ -424,7 +424,10 @@ public class GuiController implements ActionListener, ListSelectionListener
         view.setCurrentPlayerName(p.getName());
         view.setCurrentPlayerTroops(p.getTroops());
         view.setCurrentPlayerReinforcements(p.getCountryBonus(), p.getContinentBonus());
-        
+        if(p.isAI()){
+            aiTurn();
+        }
+
     }
 
     /**
