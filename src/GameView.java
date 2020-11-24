@@ -113,6 +113,11 @@ public class GameView extends JFrame
         toFront();
     }
 
+    /**
+     * JPanel that displays "Start" and "Quit" options
+     *
+     * @return
+     */
     private JPanel menuGUI()
     {
         // Main Panel
@@ -150,6 +155,11 @@ public class GameView extends JFrame
         return mPanel;
     }
 
+    /**
+     * JPanel that displays the option for amount of players and whether they're AI
+     *
+     * @return
+     */
     private JPanel playerAmountGUI()
     {
         // Main panel
@@ -242,6 +252,11 @@ public class GameView extends JFrame
         return pPanel;
     }
 
+    /**
+     *
+     *
+     * @return JPanel with the options
+     */
     private JPanel twoPlayersGUI()
     {
         // Main panel
