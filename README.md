@@ -1,32 +1,24 @@
 # RiskProject
 
-# Changelog (10/25/20):
+# Changelog (11/23/20):
 
 
 Authors:
 
-Tyler Leung - Dice Class, Attack Stage Methods
+Tyler Leung - AI Logic, UML
 
-Braxton Martin - Initialization of Countries, Continents, Adjacent.
+Braxton Martin - Test Cases
 
-Braden Norton - Base Skeleton of Classes
+Braden Norton - GUI + Fortify
 
 Known Issues:
 
-- No Actual Turns
-
-- No Player Troop Initialization
-
-- No Working Combat
-
-- Doesn't Check Adjacent
+-Unsure If AI Works
 
 
 Roadmap:
-- Add Turn System
+- Save/Load Feature 
 
-- Add Working Combat
+- Custom Maps
 
-- Fix Adjacent Check
-
-- Add GUI
+- Fix AI
