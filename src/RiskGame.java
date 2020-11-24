@@ -101,6 +101,14 @@ public class RiskGame
         System.out.println("Amount of players: " + names.size());
     }
 
+    public ArrayList<Country> getCountries(){
+        return countries;
+    }
+
+    public Player getCurrentPlayer(){
+        return currentPlayer;
+    }
+
     /**
      * Sets up the players, turn order, the map (loads countries/continents/adjacencies from text file), & deployment phase (randomly assigns countries to each player, & troops randomly to those countries)
      *

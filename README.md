@@ -25,10 +25,6 @@ Braden Norton - Made GUI
 
 # Future Roadmap:
 
-Fix attack
-
-Add an AI player
-
 Add bonus army placement
 
 Add troupe movement
@@ -39,7 +35,3 @@ Custom Maps
 
 
 # Known Issues:
-
-Unsure if attack works properly
-
-Missing win condition
