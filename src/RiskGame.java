@@ -25,10 +25,10 @@ public class RiskGame
     /**
      * TO DO:
      *
-     * 1. Write AI logic
-     * 2. Set win conditions
-     * 3. Test cases
-     * 5. End of turn logic
+     * 1. Write AI logic (DONE)
+     * 2. Set win conditions (DONE)
+     * 3. Test cases (DONE)
+     * 5. End of turn logic (DONE)
      * 6. Better documentation
      * 7. Refined code/get rid of useless getters & setters
      * 8. Make GUI look better
