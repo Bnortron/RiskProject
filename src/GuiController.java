@@ -179,6 +179,9 @@ public class GuiController implements ActionListener, ListSelectionListener
         {
             endTurnSelected(o);
         }
+        if(o.equals("Submit Dice")){
+            model.setDefDice(view.getDDiceAIAmount());
+        }
     }
 
     /**
@@ -371,7 +374,7 @@ public class GuiController implements ActionListener, ListSelectionListener
     /**
      * Handles "Start" button selection
      *
-     *
+     * @author Braden Norton
      */
     void startSelected(String s)
     {
@@ -382,7 +385,7 @@ public class GuiController implements ActionListener, ListSelectionListener
     /**
      * Handles "menuReturn" button selection
      *
-     *
+     * @author Braden Norton
      */
     void menuReturn(String s)
     {
@@ -393,7 +396,7 @@ public class GuiController implements ActionListener, ListSelectionListener
     /**
      * Handles submission of player names & starts game
      *
-     *
+     * @author Braden Norton
      */
     void namesSelected(String s)
     {
@@ -409,15 +412,11 @@ public class GuiController implements ActionListener, ListSelectionListener
         updateOCLists();
     }
 
-    void checkAI()
-    {
-        if(view.getCB1()){}
-    }
 
     /**
      * Updates view to reflect current player
      *
-     *
+     * @author Braden Norton
      */
     void updateTurn()
     {
@@ -431,7 +430,7 @@ public class GuiController implements ActionListener, ListSelectionListener
     /**
      * Updates view with current list of players
      *
-     *
+     * @author Braden Norton
      */
     void updateOCLists()
     {
@@ -458,7 +457,7 @@ public class GuiController implements ActionListener, ListSelectionListener
     /**
      * Handles Attack button action
      *
-     *
+     * @author Braden Norton
      */
     void attackSelected(String s)
     {
@@ -472,7 +471,7 @@ public class GuiController implements ActionListener, ListSelectionListener
     /**
      * Handles Battle button action
      *
-     *
+     * @author Braden Norton
      */
     void battleSelected(String s)
     {
@@ -496,7 +495,7 @@ public class GuiController implements ActionListener, ListSelectionListener
     /**
      * Handles Choose Dice button action
      *
-     *
+     * @author Braden Norton
      */
     void diceSelected(String s)
     {
@@ -519,6 +518,7 @@ public class GuiController implements ActionListener, ListSelectionListener
     /**
      * Handles roll button selection
      *
+     * @author Braden Norton
      * @param s
      */
     void rollSelected(String s)
@@ -562,7 +562,7 @@ public class GuiController implements ActionListener, ListSelectionListener
     /**
      * Handles Exit Battle Selection
      *
-     *
+     * @author Braden Norton
      */
      private void exitBattleSelected(String s)
     {
@@ -578,6 +578,7 @@ public class GuiController implements ActionListener, ListSelectionListener
     /**
      * Post battle results to the main game board
      *
+     * @author Braden Norton
      */
     void updateMainBoardResults()
     {
@@ -603,7 +604,7 @@ public class GuiController implements ActionListener, ListSelectionListener
     /**
      * Handles fortify button selection
      *
-     *
+     * @author Braden Norton
      */
     void fortifySelected(String s)
     {
@@ -618,7 +619,7 @@ public class GuiController implements ActionListener, ListSelectionListener
     /**
      * Handles Move Troops button selection
      *
-     *
+     * @author Braden Norton
      */
     void moveTroopsSelected(String s)
     {
@@ -638,7 +639,7 @@ public class GuiController implements ActionListener, ListSelectionListener
     /**
      * Handles Submit Fortify button selection
      *
-     *
+     * @author Braden Norton
      */
     void submitFortifySelected(String s)
     {
@@ -654,7 +655,7 @@ public class GuiController implements ActionListener, ListSelectionListener
     /**
      * Handles End Turn button selection
      *
-     *
+     * @author Braden Norton
      */
     void endTurnSelected(String s)
     {
@@ -667,18 +668,25 @@ public class GuiController implements ActionListener, ListSelectionListener
         updateOCLists();
     }
 
+    /**
+     * 
+     * @author Tyler Leung
+     */
     public void aiTurn(){
         Random random = new Random();
         int randNum = random.nextInt(2); //Generate Random Number
 
         if(randNum == 0){  //Attack and End Turn
             //Select Defense Dice
+            model.setACDC();
+            view.setDefDice(model.allowedDefDice(model.getDefenderTroops()));
+            view.boardOptions("Select User Dice");
             model.aiAttackStage();
-            endTurnSelected("End Turn");
+            view.boardOptions("End Turn");
         } else if(randNum == 1){//Move and End Turn
             model.aiFortify();
-            endTurnSelected("End Turn");
+            view.boardOptions("End Turn");
         }
-    } 
+    }     
 }
 

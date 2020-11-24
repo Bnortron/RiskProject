@@ -868,6 +868,22 @@ public class RiskGame
     }
 
     /**
+     * Set attack/defend country and attack/defend troops for AI Attack
+     * 
+     * @author Tyler Leung
+     */
+    public void setACDC(){
+        String ac = randomAICountry();
+        setAttackCountry(ac);
+        Random rndIndex = new Random();
+        int rndDefend = rndIndex.nextInt(getAttackableCountries(ac).length);
+        String dc = getAttackableCountries(ac)[rndDefend-1];
+        setDefendCountry(dc);
+        setACountryTroops();
+        setDCountryTroops();
+    }
+
+    /**
      * Attack Logic For AI Attacking
      * @param dc defending country
      * @author Tyler Leung
@@ -879,14 +895,6 @@ public class RiskGame
         defLoss = 0;
         successfulAttack = false;
         
-        //Choose Random Attacking Country and Random Viable Defending Country
-        String ac = randomAICountry();
-        setAttackCountry(ac);
-        Random rndIndex = new Random();
-        int rndDefend = rndIndex.nextInt(getAttackableCountries(ac).length);
-        String dc = getAttackableCountries(ac)[rndDefend-1];
-        setDefendCountry(dc);
-
         //Create New Dice
         attackerDice = new Dice();
         defenderDice = new Dice();

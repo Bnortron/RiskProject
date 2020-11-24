@@ -8,7 +8,6 @@ import javax.swing.*;
 import javax.swing.event.*;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import javax.swing.DefaultListModel;
 
 /**
  * View class that represents the visualization of the data that RiskGame model contains
@@ -19,7 +18,7 @@ import javax.swing.DefaultListModel;
 public class GameView extends JFrame
 {
     // JFrame
-    private JFrame attackFrame, diceF, battleF, fortifyF, setFortifyF;
+    private JFrame attackFrame, diceF, battleF, fortifyF, setFortifyF, defDiceF;
 
     // Boolean for open JFrames
     private boolean mapStateOpen = false;
@@ -71,10 +70,10 @@ public class GameView extends JFrame
     private DefaultListModel currentPlayerOC,dList;
 
     // Battle GUI
-    private JButton roll, exitBattle, selectDice;
+    private JButton roll, exitBattle, selectDice, submitDefDie;
     private JTextField att, def, attTroops, defTroops,attDiceAmount,defDiceAmount;
     private JTextArea results;
-    private JComboBox attDice, defDice;
+    private JComboBox attDice, defDice, defDie;
     private DefaultListModel allowedAttDice, allowedDefDice;
 
     // Fortify GUI
@@ -1078,6 +1077,12 @@ public class GameView extends JFrame
             attackFrame.dispose();
             chooseDiceGUI();
         }
+        if(s.equals("Select User Dice")){
+            defAIDiceGUI();
+        }
+        if(s.equals("Submit Dice")){
+            defDiceF.dispose();
+        }
         if(s.equals("Cancel"))
         {
             attackFrame.dispose();
@@ -1558,6 +1563,8 @@ public class GameView extends JFrame
 
     String getDDiceAmount() { return defDice.getSelectedItem().toString(); }
 
+    String getDDiceAIAmount(){ return defDie.getSelectedItem().toString(); }
+
 
     /**
      * Updates the battleGUI to reflect changes game state changes from battle
@@ -1667,6 +1674,46 @@ public class GameView extends JFrame
         winScreen = new JOptionPane();
         winScreen.showMessageDialog(this, s + " has won the Game of Risk!");
         System.exit(0);
+    }
+
+    /**
+     * GUI For Selecting Defending Dice When AI Attacks Player
+     * 
+     * @author Tyler Leung
+     */
+    public void defAIDiceGUI(){
+        //Frame
+        defDiceF = new JFrame();
+        defDiceF.setPreferredSize(new Dimension(250,200));
+        Container cpDefDie = defDiceF.getContentPane();
+        cpDefDie.setLayout(new GridLayout(2,1));
+
+        //Panel
+        JPanel defP = new JPanel();
+        defP.setLayout(new BoxLayout(defP, BoxLayout.X_AXIS));
+
+        //JComboBox
+        JPanel cb = new JPanel();
+        cb.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder("Defence Die"), BorderFactory.createEmptyBorder(1, 1, 1, 1)));
+        defDie = new JComboBox();
+        defDie.setActionCommand("UserDefence Die");
+        cb.add(defDie);
+
+        //JButton
+        submitDefDie = new JButton("Submit Die");
+        submitDefDie.setActionCommand("Submit Dice");
+
+        //Add to panel
+        defP.add(cb);
+        cpDefDie.add(defP);
+        cpDefDie.add(submitDefDie);
+
+        //Finish Setup
+        defDiceF.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        defDiceF.pack();
+        defDiceF.setResizable(false);
+        defDiceF.setVisible(true);
+
     }
 
 
