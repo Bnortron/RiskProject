@@ -55,7 +55,7 @@ public class RiskGame
     private String[] d2 = {"1", "2"};
     private String[] d3 = {"1", "2", "3"};
     private Country aCountry, dCountry;
-    private String dCountryOwner;
+    private Player dCountryOwner;
     private int aTroops, dTroops, aDice, dDice, attLoss, defLoss, totalBattleRolls;
     // Original amount of troops in each country: aTroops, dTroops
     // Amount of troops involved in battle: aDice, dDice
@@ -431,7 +431,9 @@ public class RiskGame
 
         // Adjust Troops
         aCountry.removeTroops(attLoss);
+        aCountry.getOwner().removeTroops(attLoss);
         dCountry.removeTroops(defLoss);
+        dCountry.getOwner().removeTroops(defLoss);
 
         // Adjust defending country if all defence is eliminated
         if(dCountry.getTroops() == 0)
@@ -699,7 +701,7 @@ public class RiskGame
     void setDefendCountry(String s)
     {
         for(Country c: countries){if(c.getName().equals(s)){this.dCountry = c;}}
-        dCountryOwner = this.dCountry.getOwner().getName();
+        dCountryOwner = this.dCountry.getOwner();
     }
 
     public String getAttacker(){return aCountry.getName();}
@@ -812,7 +814,7 @@ public class RiskGame
 
     void endAttackPhase() {attackPhaseActive = false;}
 
-    String getDefendingCountryOwner()
+    Player getDefendingCountryOwner()
     {
         return dCountryOwner;
     }

@@ -23,7 +23,7 @@ import javax.swing.JOptionPane;
  * @author Braden Norton
  * @version 11/17/20
  */
-public class GuiController implements ActionListener, ListSelectionListener
+public class GuiController implements ActionListener
 {
     // Risk model
     private RiskGame model;
@@ -37,8 +37,8 @@ public class GuiController implements ActionListener, ListSelectionListener
     /**
      * Constructor for controller
      *
-     * @param RiskGame m, model holding all the data
-     * @param GameView v, GUI that displays changes in model
+     * @param m, model holding all the data
+     * @param v, GUI that displays changes in model
      *
      * @author Braden Norton
      */
@@ -89,15 +89,6 @@ public class GuiController implements ActionListener, ListSelectionListener
             view.dispose();
             view.quitGame();
         }
-    }
-
-    /**
-     * Handler for selection events in GUI JLists
-     *
-     * @author Braden Norton
-     */
-    public void valueChanged(ListSelectionEvent e)
-    {
     }
 }
 
@@ -250,6 +241,11 @@ class BoardController implements ActionListener, ListSelectionListener
     private AttackGUI aPhase;
     private FortifyGUI fPhase;
 
+    // Phases Active
+    boolean reinforceActive;
+    boolean attackActive;
+    boolean fortifyActive;
+
     /**
      * Constructor
      *
@@ -274,6 +270,9 @@ class BoardController implements ActionListener, ListSelectionListener
 
         if(o.equals("Reinforce"))
         {
+            attackActive = false;
+            reinforceActive = true;
+            fortifyActive = false;
             // Open ReinforceGUI
             rPhase = new ReinforceGUI(model.getCurrentPlayer(), model.getReinforcementAmount());
             rPhase.reinforceActionListener(new ReinforcePhaseController(model, rPhase, view));
@@ -285,11 +284,17 @@ class BoardController implements ActionListener, ListSelectionListener
         }
         else if(o.equals("Fortify"))
         {
+            attackActive = false;
+            reinforceActive = false;
+            fortifyActive = true;
             fPhase = new FortifyGUI(model.getCurrentPlayer());
             fPhase.fortifyActionListener(new FortifyPhaseController(model, fPhase, view),new FortifyPhaseController(model, fPhase, view));
         }
         else if(o.equals("End Turn"))
         {
+            attackActive = false;
+            reinforceActive = false;
+            fortifyActive = false;
             // Update Model
             model.nextTurn();
             model.setReinforcementAmount();
@@ -400,7 +405,7 @@ class ReinforcePhaseController implements ActionListener
     void updateBoard()
     {
         board.updateTurnArea("Reinforcement: "+ view.getReinforceAmount()+" added to " + model.getReinforcedCountry());
-        board.updateTurnArea("Remaining reinforcements: " + model.getRemainingReinforcements());
+        board.updateTurnArea("Remaining reinforcements: " + model.getRemainingReinforcements()+"\n");
     }
 }
 
@@ -477,13 +482,19 @@ class AttackPhaseController implements ActionListener, ListSelectionListener
 
             // Update View
             rollResults();
+            updateBoard();
             view.disableRoll();
         }
         else
         {
             // Close AttackGUI
             view.dispose();
-            updateBoard();
+            board.updateStats(model.getPlayers());
+            if(model.getAttackResult())
+            {
+                board.updateCountryLists(model.getCurrentPlayer(), model.getDefendingCountryOwner(), model.getDefender());
+                board.revalidate();
+            }
         }
     }
 
@@ -542,7 +553,7 @@ class AttackPhaseController implements ActionListener, ListSelectionListener
     {
         board.updateTurnArea("\n"+"Attack: " + model.getAttacker() + " attacking " + model.getDefender());
         board.updateTurnArea(model.getAttackingPlayer()+" has lost: "+model.getAttLosses()+" troops in "+model.getAttacker());
-        board.updateTurnArea(model.getDefendingPlayer()+" has lost: "+model.getDefLosses()+" troops in "+model.getDefender());
+        board.updateTurnArea(model.getDefendingCountryOwner().getName()+" has lost: "+model.getDefLosses()+" troops in "+model.getDefender());
         if(model.getAttackResult())
         {
             board.updateTurnArea(model.getAttackingPlayer()+" has claimed: " + model.getDefender());

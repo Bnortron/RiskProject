@@ -100,7 +100,7 @@ public class Country
     public void removeTroops(int amount)
     {
         troops = troops - amount;
-        owner.removeTroops(amount);
+        //owner.removeTroops(amount);
         //System.out.println(owner.getName() + " lost " + amount + " troops in " + name + ".");
         //System.out.println("Troops in " + name + ": " + troops);
     }

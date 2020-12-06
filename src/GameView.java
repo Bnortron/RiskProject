@@ -860,10 +860,18 @@ class BoardGUI extends JFrame
 
             // JList for each players owned countries
             p1OC = new DefaultListModel();
+            for(int i=0; i<allPlayers.get(0).capturedCountriesToString().size(); ++i)
+            {
+                p1OC.addElement(allPlayers.get(0).capturedCountriesToString().get(i));
+            }
             oc1 = new JList<>(p1OC);
             JScrollPane sp1 = new JScrollPane(oc1);
 
             p2OC = new DefaultListModel();
+            for(int i=0; i<allPlayers.get(1).capturedCountriesToString().size(); ++i)
+            {
+                p2OC.addElement(allPlayers.get(1).capturedCountriesToString().get(i));
+            }
             oc2 = new JList<String>(p2OC);
             JScrollPane sp2 = new JScrollPane(oc2);
 
@@ -881,6 +889,10 @@ class BoardGUI extends JFrame
                 player3.setLayout(new BoxLayout(player3, BoxLayout.Y_AXIS));
                 player3.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder(allPlayers.get(2).getName() +" Owns:"),BorderFactory.createEmptyBorder(5,5,5,5)));
                 p3OC = new DefaultListModel();
+                for(int i=0; i<allPlayers.get(2).capturedCountriesToString().size(); ++i)
+                {
+                    p3OC.addElement(allPlayers.get(2).capturedCountriesToString().get(i));
+                }
                 oc3 = new JList<>(p3OC);
                 JScrollPane sp3 = new JScrollPane(oc3);
                 player3.add(sp3);
@@ -893,6 +905,10 @@ class BoardGUI extends JFrame
                     player4.setLayout(new BoxLayout(player4, BoxLayout.Y_AXIS));
                     player4.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder(allPlayers.get(3).getName() +" Owns:"),BorderFactory.createEmptyBorder(5,5,5,5)));
                     p4OC = new DefaultListModel();
+                    for(int i=0; i<allPlayers.get(3).capturedCountriesToString().size(); ++i)
+                    {
+                        p4OC.addElement(allPlayers.get(3).capturedCountriesToString().get(i));
+                    }
                     oc4 = new JList<>(p4OC);
                     JScrollPane sp4 = new JScrollPane(oc4);
                     player4.add(sp4);
@@ -905,6 +921,10 @@ class BoardGUI extends JFrame
                         player5.setLayout(new BoxLayout(player5, BoxLayout.Y_AXIS));
                         player5.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder(allPlayers.get(4).getName() +" Owns:"),BorderFactory.createEmptyBorder(5,5,5,5)));
                         p5OC = new DefaultListModel();
+                        for(int i=0; i<allPlayers.get(4).capturedCountriesToString().size(); ++i)
+                        {
+                            p5OC.addElement(allPlayers.get(4).capturedCountriesToString().get(i));
+                        }
                         oc5 = new JList<>(p5OC);
                         JScrollPane sp5 = new JScrollPane(oc5);
                         player5.add(sp5);
@@ -917,6 +937,10 @@ class BoardGUI extends JFrame
                             player6.setLayout(new BoxLayout(player6, BoxLayout.Y_AXIS));
                             player6.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder(allPlayers.get(5).getName() +" Owns:"),BorderFactory.createEmptyBorder(5,5,5,5)));
                             p6OC = new DefaultListModel();
+                            for(int i=0; i<allPlayers.get(5).capturedCountriesToString().size(); ++i)
+                            {
+                                p6OC.addElement(allPlayers.get(5).capturedCountriesToString().get(i));
+                            }
                             oc6 = new JList<>(p6OC);
                             JScrollPane sp6 = new JScrollPane(oc6);
                             player6.add(sp6);
@@ -928,7 +952,7 @@ class BoardGUI extends JFrame
                 }
             }
         }
-        updateLists();
+        //initializeLists();
 
         return msPanel;
     }
@@ -978,7 +1002,7 @@ class BoardGUI extends JFrame
         this.cpContinentAmount = p.getCapturedContinents().size();
     }
 
-    void updateLists()
+    void initializeLists()
     {
         updateP1OCList(allPlayers.get(0).capturedCountriesToString());
         updateP2OCList(allPlayers.get(1).capturedCountriesToString());
@@ -1002,11 +1026,8 @@ class BoardGUI extends JFrame
 
     void updateP1OCList(ArrayList<String> a)
     {
-        if(!p1OC.isEmpty())
-        {
-            p1OC.clear();
-        }
-
+        oc1.clearSelection();
+        p1OC.clear();
         for(int i =0; i<a.size(); ++i)
         {
             p1OC.addElement(a.get(i));
@@ -1015,10 +1036,8 @@ class BoardGUI extends JFrame
 
     void updateP2OCList(ArrayList<String> a)
     {
-        if(!p2OC.isEmpty())
-        {
-            p2OC.clear();
-        }
+        oc2.clearSelection();
+        p2OC.clear();
         for(int i =0; i<a.size(); ++i)
         {
             p2OC.addElement(a.get(i));
@@ -1027,10 +1046,8 @@ class BoardGUI extends JFrame
 
     void updateP3OCList(ArrayList<String> a)
     {
-        if(!p3OC.isEmpty())
-        {
-            p3OC.clear();
-        }
+        oc3.clearSelection();
+        p3OC.clear();
         for(int i =0; i<a.size(); ++i)
         {
             p3OC.addElement(a.get(i));
@@ -1039,10 +1056,8 @@ class BoardGUI extends JFrame
 
     void updateP4OCList(ArrayList<String> a)
     {
-        if(!p4OC.isEmpty())
-        {
-            p4OC.clear();
-        }
+        oc4.clearSelection();
+        p4OC.clear();
         for(int i =0; i<a.size(); ++i)
         {
             p4OC.addElement(a.get(i));
@@ -1051,10 +1066,8 @@ class BoardGUI extends JFrame
 
     void updateP5OCList(ArrayList<String> a)
     {
-        if(!p5OC.isEmpty())
-        {
-            p5OC.clear();
-        }
+        oc5.clearSelection();
+        p5OC.clear();
         for(int i =0; i<a.size(); ++i)
         {
             p5OC.addElement(a.get(i));
@@ -1063,10 +1076,8 @@ class BoardGUI extends JFrame
 
     void updateP6OCList(ArrayList<String> a)
     {
-        if(!p6OC.isEmpty())
-        {
-            p6OC.clear();
-        }
+        oc6.clearSelection();
+        p6OC.clear();
         for(int i =0; i<a.size(); ++i)
         {
             p6OC.addElement(a.get(i));
@@ -1122,14 +1133,6 @@ class BoardGUI extends JFrame
         endTurn.setEnabled(true);
     }
 
-    void reinforcementPhaseActive()
-    {
-        reinforce.setEnabled(true);
-        attack.setEnabled(false);
-        fortify.setEnabled(false);
-        endTurn.setEnabled(false);
-    }
-
     void fortifyPhaseComplete()
     {
         reinforce.setEnabled(false);
@@ -1148,7 +1151,6 @@ class BoardGUI extends JFrame
     void updateTurnHistory(String s)
     {
         turnNumber++;
-
         turnHistory.append("---------------\n");
         turnHistory.append("Turn: " + turnNumber + "\n");
         turn.append("---------------\n");
@@ -1166,6 +1168,31 @@ class BoardGUI extends JFrame
         boardPanel.add(mapStateGUI());
         add(boardPanel);
         revalidate();
+    }
+
+    void updateStats(ArrayList<Player> players)
+    {
+        this.allPlayers = players;
+        troops.setText(""+currentPlayer.getTroops());
+        ownedCountries.setText(""+currentPlayer.getCapturedCountries().size());
+        ownedContinents.setText(""+currentPlayer.getCapturedContinents().size());
+    }
+
+    void updateCountryLists(Player att, Player def, String c)
+    {
+        if(att.getTurnPosition() == 0) { p1OC.addElement(c);}
+        else if(att.getTurnPosition()==1) { p2OC.addElement(c);}
+        else if(att.getTurnPosition()==2){ p3OC.addElement(c); }
+        else if(att.getTurnPosition()==3){ p4OC.addElement(c); }
+        else if(att.getTurnPosition()==4){ p5OC.addElement(c); }
+        else if(att.getTurnPosition()==5){ p6OC.addElement(c); }
+
+        if(def.getTurnPosition() == 0){ p1OC.removeElement(c); }
+        else if(def.getTurnPosition()==1){ p2OC.removeElement(c); }
+        else if(def.getTurnPosition()==2){ p3OC.removeElement(c); }
+        else if(def.getTurnPosition()==3){ p4OC.removeElement(c); }
+        else if(def.getTurnPosition()==4){ p5OC.removeElement(c); }
+        else if(def.getTurnPosition()==5){ p6OC.removeElement(c); }
     }
 }
 
@@ -1743,6 +1770,7 @@ class FortifyGUI extends JFrame
 
     private JPanel fortifyAmountPanel()
     {
+        setSize(new Dimension(300, 200));
         // Create Panels
         JPanel fPanel = new JPanel();
         fPanel.setLayout(new GridLayout(2,1));
