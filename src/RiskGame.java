@@ -4,15 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
 import java.util.Scanner;
-import java.util.Observable;
-import java.lang.StringBuilder;
-import java.lang.NumberFormatException;
 import java.io.File;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.Observable;
 
 /**
  * Model class for RiskGame that stores and processes game data
@@ -37,12 +29,13 @@ public class RiskGame
 
     private int playerAmount;
     private int initialTroops;
-    private int countryBonus;
-    private int continentBonus;
+    private int ownedCountries;
+    private int ownedContinents;
     private int totalCountries = 42;
     private Player currentPlayer;
     private ArrayList<String> names;
     private ArrayList<String> fortifiableCountries;
+    private ArrayList<Boolean> aiPlayers;
     private ArrayList<Player> players;
     private ArrayList<Country> countries;
     private ArrayList<Continent> continents;
@@ -52,6 +45,10 @@ public class RiskGame
 
     // For Reinforcement Phase
     private boolean reinforcementPhaseActive = false;
+    private String rCountry;
+    private int countryBonus;
+    private int continentBonus;
+    private int totalBonus;
 
     // For Attack Phase
     private String[] d1 = {"1"};
@@ -84,10 +81,24 @@ public class RiskGame
     public RiskGame()
     {
         names = new ArrayList<>();
+        aiPlayers = new ArrayList<>();
         players = new ArrayList<>();
 
         continents = new ArrayList<>();
         countries = new ArrayList<>();
+    }
+
+    public ArrayList<Country> getCountries(){
+        return countries;
+    }
+
+    public Player getCurrentPlayer(){
+        return currentPlayer;
+    }
+
+    ArrayList<Player> getPlayers()
+    {
+        return players;
     }
 
     /**
@@ -100,31 +111,25 @@ public class RiskGame
         names.add(s);
         System.out.println("Amount of players: " + names.size());
     }
-
-    public ArrayList<Country> getCountries(){
-        return countries;
-    }
-
-    public Player getCurrentPlayer(){
-        return currentPlayer;
-    }
-
     /**
      * Sets up the players, turn order, the map (loads countries/continents/adjacencies from text file), & deployment phase (randomly assigns countries to each player, & troops randomly to those countries)
      *
      * @author Braden Norton
      * @author Braxton Martin
      * @author Tyler Leung
-     * 
+     *
      * @param ai: ArrayList of booleans that represent whether a given player is designated as an AI
      */
-    void initializeGame(ArrayList<Boolean> ai)
+    void initializeGame(ArrayList<String> playerList, ArrayList<Boolean> ai)
     {
+        // Shuffle player names to establish random turn order
+        Collections.shuffle(playerList);
+
         // Create Players
-        int n = names.size();
-        for(int i=0; i<n; ++i)
+        System.out.println("Players: " + playerAmount);
+        for(int i=0; i<playerAmount; ++i)
         {
-            Player p = new Player(names.get(i), initialTroops,i, ai.get(i));
+            Player p = new Player(playerList.get(i), initialTroops,i, ai.get(i));
             players.add(p);
             if(players.get(i).isAI())
             {
@@ -132,12 +137,10 @@ public class RiskGame
             }
         }
 
-
-        // Shuffle player names to establish random turn order
-        Collections.shuffle(names);
-
         // Set current turn
         currentPlayer = players.get(0);
+        System.out.println("Turn Order:");
+        for(Player p:players){ System.out.println(p.getName()); }
 
         // Set Countries & Continents
         // Set up countries
@@ -163,6 +166,9 @@ public class RiskGame
 
         // Assign Countries & Troops
         assignCountriesTroops();
+
+        // Start in reinforcement stage
+        setReinforcementAmount();
     }
 
     /**
@@ -311,15 +317,29 @@ public class RiskGame
      *
      * @author Braden Norton
      */
-    void reinforcementStage(Player p)
+    void reinforcementStage(int troops, String country)
     {
-        System.out.println("Reinforcement Stage Active!");
-        //Give reinforcement troops
-        continentBonus(p);
-        p.setContinentBonus(continentBonus);
+        // Set reinforced country
+        this.rCountry = country;
 
-        countryBonus(p);
-        p.setCountryBonus(countryBonus);
+        // Add troops to country & remove troops from total bonus reinforcements
+        for(Country c: currentPlayer.getCapturedCountries())
+        {
+            if(c.getName().equals(country))
+            {
+                // Add troops to designated country
+                c.addTroops(troops);
+
+                // Remove troops from total reinforcement amount
+                totalBonus -= troops;
+            }
+        }
+
+        // End reinforcement phase when total bonus reinforcements = 0
+        if(totalBonus==0)
+        {
+            reinforcementPhaseActive = false;
+        }
     }
 
     /**
@@ -343,7 +363,6 @@ public class RiskGame
      */
     void attackStage(String ac, String dc)
     {
-
         // Initialize
         attLoss = 0;
         defLoss = 0;
@@ -469,10 +488,10 @@ public class RiskGame
      */
     void nextTurn()
     {
-         int winningPlayer = checkWin();
-         if(winningPlayer!= -1){
+        int winningPlayer = checkWin();
+        if(winningPlayer!= -1){
             winner = true;
-         }
+        }
         int n = currentPlayer.getTurnPosition();
         // Last player's turn
         if(n+1 == playerAmount)
@@ -494,6 +513,10 @@ public class RiskGame
      */
     void updateModel()
     {
+        if(reinforcementPhaseActive)
+        {
+
+        }
         // Attack Phase Variables: aTroops, dTroops, aDice, dDice, totalBattleRolls
         if(attackPhaseActive)
         {
@@ -553,15 +576,12 @@ public class RiskGame
         return names;
     }
 
-    public ArrayList<Player> getPlayers()
-    {
-        return players;
-    }
-
     public Player getCurrentTurn()
     {
         return currentPlayer;
     }
+
+    public ArrayList<Continent> getContinents(){ return continents; }
 
     /**
      * Reinforcement Getters & Setters
@@ -572,10 +592,18 @@ public class RiskGame
     {
         for(int i=0; i<continents.size(); ++i)
         {
+            // Player owns all the countries in the continent
             if(p.getCapturedCountries().containsAll(continents.get(i).getResidingCountries()))
             {
+                // Adjust Current Player
+                p.addCapturedContinent(continents.get(i));
                 p.addTroops(continents.get(i).getBonusTroops());
-                continentBonus = continents.get(i).getBonusTroops();
+
+                // Adjust Continent ownership
+                continents.get(i).setOwner(p);
+
+                // Add troops to total bonus amount
+                continentBonus += continents.get(i).getBonusTroops();
             }
         }
     }
@@ -594,14 +622,58 @@ public class RiskGame
         }
     }
 
+    void setReinforcementAmount()
+    {
+        // Enabled ReinforcementPhase
+        reinforcementPhaseActive = true;
+
+        //Give reinforcement troops
+        continentBonus(currentPlayer);
+        currentPlayer.setContinentBonus(continentBonus);
+
+        countryBonus(currentPlayer);
+        currentPlayer.setCountryBonus(countryBonus);
+
+        this.totalBonus = currentPlayer.getCountryBonus() + currentPlayer.getContinentBonus();
+    }
+
+    ArrayList<String> getReinforcementAmount()
+    {
+        ArrayList<String> temp = new ArrayList<>();
+
+        for(int i=0; i< totalBonus; ++i)
+        {
+            int t = i+1;
+            temp.add(t+"");
+        }
+        return temp;
+    }
+
+    int getRemainingReinforcements()
+    {
+        return totalBonus;
+    }
+
+    String getReinforcedCountry()
+    {
+        return rCountry;
+    }
+
+    Boolean reinforcementPhaseActive()
+    {
+        return reinforcementPhaseActive;
+    }
 
     /**
      * Attack Stage: Getters & Setters
      *
      *
      */
-
     public ArrayList<Country> getCurrentPlayerOC(){return currentPlayer.getCapturedCountries();}
+
+    public String getAttackingPlayer(){ return aCountry.getOwner().getName(); }
+
+    public String getDefendingPlayer(){ return dCountry.getOwner().getName(); }
 
     // Get amount of troops used to attack
     public int getAttackerTroops(){return aTroops;}
@@ -679,6 +751,12 @@ public class RiskGame
         System.out.println("Defence using " + dDice + " dice");
     }
 
+    void setAIDefDice(int n)
+    {
+        dDice = n;
+        System.out.println("Defence using " + dDice + " dice");
+    }
+
     /**
      * Set the amount of dice the attacker can use depending on troop amount in the attacking country
      * Attacker can use up to maximum 3 dice, each dice represents 1 troop
@@ -695,7 +773,7 @@ public class RiskGame
      */
     public String[] allowedAttDice(int troops)
     {
-        if(troops > 4) {return d3;}
+        if(troops > 3) {return d3;}
         else if(troops == 3){return d2;}
         else if(troops == 2){return d1;} // Troops = 2
         else{return null;}// not valid
@@ -797,10 +875,10 @@ public class RiskGame
     }
 
     /**
-    * Checking to see if a win has occured
-    * 
-    * @author Braxton Martin
-    */
+     * Checking to see if a win has occured
+     *
+     * @author Braxton Martin
+     */
     public int checkWin(){
         for(Player p : players){
             int playerNum =0;
@@ -863,7 +941,7 @@ public class RiskGame
 
     /**
      * Generates random country if AI is the current player
-     * 
+     *
      * @author Tyler Leung
      * @return name of random country
      */
@@ -877,7 +955,7 @@ public class RiskGame
 
     /**
      * Set attack/defend country and attack/defend troops for AI Attack
-     * 
+     *
      * @author Tyler Leung
      */
     public void setACDC(){
@@ -885,7 +963,7 @@ public class RiskGame
         setAttackCountry(ac);
         Random rndIndex = new Random();
         int rndDefend = rndIndex.nextInt(getAttackableCountries(ac).length);
-        String dc = getAttackableCountries(ac)[rndDefend-1];
+        String dc = getAttackableCountries(ac)[rndDefend];
         setDefendCountry(dc);
         setACountryTroops();
         setDCountryTroops();
@@ -893,7 +971,7 @@ public class RiskGame
 
     /**
      * Attack Logic For AI Attacking
-     * @param dc defending country
+     *
      * @author Tyler Leung
      */
     public void aiAttackStage(){
@@ -902,14 +980,14 @@ public class RiskGame
         attLoss = 0;
         defLoss = 0;
         successfulAttack = false;
-        
+
         //Create New Dice
         attackerDice = new Dice();
         defenderDice = new Dice();
 
         //Roll Dice
         setAIAtkDice();
-        attackerDice.rollDice(aDice); //Select Max Num Dice                                              
+        attackerDice.rollDice(aDice); //Select Max Num Dice
         defenderDice.rollDice(dDice);
 
         // Add highest rolls to reference list
@@ -1032,7 +1110,7 @@ public class RiskGame
                         }else {
                             fCountry.addTroops(1);
                             cCountry.removeTroops(1);
-                        } 
+                        }
                     }
                 }
             }

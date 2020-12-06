@@ -62,6 +62,8 @@ public class Country
         return name;
     }
 
+    public String toString(){return name;}
+
     public int getTroops()
     {
         return troops;

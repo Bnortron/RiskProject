@@ -12,6 +12,7 @@ public class Player
     private boolean AI;
 
     private ArrayList<Country> capturedCountries;
+    private ArrayList<Continent> capturedContinents;
 
     /**
      * Constructor
@@ -27,6 +28,7 @@ public class Player
         this.turnPosition = turnPosition;
         this.AI = ai;
         capturedCountries = new ArrayList<>();
+        capturedContinents = new ArrayList<>();
     }
 
     /**
@@ -83,26 +85,14 @@ public class Player
         return temp;
     }
 
-    public void printCapturedCountries()
-    {
-        System.out.println("Captured Countries by this player are: ");
-        for(Country c : capturedCountries){
-            System.out.println(c.getName());
-        }
-    }
-
     public void addCapturedCountry(Country c)
     {
-        capturedCountries.add(c);
+        this.capturedCountries.add(c);
         c.setOwner(this);
     }
 
     public void removeCapturedCountry(Country c){
         capturedCountries.remove(c);
-    }
-
-    public int numCapturedCountries(){
-        return capturedCountries.size();
     }
 
     void setCountryBonus(int n)
@@ -111,15 +101,25 @@ public class Player
         System.out.println("Country Bonus: " + countryBonus);
     }
 
-    void setContinentBonus(int n)
-    {
-        this.continentBonus = n;
-        System.out.println("Continent Bonus: " + continentBonus);
-    }
-
     int getCountryBonus()
     {
         return this.countryBonus;
+    }
+
+    ArrayList<Continent> getCapturedContinents() { return capturedContinents; }
+
+    void removeCapturedContinent(Continent c) { capturedContinents.remove(c); }
+
+    int numCapturedCountries(){ return capturedCountries.size(); }
+
+    void addCapturedContinent(Continent c)
+    {
+        this.capturedContinents.add(c);
+    }
+
+    void setContinentBonus(int n)
+    {
+        this.continentBonus = n;
     }
 
     int getContinentBonus()
@@ -131,4 +131,5 @@ public class Player
     {
         return AI;
     }
+
 }
