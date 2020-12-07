@@ -657,3 +657,22 @@ class FortifyPhaseController implements ActionListener, ListSelectionListener
         board.updateTurnArea("Turn ended - Please select 'End Turn' once you are done reviewing"+"\n");
     }
 }
+
+class aiPhaseController implements ActionListener{
+
+    private RiskGame model;
+    private aiGUI view;
+    private BoardGUI board;
+
+    public aiPhaseController(RiskGame m, aiGUI v, BoardGUI b){
+        this.model = m;
+        this.view = v;
+        this.board = b;
+    }
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        //If Submit Button Pressed
+        //Set Def Die To aiGUI Combo Box Value
+    }
+
+}

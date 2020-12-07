@@ -1842,3 +1842,32 @@ class FortifyGUI extends JFrame
 
     int getFortifyTroopAmount() { return movableTroops.getSelectedIndex(); }
 }
+
+/**
+ * Allows For Selection Of User Defend Dice Against AI
+ * 
+ * @author Tyler Leung
+ * 
+ */
+class aiGUI extends JFrame{
+    JPanel p;
+    JComboBox cb1;
+    public aiGUI(){
+        //SETIP
+    }
+    public JPanel userDefDice(){
+        p = new JPanel(new GridBagLayout());
+        cb1 = new JComboBox();
+        p.add(cb1);
+        return p;
+    }
+    
+    void setDefDice(String[] s)
+    {
+        System.out.println(s.length);
+        for(int i=0; i<s.length; ++i)
+        {
+            cb1.addItem(s[i]);
+        }
+    }
+}
