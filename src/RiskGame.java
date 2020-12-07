@@ -1,4 +1,4 @@
-//package src;
+package src;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -1108,5 +1108,32 @@ public class RiskGame implements Serializable
                 }
             }
         }
+    }
+
+    public void aiReinforce(){
+        setReinforcementAmount();
+        while (totalBonus > 0){
+            rCountry = randomAICountry();
+            Random rInt = new Random();
+            int randTroops = rInt.nextInt(totalBonus) + 1;
+            for(Country c: currentPlayer.getCapturedCountries())
+            {
+                if(c.getName().equals(rCountry))
+                {
+                    // Add troops to designated country
+                    c.addTroops(randTroops);
+
+                    // Remove troops from total reinforcement amount
+                    totalBonus -= randTroops;
+                }
+            } 
+        }
+
+        
+        //Select Random Country
+        //Select Random Number of Units From 0 -  Bonus To Add
+        //Add Random Number To Random Country
+        //Subtract Random Number From Total Amount
+
     }
 }

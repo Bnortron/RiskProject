@@ -38,7 +38,7 @@ public class GuiController implements ActionListener
     // GUI View
     private GameView view;
 
-    // New Game Frame
+    // Next Frame
     private PlayerAmountGUI next;
 
     // Load Game Frame
@@ -251,6 +251,10 @@ class PlayerNameController implements ActionListener
             view.dispose();
             next = new BoardGUI(model.getPlayers(), model.getCurrentPlayer());
             next.boardActionListener(new BoardController(model,next), new BoardController(model,next));
+
+            if(model.getCurrentTurn().isAI()){
+
+            }
         }
         else if(o.equals("Back"))
         {
@@ -273,7 +277,8 @@ class PlayerNameController implements ActionListener
  * @author Braden Norton
  * @version 11/27/20
  */
-class BoardController implements ActionListener, ListSelectionListener {
+class BoardController implements ActionListener, ListSelectionListener
+{
     // Variables
     private RiskGame model;
     private BoardGUI view;
@@ -308,35 +313,56 @@ class BoardController implements ActionListener, ListSelectionListener {
      *
      * @param e, ActionEvent
      */
-    public void actionPerformed(ActionEvent e) {
+    public void actionPerformed(ActionEvent e)
+    {
         // Get ActionEvent
         String o = e.getActionCommand();
 
-        if (o.equals("Reinforce"))
+        if(o.equals("Reinforce"))
         {
+            attackActive = false;
+            reinforceActive = true;
+            fortifyActive = false;
             // Open ReinforceGUI
             rPhase = new ReinforceGUI(model.getCurrentPlayer(), model.getReinforcementAmount());
             rPhase.reinforceActionListener(new ReinforcePhaseController(model, rPhase, view));
         }
-        else if (o.equals("Attack"))
+        else if(o.equals("Attack"))
         {
             aPhase = new AttackGUI(model.getCurrentPlayer());
             aPhase.attackActionListener(new AttackPhaseController(model, aPhase, view), new AttackPhaseController(model, aPhase, view));
         }
-        else if (o.equals("Fortify"))
+        else if(o.equals("Fortify"))
         {
+            attackActive = false;
+            reinforceActive = false;
+            fortifyActive = true;
             fPhase = new FortifyGUI(model.getCurrentPlayer());
-            fPhase.fortifyActionListener(new FortifyPhaseController(model, fPhase, view), new FortifyPhaseController(model, fPhase, view));
+            fPhase.fortifyActionListener(new FortifyPhaseController(model, fPhase, view),new FortifyPhaseController(model, fPhase, view));
         }
-        else if (o.equals("End Turn"))
+        else if(o.equals("AI Turn")){
+            //AI Button
+            //AI Reinforce
+            //Randomize A/F
+                //AI Attack
+                    //SetACDC
+                    //Popup list
+                    //AI Attack Stage
+                //AI Fortify
+
+        }
+        else if(o.equals("End Turn"))
         {
+            attackActive = false;
+            reinforceActive = false;
+            fortifyActive = false;
             // Update Model
             model.nextTurn();
             model.setReinforcementAmount();
 
             // Update View
             view.nextTurn(model.getCurrentTurn());
-            view.boardActionListener(new BoardController(model, view), new BoardController(model, view));
+            view.boardActionListener(new BoardController(model,view), new BoardController(model,view));
         }
         else if (o.equals("Save Game"))
         {
@@ -353,22 +379,35 @@ class BoardController implements ActionListener, ListSelectionListener {
         }
     }
 
-    public void valueChanged(ListSelectionEvent e) {
+    public void valueChanged(ListSelectionEvent e)
+    {
         // Get list selected
         Object o = e.getSource();
 
-        if (!e.getValueIsAdjusting()) {
-            if (o.equals(view.l1())) {
+        if(!e.getValueIsAdjusting())
+        {
+            if(o.equals(view.l1()))
+            {
                 view.getTroopsInCountry(model.getPlayers().get(0), view.getL1());
-            } else if (o.equals(view.l2())) {
+            }
+            else if(o.equals(view.l2()))
+            {
                 view.getTroopsInCountry(model.getPlayers().get(1), view.getL2());
-            } else if (o.equals(view.l3())) {
+            }
+            else if(o.equals(view.l3()))
+            {
                 view.getTroopsInCountry(model.getPlayers().get(2), view.getL3());
-            } else if (o.equals(view.l4())) {
+            }
+            else if(o.equals(view.l4()))
+            {
                 view.getTroopsInCountry(model.getPlayers().get(3), view.getL4());
-            } else if (o.equals(view.l5())) {
+            }
+            else if(o.equals(view.l5()))
+            {
                 view.getTroopsInCountry(model.getPlayers().get(4), view.getL5());
-            } else if (o.equals(view.l6())) {
+            }
+            else if(o.equals(view.l6()))
+            {
                 view.getTroopsInCountry(model.getPlayers().get(5), view.getL6());
             }
         }
@@ -398,100 +437,116 @@ class BoardController implements ActionListener, ListSelectionListener {
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+/**
+ *
+ *
+ * @author Braden Norton
+ * @version 11/27/20
+ */
+class ReinforcePhaseController implements ActionListener
+{
+    // Variables
+    private RiskGame model;
+    private ReinforceGUI view;
+    private BoardGUI board;
+
     /**
-     * @author Braden Norton
-     * @version 11/27/20
+     * Constructor
+     *
+     * @param m, model of RiskGame
+     * @param v, view of GameView
      */
-    class ReinforcePhaseController implements ActionListener {
-        // Variables
-        private RiskGame model;
-        private ReinforceGUI view;
-        private BoardGUI board;
+    public ReinforcePhaseController(RiskGame m, ReinforceGUI v, BoardGUI b)
+    {
+        this.model = m;
+        this.view = v;
+        this.board = b;
+    }
 
-        /**
-         * Constructor
-         *
-         * @param m, model of RiskGame
-         * @param v, view of GameView
-         */
-        public ReinforcePhaseController(RiskGame m, ReinforceGUI v, BoardGUI b) {
-            this.model = m;
-            this.view = v;
-            this.board = b;
-        }
+    /**
+     * ActionEvent handler
+     *
+     * @param e, ActionEvent
+     */
+    public void actionPerformed(ActionEvent e)
+    {
+        // Get ActionEvent
+        String o = e.getActionCommand();
 
-        /**
-         * ActionEvent handler
-         *
-         * @param e, ActionEvent
-         */
-        public void actionPerformed(ActionEvent e) {
-            // Get ActionEvent
-            String o = e.getActionCommand();
+        if(o.equals("Submit"))
+        {
+            System.out.println("Submit Selected");
+            System.out.println("Amount of troops to reinforce " + view.getCountry() + ": " + view.getReinforceAmount());
 
-            if (o.equals("Submit")) {
-                System.out.println("Submit Selected");
-                System.out.println("Amount of troops to reinforce " + view.getCountry() + ": " + view.getReinforceAmount());
+            // Update Model
+            model.reinforcementStage(view.getReinforceAmount(), view.getCountry());
 
-                // Update Model
-                model.reinforcementStage(view.getReinforceAmount(), view.getCountry());
-
-                // Update View
-                view.dispose();
-                updateBoard();
-                if (!model.reinforcementPhaseActive()) {
-                    board.reinforcementPhaseComplete();
-                    board.revalidate();
-                }
-            } else if (o.equals("Back")) {
-                System.out.println("Back Selected");
-                view.dispose();
+            // Update View
+            view.dispose();
+            updateBoard();
+            if(!model.reinforcementPhaseActive())
+            {
+                board.reinforcementPhaseComplete();
+                board.revalidate();
             }
         }
-
-        void updateBoard() {
-            board.updateTurnArea("Reinforcement: " + view.getReinforceAmount() + " added to " + model.getReinforcedCountry());
-            board.updateTurnArea("Remaining reinforcements: " + model.getRemainingReinforcements() + "\n");
+        else if(o.equals("Back"))
+        {
+            System.out.println("Back Selected");
+            view.dispose();
         }
     }
 
+    void updateBoard()
+    {
+        board.updateTurnArea("Reinforcement: "+ view.getReinforceAmount()+" added to " + model.getReinforcedCountry());
+        board.updateTurnArea("Remaining reinforcements: " + model.getRemainingReinforcements()+"\n");
+    }
+}
+
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+/**
+ *
+ *
+ * @author Braden Norton
+ * @version 11/27/20
+ */
+class AttackPhaseController implements ActionListener, ListSelectionListener
+{
+    // Variables
+    private RiskGame model;
+    private AttackGUI view;
+    private BoardGUI board;
+
     /**
-     * @author Braden Norton
-     * @version 11/27/20
+     * Constructor
+     *
+     * @param m, model of RiskGame
+     * @param v, view of GameView
      */
-    class AttackPhaseController implements ActionListener, ListSelectionListener {
-        // Variables
-        private RiskGame model;
-        private AttackGUI view;
-        private BoardGUI board;
+    public AttackPhaseController(RiskGame m, AttackGUI v, BoardGUI b)
+    {
+        this.model = m;
+        this.view = v;
+        this.board = b;
+    }
 
-        /**
-         * Constructor
-         *
-         * @param m, model of RiskGame
-         * @param v, view of GameView
-         */
-        public AttackPhaseController(RiskGame m, AttackGUI v, BoardGUI b) {
-            this.model = m;
-            this.view = v;
-            this.board = b;
-        }
+    /**
+     * ActionEvent handler
+     *
+     * @param e, ActionEvent
+     */
+    public void actionPerformed(ActionEvent e)
+    {
+        // Get ActionEvent
+        String o = e.getActionCommand();
 
-        /**
-         * ActionEvent handler
-         *
-         * @param e, ActionEvent
-         */
-        public void actionPerformed(ActionEvent e) {
-            // Get ActionEvent
-            String o = e.getActionCommand();
-
-            if (o.equals("Battle")) {
-                // Update Model
-                model.setDefendCountry(view.getACListValue());
-                model.setAttackCountry(view.getOCListValue());
+        if(o.equals("Battle"))
+        {
+            // Update Model
+            model.setDefendCountry(view.getACListValue());
+            model.setAttackCountry(view.getOCListValue());
 
                 model.setACountryTroops();
                 model.setDCountryTroops();
@@ -529,124 +584,165 @@ class BoardController implements ActionListener, ListSelectionListener {
             }
         }
 
-        public void valueChanged(ListSelectionEvent e) {
-            // Get list selected
-            Object o = e.getSource();
+    public void valueChanged(ListSelectionEvent e)
+    {
+        // Get list selected
+        Object o = e.getSource();
 
-            if (o.equals(view.getACList())) {
-                if (!view.getACList().getValueIsAdjusting()) {
-                    view.updateACTroops(model.getTroopsByName(view.getACList().getSelectedValue().toString()));
-                }
-            }
-
-            if (o.equals(view.getOCList())) {
-                if (!view.getOCList().getValueIsAdjusting()) {
-                    // Update ac list for selected oc
-                    System.out.println("Selected: " + view.getOCListValue());
-                    view.removeACListener(this);
-                    view.updateACList(model.getAttackableCountries(view.getOCListValue()));
-                    view.updateOCTroops(model.getTroopsByName(view.getOCListValue()));
-                    view.acCountryActionListener(this);
-                }
+        if(o.equals(view.getACList()))
+        {
+            if(!view.getACList().getValueIsAdjusting())
+            {
+                view.updateACTroops(model.getTroopsByName(view.getACList().getSelectedValue().toString()));
             }
         }
 
-        /**
-         * Updates the results text area in battle gui frame with results of roll
-         * Displays: Attack dice roll, Defence dice roll, amount of attack troops lost, amount of defence troops lost
-         *
-         * @author Braden Norton
-         */
-        void rollResults() {
-            if (model.getAttDiceAmount() == 1 || model.getDefDiceAmount() == 1) {
-                view.setRollResult("Attack Roll: " + model.getARolls(0) + "\n");
-                view.setRollResult("Defence Roll: " + model.getDRolls(0) + "\n");
-            } else if ((model.getAttDiceAmount() >= 2) && (model.getDefDiceAmount() == 2)) {
-                view.setRollResult("Attack Roll: " + model.getARolls(0) + ", " + model.getARolls(1) + "\n");
-                view.setRollResult("Defence Roll: " + model.getDRolls(0) + ", " + model.getDRolls(1) + "\n");
-            }
-
-            view.setRollResult("Attack Losses: " + model.getAttLosses() + "\n");
-            view.setRollResult("Defence Losses: " + model.getDefLosses());
-            view.setBattleResults(model.getACountryTroops(), model.getDCountryTroops());
-        }
-
-        void updateBoard() {
-            board.updateTurnArea("\n" + "Attack: " + model.getAttacker() + " attacking " + model.getDefender());
-            board.updateTurnArea(model.getAttackingPlayer() + " has lost: " + model.getAttLosses() + " troops in " + model.getAttacker());
-            board.updateTurnArea(model.getDefendingCountryOwner().getName() + " has lost: " + model.getDefLosses() + " troops in " + model.getDefender());
-            if (model.getAttackResult()) {
-                board.updateTurnArea(model.getAttackingPlayer() + " has claimed: " + model.getDefender());
+        if (o.equals(view.getOCList()))
+        {
+            if(!view.getOCList().getValueIsAdjusting())
+            {
+                // Update ac list for selected oc
+                System.out.println("Selected: " + view.getOCListValue());
+                view.removeACListener(this);
+                view.updateACList(model.getAttackableCountries(view.getOCListValue()));
+                view.updateOCTroops(model.getTroopsByName(view.getOCListValue()));
+                view.acCountryActionListener(this);
             }
         }
     }
+
+    /**
+     * Updates the results text area in battle gui frame with results of roll
+     * Displays: Attack dice roll, Defence dice roll, amount of attack troops lost, amount of defence troops lost
+     *
+     * @author Braden Norton
+     */
+    void rollResults()
+    {
+        if(model.getAttDiceAmount() == 1 || model.getDefDiceAmount() == 1)
+        {
+            view.setRollResult("Attack Roll: " + model.getARolls(0)+"\n");
+            view.setRollResult("Defence Roll: " + model.getDRolls(0)+"\n");
+        }
+        else if((model.getAttDiceAmount() >= 2) && (model.getDefDiceAmount() == 2))
+        {
+            view.setRollResult("Attack Roll: " + model.getARolls(0)+ ", " + model.getARolls(1) +"\n");
+            view.setRollResult("Defence Roll: " + model.getDRolls(0)+ ", " + model.getDRolls(1) +"\n");
+        }
+
+        view.setRollResult("Attack Losses: " + model.getAttLosses()+"\n");
+        view.setRollResult("Defence Losses: " + model.getDefLosses());
+        view.setBattleResults(model.getACountryTroops(), model.getDCountryTroops());
+    }
+
+    void updateBoard()
+    {
+        board.updateTurnArea("\n"+"Attack: " + model.getAttacker() + " attacking " + model.getDefender());
+        board.updateTurnArea(model.getAttackingPlayer()+" has lost: "+model.getAttLosses()+" troops in "+model.getAttacker());
+        board.updateTurnArea(model.getDefendingCountryOwner().getName()+" has lost: "+model.getDefLosses()+" troops in "+model.getDefender());
+        if(model.getAttackResult())
+        {
+            board.updateTurnArea(model.getAttackingPlayer()+" has claimed: " + model.getDefender());
+        }
+    }
+}
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+/**
+ *
+ *
+ * @author Braden Norton
+ * @version 11/27/20
+ */
+class FortifyPhaseController implements ActionListener, ListSelectionListener
+{
+    // Variables
+    private RiskGame model;
+    private FortifyGUI view;
+    private BoardGUI board;
+
     /**
-     * @author Braden Norton
-     * @version 11/27/20
+     * Constructor
+     *
+     * @param m, model of RiskGame
+     * @param v, view of GameView
      */
-    class FortifyPhaseController implements ActionListener, ListSelectionListener {
-        // Variables
-        private RiskGame model;
-        private FortifyGUI view;
-        private BoardGUI board;
+    public FortifyPhaseController(RiskGame m, FortifyGUI v, BoardGUI b)
+    {
+        this.model = m;
+        this.view = v;
+        this.board = b;
+    }
 
-        /**
-         * Constructor
-         *
-         * @param m, model of RiskGame
-         * @param v, view of GameView
-         */
-        public FortifyPhaseController(RiskGame m, FortifyGUI v, BoardGUI b) {
-            this.model = m;
-            this.view = v;
-            this.board = b;
+    /**
+     * ActionEvent handler
+     *
+     * @param e, ActionEvent
+     */
+    public void actionPerformed(ActionEvent e)
+    {
+        // Get ActionEvent
+        String o = e.getActionCommand();
+
+        if(o.equals("Move Troops"))
+        {
+            // Update Model
+            model.setCurrentCountryName(view.getOwnedListValue());
+            model.setFortifiedCountryName(view.getAdjListValue());
+
+            // Update View
+            view.setAmountToFortify(model.getValidMovementAmount(model.getCurrentCountryName()));
+            view.fortifyAmountStage();
         }
+        else if(o.equals("Submit Fortify"))
+        {
+            // Update Model
+            model.fortifyStage(model.getCurrentCountryName(), model.getFortifiedCountryName(), (view.getFortifyTroopAmount() + 1));
 
-        /**
-         * ActionEvent handler
-         *
-         * @param e, ActionEvent
-         */
-        public void actionPerformed(ActionEvent e) {
-            // Get ActionEvent
-            String o = e.getActionCommand();
-
-            if (o.equals("Move Troops")) {
-                // Update Model
-                model.setCurrentCountryName(view.getOwnedListValue());
-                model.setFortifiedCountryName(view.getAdjListValue());
-
-                // Update View
-                view.setAmountToFortify(model.getValidMovementAmount(model.getCurrentCountryName()));
-                view.fortifyAmountStage();
-            } else if (o.equals("Submit Fortify")) {
-                // Update Model
-                model.fortifyStage(model.getCurrentCountryName(), model.getFortifiedCountryName(), (view.getFortifyTroopAmount() + 1));
-
-                // Update View
-                view.dispose();
-                updateBoard();
-                board.fortifyPhaseComplete();
-            }
-        }
-
-        public void valueChanged(ListSelectionEvent e) {
-            // Get list selected
-            Object o = e.getSource();
-
-            if (o.equals(view.getOwnedList()) && (!view.getOwnedList().getValueIsAdjusting())) {
-                // Update adj list for selected oc
-                view.setAdjList(model.getFortifiableCountries(view.getOwnedListValue()));
-            }
-        }
-
-        void updateBoard() {
-            board.updateTurnArea("\n" + "Fortify: " + model.getCurrentCountryName() + " fortified " + model.getFortifiedCountryName() + " by " + model.getFortifiedAmount());
-            board.updateTurnArea("Troops in " + model.getCurrentCountryName() + ": " + model.getTroopsByName(model.getCurrentCountryName()));
-            board.updateTurnArea("Troops in " + model.getFortifiedCountryName() + ": " + model.getTroopsByName(model.getFortifiedCountryName()));
-            board.updateTurnArea("Turn ended - Please select 'End Turn' once you are done reviewing" + "\n");
+            // Update View
+            view.dispose();
+            updateBoard();
+            board.fortifyPhaseComplete();
         }
     }
+
+    public void valueChanged(ListSelectionEvent e)
+    {
+        // Get list selected
+        Object o = e.getSource();
+
+        if(o.equals(view.getOwnedList()) && (!view.getOwnedList().getValueIsAdjusting()))
+        {
+            // Update adj list for selected oc
+            view.setAdjList(model.getFortifiableCountries(view.getOwnedListValue()));
+        }
+    }
+
+    void updateBoard()
+    {
+        board.updateTurnArea("\n"+"Fortify: " + model.getCurrentCountryName()+" fortified "+model.getFortifiedCountryName()+" by "+model.getFortifiedAmount());
+        board.updateTurnArea("Troops in "+model.getCurrentCountryName()+": "+model.getTroopsByName(model.getCurrentCountryName()));
+        board.updateTurnArea("Troops in "+model.getFortifiedCountryName()+": "+model.getTroopsByName(model.getFortifiedCountryName()));
+        board.updateTurnArea("Turn ended - Please select 'End Turn' once you are done reviewing"+"\n");
+    }
+}
+
+class aiPhaseController implements ActionListener{
+
+    private RiskGame model;
+    private aiGUI view;
+    private BoardGUI board;
+
+    public aiPhaseController(RiskGame m, aiGUI v, BoardGUI b){
+        this.model = m;
+        this.view = v;
+        this.board = b;
+    }
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        //If Submit Button Pressed
+        //Set Def Die To aiGUI Combo Box Value
+    }
+
+}
