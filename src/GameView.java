@@ -1,4 +1,4 @@
-//package src;
+package src;
 import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
@@ -670,7 +670,7 @@ class PlayerNameGUI extends JFrame
 class BoardGUI extends JFrame
 {
     // BoardGUI options
-    private JButton reinforce,attack,fortify,endTurn;
+    private JButton reinforce,attack,fortify, aiTurn,endTurn;
 
     private JTextField bonusTroops,troops, ownedCountries, ownedContinents;
 
@@ -730,10 +730,12 @@ class BoardGUI extends JFrame
         topPanel = new JPanel();
         topPanel.setLayout(new GridLayout(1,4));
 
+
         // JButtons
         // Reinforce
         reinforce = new JButton("Reinforce");
         reinforce.setActionCommand("Reinforce");
+        if(currentPlayer.isAI()) reinforce.setEnabled(false);
 
         // Attack
         attack = new JButton("Attack");
@@ -744,6 +746,15 @@ class BoardGUI extends JFrame
         fortify = new JButton("Fortify");
         fortify.setActionCommand("Fortify");
         fortify.setEnabled(false);
+
+        //AI Turn
+        aiTurn = new JButton("Do AI Turn");
+        aiTurn.setActionCommand("AI Turn");
+        if(currentPlayer.isAI()){
+            aiTurn.setEnabled(true);
+        }else{
+            aiTurn.setEnabled(false);
+        }
 
         // End Turn
         endTurn = new JButton("End Turn");
@@ -963,6 +974,7 @@ class BoardGUI extends JFrame
         reinforce.addActionListener(e);
         attack.addActionListener(e);
         fortify.addActionListener(e);
+        aiTurn.addActionListener(e);
         endTurn.addActionListener(e);
 
         // ListSelectionListeners

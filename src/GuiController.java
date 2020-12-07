@@ -1,4 +1,4 @@
-//package src;
+package src;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -208,6 +208,10 @@ class PlayerNameController implements ActionListener
             view.dispose();
             next = new BoardGUI(model.getPlayers(), model.getCurrentPlayer());
             next.boardActionListener(new BoardController(model,next), new BoardController(model,next));
+
+            if(model.getCurrentTurn().isAI()){
+                
+            }
         }
         else if(o.equals("Back"))
         {
@@ -289,6 +293,17 @@ class BoardController implements ActionListener, ListSelectionListener
             fortifyActive = true;
             fPhase = new FortifyGUI(model.getCurrentPlayer());
             fPhase.fortifyActionListener(new FortifyPhaseController(model, fPhase, view),new FortifyPhaseController(model, fPhase, view));
+        }
+        else if(o.equals("AI Turn")){
+            //AI Button
+            //AI Reinforce
+            //Randomize A/F
+                //AI Attack
+                    //SetACDC
+                    //Popup list
+                    //AI Attack Stage
+                //AI Fortify
+            
         }
         else if(o.equals("End Turn"))
         {
@@ -478,6 +493,7 @@ class AttackPhaseController implements ActionListener, ListSelectionListener
         else if(o.equals("Roll"))
         {
             // Update Model
+
             model.attackStage(model.getAttacker(), model.getDefender());
 
             // Update View
