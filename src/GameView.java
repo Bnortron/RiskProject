@@ -1,17 +1,11 @@
 //package src;
 import java.awt.*;
 import javax.swing.*;
-import java.awt.event.*;
-import javax.swing.border.*;
-import java.util.List;
-import javax.swing.*;
 import javax.swing.event.*;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.ArrayList;
-import javax.swing.border.*;
 import javax.swing.DefaultListModel;
-import java.util.Observer;
-import java.util.Observable;
 
 /**
  * View class that represents the visualization of the data that RiskGame model contains
@@ -96,6 +90,33 @@ public class GameView extends JFrame
 
         // Stop program once exit popup closed
         System.exit(0);
+    }
+
+    void loadFailed()
+    {
+        // Fail popup
+        JFrame f = new JFrame();
+        JOptionPane.showMessageDialog(f, "No file selected");
+    }
+
+    String loadGame()
+    {
+        JFrame loadFrame = new JFrame();
+
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Specify a file to Open");
+
+        int userSelection = fileChooser.showOpenDialog(loadFrame);
+
+        if (userSelection == JFileChooser.APPROVE_OPTION) {
+            File fileToSave = fileChooser.getSelectedFile();
+            //System.out.println("Save as file: " + fileToSave.getAbsolutePath());
+            return ("" +fileToSave.getAbsolutePath());
+        }
+        else
+        {
+            return "No path selected";
+        }
     }
 
     public void menuActionListener(ActionListener o)
@@ -682,6 +703,8 @@ class BoardGUI extends JFrame
 
     private JList playerList, oc1,oc2,oc3,oc4,oc5,oc6,ocCurrent,aCountries;
 
+    private JMenuItem saveGame, quitGame;
+
     // Model Data to represent
     private String cpName;
     private ArrayList<Player> allPlayers;
@@ -717,11 +740,33 @@ class BoardGUI extends JFrame
         boardPanel.add(boardGUI(cpName));
         boardPanel.add(mapStateGUI());
         add(boardPanel);
+        addMenu();
 
         // Finish frame setup
         pack();
         setVisible(true);
         toFront();
+    }
+
+    void addMenu()
+    {
+        // Create Menu
+        JMenuBar menubar = new JMenuBar();
+        JMenu menu = new JMenu("Menu");
+
+        saveGame = new JMenuItem("Save Game");
+        saveGame.setActionCommand("Save Game");
+
+        quitGame = new JMenuItem("Quit Game");
+        quitGame.setActionCommand("Quit Game");
+
+        // Add components
+        menu.add(saveGame);
+        menu.add(quitGame);
+        menubar.add(menu);
+
+        // Add menu to frame
+        setJMenuBar(menubar);
     }
 
     private JPanel boardGUIButtons()
@@ -964,6 +1009,8 @@ class BoardGUI extends JFrame
         attack.addActionListener(e);
         fortify.addActionListener(e);
         endTurn.addActionListener(e);
+        saveGame.addActionListener(e);
+        quitGame.addActionListener(e);
 
         // ListSelectionListeners
         oc1.addListSelectionListener(o);
@@ -1139,7 +1186,6 @@ class BoardGUI extends JFrame
         attack.setEnabled(false);
         fortify.setEnabled(false);
         endTurn.setEnabled(true);
-        revalidate();
     }
 
     void updateTurnArea(String s)
@@ -1193,6 +1239,32 @@ class BoardGUI extends JFrame
         else if(def.getTurnPosition()==3){ p4OC.removeElement(c); }
         else if(def.getTurnPosition()==4){ p5OC.removeElement(c); }
         else if(def.getTurnPosition()==5){ p6OC.removeElement(c); }
+    }
+
+    String saveGame() {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Specify a file to save");
+
+        int userSelection = fileChooser.showSaveDialog(this);
+
+        if (userSelection == JFileChooser.APPROVE_OPTION) {
+            File fileToSave = fileChooser.getSelectedFile();
+            //System.out.println("Save as file: " + fileToSave.getAbsolutePath());
+            return ("" +fileToSave.getAbsolutePath());
+        }
+        else
+        {
+            return "No path selected";
+        }
+    }
+
+    void quitGame()
+    {
+        // Exit Popup
+        JOptionPane.showMessageDialog(this, "Thank you for playing!");
+
+        // Stop program once exit popup closed
+        System.exit(0);
     }
 }
 
@@ -1311,7 +1383,7 @@ class AttackGUI extends JFrame
 
     private JScrollPane jp1, jp2;
 
-    private JTextField ocTroops, acTroops, att, def, attTroops, defTroops,attDiceAmount,defDiceAmount;
+    private JTextField ocTroops, acTroops, att, def, attTroops, defTroops,attDiceAmount,defDiceAmount, ap, dp;
 
     private DefaultListModel currentPlayerOC,dList,allowedAttDice, allowedDefDice;
 
@@ -1322,7 +1394,7 @@ class AttackGUI extends JFrame
     private JComboBox attDice, defDice, defDie;
 
     // Battle Stats
-    private String attackingCountry, defendingCountry, attackingCountryTroops, defendingCountryTroops, attackDice, defenceDice;
+    private String attackingCountry, defendingCountry, attackingCountryTroops, defendingCountryTroops, attPlayer, defPlayer;
 
     public AttackGUI(Player cp)
     {
@@ -1435,6 +1507,19 @@ class AttackGUI extends JFrame
         defDiceAmount.setHorizontalAlignment(JTextField.CENTER);
         defDiceAmount.setEditable(false);
 
+        // Attacking Player Name
+        ap = new JTextField();
+        ap.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder("Attacking Player"),BorderFactory.createEmptyBorder(1,1,1,1)));
+        ap.setHorizontalAlignment(JTextField.CENTER);
+        ap.setEditable(false);
+
+        // Defending Player Name
+        dp = new JTextField();
+        dp.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder("Defending Player"),BorderFactory.createEmptyBorder(1,1,1,1)));
+        dp.setHorizontalAlignment(JTextField.CENTER);
+        dp.setEditable(false);
+
+
         // Results of roll
         results = new JTextArea();
         results.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder("Results"),BorderFactory.createEmptyBorder(1,1,1,1)));
@@ -1492,14 +1577,22 @@ class AttackGUI extends JFrame
 
         // Create Panels
         JPanel cdPanel = new JPanel();
-        cdPanel.setLayout(new GridLayout(2,1));
+        cdPanel.setLayout(new GridLayout(3,1));
 
         JPanel p = new JPanel();
         p.setLayout(new BoxLayout(p, BoxLayout.X_AXIS));
 
+        JPanel players = new JPanel();
+        players.setLayout(new GridLayout(1,2));
+
         // Add to panel
+        players.add(ap);
+        players.add(dp);
+
         p.add(cbp1);
         p.add(cbp2);
+
+        cdPanel.add(players);
         cdPanel.add(p);
         cdPanel.add(selectDice);
 
@@ -1561,8 +1654,13 @@ class AttackGUI extends JFrame
         return battleP;
     }
 
-    void chooseDiceStage()
+    void chooseDiceStage(String aPlayer, String dPlayer)
     {
+        // Set Attacking & Defending player
+        ap.setText(aPlayer);
+        dp.setText(dPlayer);
+
+        // Set DiceGUI
         getContentPane().removeAll();
         add(chooseDicePanel());
         revalidate();

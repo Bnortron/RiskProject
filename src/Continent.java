@@ -1,8 +1,9 @@
 //package src;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Continent
+public class Continent implements Serializable
 {
     // Basic continent information
     private String name; // Name of continent

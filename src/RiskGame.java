@@ -1,5 +1,6 @@
 //package src;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
@@ -12,7 +13,7 @@ import java.io.File;
  * @author Braden Norton
  * @version 11/17/20
  */
-public class RiskGame
+public class RiskGame implements Serializable
 {
     /**
      * TO DO:
@@ -29,8 +30,6 @@ public class RiskGame
 
     private int playerAmount;
     private int initialTroops;
-    private int ownedCountries;
-    private int ownedContinents;
     private int totalCountries = 42;
     private Player currentPlayer;
     private ArrayList<String> names;
@@ -39,9 +38,6 @@ public class RiskGame
     private ArrayList<Player> players;
     private ArrayList<Country> countries;
     private ArrayList<Continent> continents;
-
-    // Initialization
-    private boolean initialized = false;
 
     // For Reinforcement Phase
     private boolean reinforcementPhaseActive = false;
@@ -70,7 +66,7 @@ public class RiskGame
     private String ccName, fcName;
     private Country cCountry, fCountry;
     private ArrayList<String> ownedAdjCountries;
-    private boolean fortifyPhaseActive = false;
+    private boolean fortifyStageActive = false;
 
     //For Win Condition is met
     private boolean winner = false;
@@ -319,6 +315,10 @@ public class RiskGame
      */
     void reinforcementStage(int troops, String country)
     {
+        // Change phase
+        reinforcementPhaseActive = true;
+        fortifyStageActive = false;
+
         // Set reinforced country
         this.rCountry = country;
 
@@ -470,6 +470,7 @@ public class RiskGame
      */
     void fortifyStage(String cc, String fc, int i)
     {
+        this.fortifyStageActive = true;
         // Set current & fortified country
         setCurrentCountry(cc);
         setFortifiedCountry(fc);
@@ -515,10 +516,6 @@ public class RiskGame
      */
     void updateModel()
     {
-        if(reinforcementPhaseActive)
-        {
-
-        }
         // Attack Phase Variables: aTroops, dTroops, aDice, dDice, totalBattleRolls
         if(attackPhaseActive)
         {
@@ -539,7 +536,6 @@ public class RiskGame
             totalBattleRolls++;
         }
     }
-
 
     /**
      * Initialization: Getters & Setters
@@ -808,12 +804,6 @@ public class RiskGame
 
     int getDefLosses() { return defLoss; }
 
-    int getTotalBattleRolls() { return totalBattleRolls; }
-
-    void startAttackPhase() { attackPhaseActive = true; }
-
-    void endAttackPhase() {attackPhaseActive = false;}
-
     Player getDefendingCountryOwner()
     {
         return dCountryOwner;
@@ -940,6 +930,7 @@ public class RiskGame
 
     String getFortifiedCountryName() { return fcName; }
 
+    Boolean fortifyStageActive() { return fortifyStageActive; }
 
     /**
      * Generates random country if AI is the current player

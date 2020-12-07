@@ -1,5 +1,6 @@
 //package src;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
@@ -8,20 +9,25 @@ import java.util.ArrayList;
  * @author (your name)
  * @version (a version number or a date)
  */
-public class Country
+public class Country implements Serializable
 {
     // Basic Country information
-    private String name; // Country name
-    private int troops; // Amount of troops in country
-    private boolean owned; // True if a player owns this country
+    // Country name
+    private String name;
+
+    // Amount of troops in country
+    private int troops;
+
+    // True if a player owns this country
+    private boolean owned;
 
     // Adjacent countries
     private ArrayList<Country> adjacents;
 
-    // Owner (If owned)
+    // Owner
     private Player owner;
 
-    // Setter Methods
+
     /**
      * Constructor for objects of class Country
      */
