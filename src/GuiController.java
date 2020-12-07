@@ -320,9 +320,6 @@ class BoardController implements ActionListener, ListSelectionListener
 
         if(o.equals("Reinforce"))
         {
-            attackActive = false;
-            reinforceActive = true;
-            fortifyActive = false;
             // Open ReinforceGUI
             rPhase = new ReinforceGUI(model.getCurrentPlayer(), model.getReinforcementAmount());
             rPhase.reinforceActionListener(new ReinforcePhaseController(model, rPhase, view));
@@ -334,9 +331,6 @@ class BoardController implements ActionListener, ListSelectionListener
         }
         else if(o.equals("Fortify"))
         {
-            attackActive = false;
-            reinforceActive = false;
-            fortifyActive = true;
             fPhase = new FortifyGUI(model.getCurrentPlayer());
             fPhase.fortifyActionListener(new FortifyPhaseController(model, fPhase, view),new FortifyPhaseController(model, fPhase, view));
         }
@@ -353,9 +347,6 @@ class BoardController implements ActionListener, ListSelectionListener
         }
         else if(o.equals("End Turn"))
         {
-            attackActive = false;
-            reinforceActive = false;
-            fortifyActive = false;
             // Update Model
             model.nextTurn();
             model.setReinforcementAmount();
