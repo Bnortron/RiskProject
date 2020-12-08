@@ -745,6 +745,7 @@ class aiPhaseController implements ActionListener{
             view = new aiGUI(); //Dont think this is needed
             board.add(view.userDefDice()); //dont think this is needed
             view.userDefDice(); //dont know if this is needed either
+            view.setDefDice(model.allowedDefDice(model.getDefenderTroops()));
             if(o.equals("Submit")){
                 model.setDefDice(view.getDefDice());
             }
