@@ -1953,10 +1953,15 @@ class aiGUI extends JFrame{
     JPanel p;
     JComboBox cb1;
     public aiGUI(){
-        //SETIP
+        setTitle("Risk GUI");
+        setLocationRelativeTo(null);
+        setResizable(false);
+        setPreferredSize(new Dimension(500, 400));
+        add(userDefDice());
     }
     public JPanel userDefDice(){
         p = new JPanel(new GridBagLayout());
+        p.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder("Select Defender Dice - "),BorderFactory.createEmptyBorder(1,1,1,1)));
         cb1 = new JComboBox();
         p.add(cb1);
         return p;
