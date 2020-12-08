@@ -738,14 +738,17 @@ class aiPhaseController implements ActionListener{
     }
     @Override
     public void actionPerformed(ActionEvent e) {
-        
+        String o = e.getActionCommand();
         model.aiReinforce();
         for(int i = 0; i<4; i++){ //AI attacks only 4 times to save time
-        model.setACDC();
-        view = new aiGUI();
-        board.add(view.userDefDice());
-        view.userDefDice();
-        model.aiAttackStage(); 
+            model.setACDC();
+            view = new aiGUI(); //Dont think this is needed
+            board.add(view.userDefDice()); //dont think this is needed
+            view.userDefDice(); //dont know if this is needed either
+            if(o.equals("Submit")){
+                model.setDefDice(view.getDefDice());
+            }
+            model.aiAttackStage(); 
         }
         model.aiFortify();  
     }
