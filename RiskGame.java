@@ -1144,16 +1144,4 @@ public class RiskGame implements Serializable
             } 
         }
     }
-
-    /**
-     * @author Braxton Martin
-     */
-    public void aiTurn(){
-        aiReinforce();
-        for(int i =0; i<4; i++){
-            aiAttackStage(); //AI attacks only 4 times to save time
-        }
-        aiFortify();  
-    }
-        
 }

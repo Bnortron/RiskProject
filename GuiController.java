@@ -287,6 +287,7 @@ class BoardController implements ActionListener, ListSelectionListener
     private ReinforceGUI rPhase;
     private AttackGUI aPhase;
     private FortifyGUI fPhase;
+    private aiGUI aiPhase;
 
     // Save Game
     private JFileChooser fileChooser;
@@ -335,6 +336,8 @@ class BoardController implements ActionListener, ListSelectionListener
             fPhase.fortifyActionListener(new FortifyPhaseController(model, fPhase, view),new FortifyPhaseController(model, fPhase, view));
         }
         else if(o.equals("AI Turn")){
+            aiPhase = new aiGUI();
+            aiPhase.aiActionListener(new aiPhaseController(model, aiPhase, view));
             //AI Button
             //AI Reinforce
             //Randomize A/F
@@ -736,8 +739,16 @@ class aiPhaseController implements ActionListener{
     }
     @Override
     public void actionPerformed(ActionEvent e) {
-        //If Submit Button Pressed
-        //Set Def Die To aiGUI Combo Box Value
+        
+        model.aiReinforce();
+        for(int i = 0; i<4; i++){ //AI attacks only 4 times to save time
+        model.setACDC();
+        view = new aiGUI();
+        board.add(view.userDefDice());
+        view.userDefDice();
+        model.aiAttackStage(); 
+        }
+        model.aiFortify();  
     }
 
 }

@@ -1947,11 +1947,13 @@ class FortifyGUI extends JFrame
  * Allows For Selection Of User Defend Dice Against AI
  * 
  * @author Tyler Leung
+ * @author Braxton Martin
  * 
  */
 class aiGUI extends JFrame{
-    JPanel p;
-    JComboBox cb1;
+    private JPanel p;
+    private JComboBox cb1;
+    private JButton submit;
     public aiGUI(){
         setTitle("Risk GUI");
         setLocationRelativeTo(null);
@@ -1959,11 +1961,17 @@ class aiGUI extends JFrame{
         setPreferredSize(new Dimension(500, 400));
         add(userDefDice());
     }
+    public void aiActionListener(ActionListener o){
+        cb1.addActionListener(o);
+    }
     public JPanel userDefDice(){
         p = new JPanel(new GridBagLayout());
         p.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder("Select Defender Dice - "),BorderFactory.createEmptyBorder(1,1,1,1)));
         cb1 = new JComboBox();
+        cb1.setActionCommand("Number of Dice");
         p.add(cb1);
+        submit = new JButton("Submit");
+        p.add(submit);
         return p;
     }
     
