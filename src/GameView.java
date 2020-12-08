@@ -1485,13 +1485,13 @@ class AttackGUI extends JFrame
         // JTextFields
         // Attacking Country
         att = new JTextField();
-        att.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder("Attacker"),BorderFactory.createEmptyBorder(1,1,1,1)));
+        att.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder("Country"),BorderFactory.createEmptyBorder(1,1,1,1)));
         att.setHorizontalAlignment(JTextField.CENTER);
         att.setEditable(false);
 
         // Defending Country
         def = new JTextField();
-        def.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder("Defender"),BorderFactory.createEmptyBorder(1,1,1,1)));
+        def.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder("Country"),BorderFactory.createEmptyBorder(1,1,1,1)));
         def.setHorizontalAlignment(JTextField.CENTER);
         def.setEditable(false);
 
@@ -1521,13 +1521,13 @@ class AttackGUI extends JFrame
 
         // Attacking Player Name
         ap = new JTextField();
-        ap.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder("Attacking Player"),BorderFactory.createEmptyBorder(1,1,1,1)));
+        ap.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder("Attacker"),BorderFactory.createEmptyBorder(1,1,1,1)));
         ap.setHorizontalAlignment(JTextField.CENTER);
         ap.setEditable(false);
 
         // Defending Player Name
         dp = new JTextField();
-        dp.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder("Defending Player"),BorderFactory.createEmptyBorder(1,1,1,1)));
+        dp.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder("Defender"),BorderFactory.createEmptyBorder(1,1,1,1)));
         dp.setHorizontalAlignment(JTextField.CENTER);
         dp.setEditable(false);
 
@@ -1630,14 +1630,14 @@ class AttackGUI extends JFrame
 
         JPanel attPanel = new JPanel();
         attPanel.setPreferredSize(new Dimension(100, 200));
-        attPanel.setLayout(new GridLayout(3,1));
+        attPanel.setLayout(new GridLayout(4,1));
 
         JPanel midPanel = new JPanel();
         midPanel.setLayout(new GridLayout(2,1));
 
         JPanel defPanel = new JPanel();
         defPanel.setPreferredSize(new Dimension(100, 200));
-        defPanel.setLayout(new GridLayout(3,1));
+        defPanel.setLayout(new GridLayout(4,1));
 
         JPanel bPanel = new JPanel();
         bPanel.setLayout(new GridLayout(1,2));
@@ -1647,6 +1647,7 @@ class AttackGUI extends JFrame
         bPanel.add(exitBattle);
 
         // Add components
+        attPanel.add(ap);
         attPanel.add(att);
         attPanel.add(attTroops);
         attPanel.add(attDiceAmount);
@@ -1654,6 +1655,7 @@ class AttackGUI extends JFrame
         midPanel.add(results);
         midPanel.add(bPanel);
 
+        defPanel.add(dp);
         defPanel.add(def);
         defPanel.add(defTroops);
         defPanel.add(defDiceAmount);

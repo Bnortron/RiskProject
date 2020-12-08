@@ -1,5 +1,6 @@
 //package src;
 
+import java.io.Serializable;
 import java.util.*;
 
 
@@ -8,7 +9,7 @@ import java.util.*;
  *
  * @author Tyler Leung
  */
-public class Dice
+public class Dice implements Serializable
 {
     ArrayList<Integer> diceRoll;
     public Dice(){
