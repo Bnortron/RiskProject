@@ -1084,6 +1084,12 @@ public class RiskGame implements Serializable
         }
     }
 
+
+    /**
+     * @author Tyler Leung
+     * @author Braxton Martin
+     * This function is the random fortification for an AI
+     */
     public void aiFortify(){
         //Select Random Country
         String fortifyCountry = randomAICountry();
@@ -1110,7 +1116,16 @@ public class RiskGame implements Serializable
         }
     }
 
+    /**
+     * @author Braxton Martin
+     * @author Tyler Leung
+     * The random reinforcement of a country by AI
+     */
     public void aiReinforce(){
+        //Select Random Country
+        //Select Random Number of Units From 0 -  Bonus To Add
+        //Add Random Number To Random Country
+        //Subtract Random Number From Total Amount
         setReinforcementAmount();
         while (totalBonus > 0){
             rCountry = randomAICountry();
@@ -1128,12 +1143,17 @@ public class RiskGame implements Serializable
                 }
             } 
         }
-
-        
-        //Select Random Country
-        //Select Random Number of Units From 0 -  Bonus To Add
-        //Add Random Number To Random Country
-        //Subtract Random Number From Total Amount
-
     }
+
+    /**
+     * @author Braxton Martin
+     */
+    public void aiTurn(){
+        aiReinforce();
+        for(int i =0; i<4; i++){
+            aiAttackStage(); //AI attacks only 4 times to save time
+        }
+        aiFortify();  
+    }
+        
 }

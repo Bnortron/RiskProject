@@ -719,6 +719,10 @@ class FortifyPhaseController implements ActionListener, ListSelectionListener
     }
 }
 
+/**
+ * @author Tyler Leung
+ * @author Braxton Martin
+ */
 class aiPhaseController implements ActionListener{
 
     private RiskGame model;
