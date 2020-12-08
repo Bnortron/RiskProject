@@ -1,5 +1,3 @@
-//package src;
-
 /**
  * Main class for the game of Risk
  *
