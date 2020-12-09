@@ -1,0 +1,252 @@
+<world>
+    <continent id="North America">
+        <country id="Alaska">
+            <adjacent>Alberta</adjacent>
+            <adjacent>Northwest Territory</adjacent>
+            <adjacent>Kamchatka</adjacent>
+        </country>
+        <country id="Alberta">
+            <adjacent>Alaska</adjacent>
+            <adjacent>Northwest Territory</adjacent>
+            <adjacent>Ontario</adjacent>
+            <adjacent>Western United States</adjacent>
+        </country>
+        <country id="Central America">
+            <adjacent>Western United States</adjacent>
+            <adjacent>Venezuela</adjacent>
+        </country>
+        <country id="Eastern United States">
+            <adjacent>Western United States</adjacent>
+            <adjacent>Ontario</adjacent>
+            <adjacent>Quebec</adjacent>
+        </country>
+        <country id="Greenland">
+            <adjacent>Northwest Territory</adjacent>
+            <adjacent>Ontario</adjacent>
+            <adjacent>Quebec</adjacent>
+            <adjacent>Iceland</adjacent>
+        </country>
+        <country id="Northwest Territory">
+            <adjacent>Alaska</adjacent>
+            <adjacent>Greenland</adjacent>
+            <adjacent>Ontario</adjacent>
+            <adjacent>Alberta</adjacent>
+        </country>
+        <country id="Ontario">
+            <adjacent>Northwest Territory</adjacent>
+            <adjacent>Greenland</adjacent>
+            <adjacent>Quebec</adjacent>
+            <adjacent>Eastern United States</adjacent>
+            <adjacent>Western United States</adjacent>
+            <adjacent>Alberta</adjacent>
+        </country>
+        <country id="Quebec">
+            <adjacent>Ontario</adjacent>
+            <adjacent>Greenland</adjacent>
+            <adjacent>Eastern United States</adjacent>
+        </country>
+        <country id="Western United States">
+            <adjacent>Alberta</adjacent>
+            <adjacent>Ontario</adjacent>
+            <adjacent>Eastern United States</adjacent>
+            <adjacent>Central America</adjacent>
+        </country>
+    </continent>
+    <continent id="South America">
+        <country id="Argentina">
+            <adjacent>Venezuela</adjacent>
+            <adjacent>Brazil</adjacent>
+        </country>
+        <country id="Brazil">
+            <adjacent>Venezuela</adjacent>
+            <adjacent>North Africa</adjacent>
+            <adjacent>Argentina</adjacent>
+        </country>
+        <country id="Peru">
+            <adjacent>Brazil</adjacent>
+            <adjacent>Venezuela</adjacent>
+        </country>
+        <country id="Venezuela">
+            <adjacent>Central America</adjacent>
+            <adjacent>Brazil</adjacent>
+            <adjacent>Argentina</adjacent>
+        </country>
+    </continent>
+    <continent id="Europe">
+        <country id="Great Britain">
+            <adjacent>Iceland</adjacent>
+            <adjacent>Scandinavia</adjacent>
+            <adjacent>Northern Europe</adjacent>
+            <adjacent>Western Europe</adjacent>
+        </country>
+        <country id="Iceland">
+            <adjacent>Greenland</adjacent>
+            <adjacent>Great Britain</adjacent>
+        </country>
+        <country id="Northern Europe">
+            <adjacent>Great Britain</adjacent>
+            <adjacent>Ukraine</adjacent>
+            <adjacent>Southern Europe</adjacent>
+            <adjacent>Western Europe</adjacent>
+        <country id="Scandinavia">
+            <adjacent>Great Britain</adjacent>
+            <adjacent>Ukraine</adjacent>
+        </country>
+        <country id="Southern Europe">
+            <adjacent>Western Europe</adjacent>
+            <adjacent>Northern Europe</adjacent>
+            <adjacent>Ukraine</adjacent>
+            <adjacent>Egypt</adjacent>
+            <adjacent>North Africa</adjacent>
+        </country>
+        <country id="Ukraine">
+            <adjacent>Scandinavia</adjacent>
+            <adjacent>Ural</adjacent>
+            <adjacent>Afganistan</adjacent>
+            <adjacent>Middle East</adjacent>
+            <adjacent>Southern Europe</adjacent>
+            <adjacent>Northern Europe</adjacent>
+        </country>
+        <country id="Western Europe">
+            <adjacent>Great Britain</adjacent>
+            <adjacent>Northern Europe</adjacent>
+            <adjacent>Southern Europe</adjacent>
+            <adjacent>North Africa</adjacent>
+        </country>
+    </continent>
+    <continent id="Africa">
+        <country id="Congo">
+            <adjacent>North Africa</adjacent>
+            <adjacent>Egypt</adjacent>
+            <adjacent>East Africa</adjacent>
+            <adjacent>South Africa</adjacent>
+        </country>
+        <country id="East Africa">
+            <adjacent>Egypt</adjacent>
+            <adjacent>Madagascar</adjacent>
+            <adjacent>South Africa</adjacent>
+            <adjacent>Congo</adjacent>
+        </country>
+        <country id="Egypt">
+            <adjacent>Southern Europe</adjacent>
+            <adjacent>Middle East</adjacent>
+            <adjacent>East Africa</adjacent>
+            <adjacent>Congo</adjacent>
+            <adjacent>North Africa</adjacent>
+        </country>
+        <country id="Madagascar">
+            <adjacent>East Africa</adjacent>
+            <adjacent>South Africa</adjacent>
+        </country>
+        <country id="North Africa"> 
+            <adjacent>Western Europe</adjacent>
+            <adjacent>Southern Europe</adjacent>
+            <adjacent>Egypt</adjacent>
+            <adjacent>Congo</adjacent>
+            <adjacent>Brazil</adjacent>
+        </country>
+        <country id="South Africa">
+            <adjacent>Congo</adjacent>
+            <adjacent>East Africa</adjacent>
+            <adjacent>Madagascar</adjacent>
+        </country>
+    </continent>
+    <continent id="Asia">
+        <country id="Afganistan">
+            <adjacent>Ukraine</adjacent>
+            <adjacent>Ural</adjacent>
+            <adjacent>Siberia</adjacent>
+            <adjacent>China</adjacent>
+            <adjacent>India</adjacent>
+            <adjacent>Middle East</adjacent>
+        </country>
+        <country id="China">
+            <adjacent>Afganistan</adjacent>
+            <adjacent>Siberia</adjacent>
+            <adjacent>Mongolia</adjacent>
+            <adjacent>Siam</adjacent>
+            <adjacent>India</adjacent>
+        </country>
+        <country id="India">
+            <adjacent>Middle East</adjacent>
+            <adjacent>Afganistan</adjacent>
+            <adjacent>China</adjacent>
+            <adjacent>Siam</adjacent>
+        </country>
+        <country id="Irkutsk">
+            <adjacent>Siberia</adjacent>
+            <adjacent>Yakutsk</adjacent>
+            <adjacent>Kamchatka</adjacent>
+            <adjacent>Mongolia</adjacent>
+        </country>
+        <country id="Japan">
+            <adjacent>Kamchatka</adjacent>
+            <adjacent>Mongolia</adjacent>
+        </country>
+        <country id="Kamchatka">
+            <adjacent>Yakutsk</adjacent>
+            <adjacent>Alaska</adjacent>
+            <adjacent>Japan</adjacent>
+            <adjacent>Mongolia</adjacent>
+            <adjacent>Irkutsk</adjacent>
+        </country>
+        <country id="Middle East">
+            <adjacent>Ukraine</adjacent>
+            <adjacent>Afganistan</adjacent>
+            <adjacent>India</adjacent>
+            <adjacent>Egypt</adjacent>
+        </country>
+        <country id="Mongolia">
+            <adjacent>Siberia</adjacent>
+            <adjacent>Irkutsk</adjacent>
+            <adjacent>Kamchatka</adjacent>
+            <adjacent>Japan</adjacent>
+            <adjacent>China</adjacent>
+        </country>
+        <country id="Siam">
+            <adjacent>India</adjacent>
+            <adjacent>China</adjacent>
+            <adjacent>Indonesia</adjacent>
+        </country>
+        <country id="Siberia">
+            <adjacent>Ural</adjacent>
+            <adjacent>Yakutsk</adjacent>
+            <adjacent>Irkutsk</adjacent>
+            <adjacent>Mongolia</adjacent>
+            <adjacent>China</adjacent>
+            <adjacent>Afganistan</adjacent>
+        </country>
+        <country id="Ural">
+            <adjacent>Ukraine</adjacent>
+            <adjacent>Siberia</adjacent>
+            <adjacent>Afganistan</adjacent>
+        </country>
+        <country id="Yakutsk">
+            <adjacent>Siberia</adjacent>
+            <adjacent>Kamchatka</adjacent>
+            <adjacent>Irkutsk</adjacent>
+        </country>
+    </continent>
+    <continent id="Australia">
+        <country id="Eastern Australia">
+            <adjacent>New Guinea</adjacent>
+            <adjacent>Western Australia</adjacent>
+            <adjacent>Indonesia</adjacent>
+        </country>
+        <country id="Indonesia">
+            <adjacent>Siam</adjacent>
+            <adjacent>New Guinea</adjacent>
+            <adjacent>Western Australia</adjacent>
+        </country>
+        <country id="New Guinea">
+            <adjacent>Indonesia</adjacent>
+            <adjacent>Eastern Australia</adjacent>
+            <adjacent>Western Australia</adjacent>
+        </country>
+        <country id="Western Australia">
+            <adjacent>Indonesia</adjacent>
+            <adjacent>New Guinea</adjacent>
+            <adjacent>Eastern Australia</adjacent>
+        </country>
+    </continent>
+</world>
