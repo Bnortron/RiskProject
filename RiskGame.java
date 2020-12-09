@@ -4,13 +4,8 @@ import java.util.Collections;
 import java.util.Random;
 import java.util.Scanner;
 import java.io.File;
-
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.DocumentBuilder;
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.Node;
-import org.w3c.dom.Element;
+import org.json.*;
+import java.io.InputStream;
 
 /**
  * Model class for RiskGame that stores and processes game data
@@ -149,12 +144,13 @@ public class RiskGame implements Serializable
                 System.out.println(p.getName()); 
             }
 
-        while(!validMap){
-
+        
+            countries.clear();
+            continents.clear();
             // Set the Map
             try
             {
-            setupMap("resources/Map_XML.xml");
+            setupMap("resources/WorldMap.json");
             //System.out.println("Country Amount: " + countries.size());
             }
             catch(Exception e)
@@ -170,7 +166,7 @@ public class RiskGame implements Serializable
             // Start in reinforcement stage
             setReinforcementAmount();
             checkMap();
-        }
+        
     }
     /**
      * Parses a text file of continents/countries to an ArrayList, setting up the game map
@@ -189,81 +185,24 @@ public class RiskGame implements Serializable
     {
 
         try{
-                File fXmlFile = new File(fileName);
-                DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-                DocumentBuilder dB = dbFactory.newDocumentBuilder();
-                Document doc = dB.parse(fXmlFile);
-                doc.getDocumentElement().normalize();
-                NodeList nL = doc.getElementsByTagName("continent");
+           JSONObject jsonO = new JSONObject(fileName);
 
-                //This loop creates all the continents and coutnries
-                for(int i =0; i< nL.getLength(); i++){ //Cycles through all continents
-                    if(nL.getLength()==0) break;
-                    Node continentList = nL.item(i);
-                    ArrayList<Country> c = new ArrayList<>();
-                    NodeList countryList = continentList.getChildNodes();
-
-                    for(int j = 0; j<countryList.getLength(); j++){ //Cycles through all countries
-                        if(countryList.getLength()==0)break;
-                        String countryName = countryList.item(j).getNodeName().toString();
-                        Country newCountry = new Country(countryName);
-                        c.add(newCountry);
-                        countries.add(newCountry);
-                    }
-                    String continentName = continentList.getNodeName().toString();
-                    int bonusTroops=0;
-
-                    if(countryList.getLength()<=4){
-                        bonusTroops = 2;
-
-                    }else if(countryList.getLength()<=6){
-                        bonusTroops = 3;
-
-                    }else if(countryList.getLength()<=9){
-                        bonusTroops = 5;
-
-                    }else if(countryList.getLength()>9){
-                        bonusTroops = 7;
-
-                    }
-                    Continent newContinent = new Continent(continentName,c,bonusTroops);
-                    continents.add(newContinent);
-                }
-
-                //This loop instantiates all the adjacents
-                for(int i =0; i<nL.getLength();i++){
-
-                    if(nL.getLength()==0) break;
-                    Node continentList = nL.item(i);
-                    NodeList countryList = continentList.getChildNodes();
-
-                    for(int j=0; j<countryList.getLength();j++){
-                        if(countryList.getLength()==0)break;
-
-                        String cName = countryList.item(j).toString();
-                        Node thisCountry = countryList.item(j);
-                        NodeList adjacentList = thisCountry.getChildNodes();
-
-                        for(int t=0; t<adjacentList.getLength();t++){
-                            if(adjacentList.getLength()==0)break;
-                            String adjacentName = adjacentList.item(t).toString();
+           JSONArray countriesList = (JSONArray) jsonO.get("countries");
+           System.out.println(countriesList.getJSONObject(0));
+                      
 
                             for(Country coun : countries){
 
-                                if(cName.equals(coun.getName())){
+                                if(fileName.equals(coun.getName())){
 
                                     for(Country c : countries){
                    
-                                        if(adjacentName.equals(c.getName())){
+                                        if(fileName.equals(c.getName())){
                                             coun.addAdjacents(c);
                                         }
-                                        
                                     }
                                 }
                             }
-                        }
-                    }
-                }
         }catch(Exception e){
             e.printStackTrace();
         }
@@ -274,6 +213,7 @@ public class RiskGame implements Serializable
             if(countries.size()>players.size()){
                 boolean check = true;
                 for(Country c : countries){
+                    System.out.println(c.getAdjacents().size());
                     if(c.getAdjacents().size()==0)check=false;
                 }
                 if(check)validMap = true;

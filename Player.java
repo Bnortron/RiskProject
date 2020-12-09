@@ -97,7 +97,7 @@ public class Player implements Serializable
     void setCountryBonus(int n)
     {
         this.countryBonus = n;
-        System.out.println("Country Bonus: " + countryBonus);
+        //System.out.println("Country Bonus: " + countryBonus);
     }
 
     int getCountryBonus()

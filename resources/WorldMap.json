@@ -1,0 +1,209 @@
+{
+    "North America":
+    {
+        "countries":{
+            "Alaska":{
+                "continent":"North America",
+                "adjacents":["Alberta,Northwest Territory,Kamchatka"]
+            },
+            "Alberta":{
+                "continent":"North America",
+                "adjacents":["Alaska,Northwest Territory,Ontario,Western United States"]
+            },
+            "Central America":{
+                "continent":"North America",
+                "adjacents":["Western United States,Venezuela"]
+            },
+            "Eastern United States":{
+                "continent":"North America",
+                "adjacents":["Western United States,Ontario,Quebec"]
+            },
+            "Greenland":{
+                "continent":"North America",
+                "adjacents":["Northwest Territory,Ontario,Quebec,Iceland"]
+            },
+            "Northwest Territory":{
+                "continent":"North America",
+                "adjacents":["Alaska,Greenland,Ontario,Alberta"]
+            },
+            "Ontario":{
+                "continent":"North America",
+                "adjacents":["Northwest Territory,Greenland,Quebec,Eastern United States,Western United States,Alberta"]
+            },
+            "Quebec":{
+                "continent":"North America",
+                "adjacents":["Ontario,Greenland,Eastern United States"]
+            },
+            "Western United States":{
+                "continent":"North America",
+                "adjacents":["Alberta,Ontario,Eastern United States,Central America"]
+            }
+        },
+        "bonusTroops": 5,
+        "numCountries": 9
+    },
+
+    "South America":
+    {
+        "countries":{
+            "Argentina":{
+                "continent":"South America",
+                "adjacents":["Venezuela,Brazil"]
+            },
+            "Brazil":{
+                "continent":"South America",
+                "adjacents":["Alaska,Northwest Territory,Ontario,Western United States"]
+            },
+            "Peru":{
+                "continent":"South America",
+                "adjacents":["Brazil, Venezuela"]
+            },
+            "Venezuela":{
+                "continent":"South America",
+                "adjacents":["Central America,Brazil,Argentina"]
+            }            
+        },
+        "bonusTroops": 2,
+        "numCountries": 4
+    },
+    "Europe":{
+        "countries":{
+            "Great Britain":{
+                "continent":"Europe",
+                "adjacents":["Iceland,Scandinavia,Northern Europe,Western Europe"]
+            },
+            "Iceland":{
+                "continent":"Europe",
+                "adjacents":["Greenland,Great Britain"]
+            },
+            "Northern Europe":{
+                "continent":"Europe",
+                "adjacents":["Great Britain,Ukraine,Southern Europe,Western Europe"]
+            },
+            "Scandinavia":{
+                "continent":"Europe",
+                "adjacents":["Great Britain,Ukraine"]
+            },
+            "Southern Europe":{
+                "continent":"Europe",
+                "adjacents":["Western Europe,Northern Europe,Ukraine,Egypt,North Africa"]
+            },
+            "Ukraine":{
+                "continent":"Europe",
+                "adjacents":["Scandinavia,Ural,Afghanistan,Middle East,Southern Europe,Northern Europe"]
+            },
+            "Western Europe":{
+                "continent":"Europe",
+                "adjacents":["Great Britain,Northern Europe,Southern Europe,North Africa"]
+            }
+        },
+        "bonusTroops":5,
+        "numCountries":8
+    },
+    "Africa":{
+        "countries":{
+            "Congo":{
+                "continent":"Africa",
+                "adjacents":["North Africa,Egypt,East Africa,South Africa"]
+            },
+            "East Africa":{
+                "continent":"Africa",
+                "adjacents":["Egypt,Madagascar,South Africa,Congo"]
+            },
+            "Egypt":{
+                "continent":"Africa",
+                "adjacents":["Southern Europe,Middle East,East Africa,Congo,North Africa"]
+            },
+            "Madagascar":{
+                "continent":"Africa",
+                "adjacents":["East Africa,South Africa"]
+            },
+            "North Africa":{
+                "continent":"Africa",
+                "adjacents":["Western Europe,Southern Europe,Egypt,Congo,Brazil"]
+            },
+            "South Africa":{
+                "continent":"Africa",
+                "adjacents":["Congo,East Africa,Madagascar"]
+            }
+        },
+        "bonusTroops":3,
+        "numCountries":6
+    },
+    "Asia":{
+        "countries":{
+            "Afghanistan":{
+                "continent":"Asia",
+                "adjacents":["Ukraine,Ural,Siberia,China,India,Middle East"]
+            },
+            "China":{
+                "continent":"Asia",
+                "adjacents":["Afghanistan,Siberia,Mongolia,Siam,India"]
+            },
+            "India":{
+                "continent":"Asia",
+                "adjacents":["Middle East,Afghanistan,China,Siam"]
+            },
+            "Irkutsk":{
+                "continent":"Asia",
+                "adjacents":["Siberia,Yakutsk,Kamchatka,Mongolia"]
+            },
+            "Japan":{
+                "continent":"Asia",
+                "adjacents":["Kamchatka,Mongolia"]
+            },
+            "Kamchatka":{
+                "continent":"Asia",
+                "adjacents":["Yakutsk,Alaska,Japan,Mongolia,Irkutsk"]
+            },
+            "Middle East":{
+                "continent":"Asia",
+                "adjacents":["Ukraine,Afghanistan,India,Egypt"]
+            },
+            "Mongolia":{
+                "continent":"Asia",
+                "adjacents":["Siberia,Irkutsk,Kamchatka,Japan,China"]
+            },
+            "Siam":{
+                "continent":"Asia",
+                "adjacents":["India, China,Indonesia"]
+            },
+            "Siberia":{
+                "continent":"Asia",
+                "adjacents":["Ural,Yakutsk,Irkutsk,Mongolia,China,Afghanistan"]
+            },
+            "Ural":{
+                "continent":"Asia",
+                "adjacents":["Ukraine,Siberia,Afghanistan"]
+            },
+            "Yakutsk":{
+                "continent":"Asia",
+                "adjacents":["Siberia,Kamchatka,Irkutsk"]
+            }
+        },
+        "bonusTroops":7,
+        "numCountries":12
+    },
+    "Australia":{
+        "countries":{
+            "Eastern Australia":{
+                "continent":"Australia",
+                "adjacents":["New Guinea,Western Australia"]
+            },
+            "Indonesia":{
+                "continent":"Australia",
+                "adjacents":["Siam,New Guinea,Western Australia"]
+            },
+            "New Guinea":{
+                "continent":"Australia",
+                "adjacents":["Indonesia,Eastern Australia,Western Australia"]
+            },
+            "Western Australia":{
+                "continent":"Australia",
+                "adjacents":["Indonesia,New Guinea,Eastern Australia"]
+            }
+        },
+        "bonusTroops":2,
+        "numCountries":4
+    }
+}
