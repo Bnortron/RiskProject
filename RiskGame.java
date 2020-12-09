@@ -154,7 +154,7 @@ public class RiskGame implements Serializable
             // Set the Map
             try
             {
-            setupMap("resources/Country.txt");
+            setupMap("resources/Map_XML.xml");
             //System.out.println("Country Amount: " + countries.size());
             }
             catch(Exception e)
@@ -205,7 +205,7 @@ public class RiskGame implements Serializable
 
                     for(int j = 0; j<countryList.getLength(); j++){ //Cycles through all countries
                         if(countryList.getLength()==0)break;
-                        String countryName = countryList.item(j).toString();
+                        String countryName = countryList.item(j).getNodeName().toString();
                         Country newCountry = new Country(countryName);
                         c.add(newCountry);
                         countries.add(newCountry);
