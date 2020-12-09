@@ -85,8 +85,8 @@ public class GuiController implements ActionListener
         {
             // Open LoadGUI
             load = new LoadGUI();
-            load.loadGUIActionListeners(new LoadController(model, load));
-            view.dispose();
+            load.loadGUIActionListeners(new LoadController(model, load, view));
+            view.setVisible(false);
         }
         else
         {
@@ -109,6 +109,9 @@ class LoadController implements ActionListener
     // LoadGUI view
     private LoadGUI view;
 
+    // Menu view
+    private GameView menu;
+
     // Loaded Model
     private RiskGame loadModel;
 
@@ -117,6 +120,9 @@ class LoadController implements ActionListener
 
     // Next Frame
     private PlayerAmountGUI customMap;
+
+    // Previous Frame
+    private GameView prev;
 
     // Load Game Reader
     private ObjectInputStream objectReader;
@@ -127,8 +133,9 @@ class LoadController implements ActionListener
      * @param m Model
      * @param v View
      */
-    public LoadController(RiskGame m, LoadGUI v)
+    public LoadController(RiskGame m, LoadGUI v, GameView menu)
     {
+        this.menu = menu;
         this.model = m;
         this.view = v;
     }
@@ -152,13 +159,13 @@ class LoadController implements ActionListener
                 ex.printStackTrace();
             }
         }
-        else if(o.equals("custom"))
-        {
-
-        }
         else
         {
+            // Open Menu
+            menu.setVisible(true);
 
+            // Close LoadGUI
+            view.dispose();
         }
     }
 
