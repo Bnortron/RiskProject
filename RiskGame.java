@@ -2,13 +2,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
-import java.util.Scanner;
 import java.util.Set;
-import java.io.File;
 import java.io.FileReader;
 import java.io.Reader;
-
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.*;
 
@@ -188,13 +184,13 @@ public class RiskGame implements Serializable
      */
     private void setupMap(String fileName) throws Exception
     {
-
+        JSONParser parser = new JSONParser();
+        
         try{
-            JSONParser parser = new JSONParser();
+           
             Reader reader = new FileReader(fileName);
-    
-            Object obj = parser.parse(reader);
-    
+
+            Object obj = parser.parse(reader); 
             JSONObject jsonObject = (JSONObject) obj;
 
             Set keys = jsonObject.keySet();
@@ -205,8 +201,12 @@ public class RiskGame implements Serializable
 
            // JSONObject[] jobArr = (JSONObject[])obArr;
 
-            JSONObject continentObj = (JSONObject)jsonObject.get(obArr[0]);
-            
+           for(int i =0; i<obArr.length; i++){
+
+            ArrayList<Country> c = new ArrayList<Country>();
+
+            JSONObject continentObj = (JSONObject)jsonObject.get(obArr[i]);           
+                       
             //System.out.println(continentObj.keySet()); //This prints out [bonusTroops, countries, numCountries]
 
             Set continentKeys = continentObj.keySet();
@@ -215,33 +215,67 @@ public class RiskGame implements Serializable
 
             JSONObject countryJObj = (JSONObject)continentObj.get(continentArr[1]);
 
+
+            Set countrySet = countryJObj.keySet();
+            Object[] countryArr = countrySet.toArray();
+            
+
+            for(int j =0; j<countryArr.length; j++){
+            
+                Country newCountry = new Country(countryArr[j].toString());
+                c.add(newCountry);
+                countries.add(newCountry);
+
+                //System.out.println(newCountry.getName());
             //JSONObject countryName = (JSONObject)continentObj.get(countryArr[1]);
 
             //System.out.println(countryJObj.keySet()); //Prints out "countries"
 
+            }
+            continents.add(new Continent(jsonObject.get(obArr[i]).toString(),c,Integer.parseInt(continentObj.get(continentArr[0]).toString()) ) );
+
+        }
+        for(int i =0; i<obArr.length; i++){
+
+            JSONObject continentObj = (JSONObject)jsonObject.get(obArr[i]);           
+                       
+            //System.out.println(continentObj.keySet()); //This prints out [bonusTroops, countries, numCountries]
+
+            Set continentKeys = continentObj.keySet();
+
+            Object[] continentArr = continentKeys.toArray();
+
+            JSONObject countryJObj = (JSONObject)continentObj.get(continentArr[1]);
+
+
             Set countrySet = countryJObj.keySet();
-                     
             Object[] countryArr = countrySet.toArray();
+            for(int j =0; j<countryArr.length; j++){
 
-           // System.out.println(countryArr[0]);
-           
-        
-                                    for(Country coun : countries){
+                Set adjacentKeys = countryJObj.keySet();
+                Object[] adjacentArr = adjacentKeys.toArray();
 
-                                if(fileName.equals(coun.getName())){
+                for(int k = 0; k<adjacentArr.length; k++){
 
-                                    for(Country c : countries){
+                    for(Country coun : countries){
+                         if(countryArr[j].equals(coun.getName())){
+
+                            for(Country c : countries){
                    
-                                        if(fileName.equals(c.getName())){
-                                            coun.addAdjacents(c);
-                                        }
-                                    }
+                                if(adjacentArr[k].equals(c.getName())){
+                                    coun.addAdjacents(c);
                                 }
                             }
-        }catch(Exception e){
-            e.printStackTrace();
+                        }
+                    }
+                }
+            }   
         }
+    
+    }catch(Exception e){
+        e.printStackTrace();
     }
+}
 
     public void checkMap(){
         if(continents.size()<0){
@@ -919,7 +953,7 @@ public class RiskGame implements Serializable
      * @return name of random country
      */
     public String randomAICountry(){
-        int numAICountry = currentPlayer.getCapturedCountries().size();
+        int numAICountry = currentPlayer.numCapturedCountries();
         Random rnd = new Random();
         int rndNum = rnd.nextInt(numAICountry);
         String randomCountry = currentPlayer.getCapturedCountries().get(rndNum).getName();
@@ -934,10 +968,12 @@ public class RiskGame implements Serializable
     public void setACDC(){
         String ac = randomAICountry();
         setAttackCountry(ac);
+        System.out.println(getAttacker());
         Random rndIndex = new Random();
         int rndDefend = rndIndex.nextInt(getAttackableCountries(ac).length);
         String dc = getAttackableCountries(ac)[rndDefend];
         setDefendCountry(dc);
+        System.out.println(getDefender());
         setACountryTroops();
         setDCountryTroops();
     }
@@ -1076,7 +1112,9 @@ public class RiskGame implements Serializable
         //Find All Adjacent Country
         ArrayList<String> fortifiableCountries = getFortifiableCountries(fortifyCountry);
         //Check If Random Country Has Less Than 2 Troops
-        setCurrentCountry(fortifyCountry);
+        setCurrentCountry(fortifyCountry); 
+        System.out.println(cCountry);
+        System.out.println(cCountry.getTroops());
         if(cCountry.getTroops() > 2 ){ //if random country has less than 2 troops
             //Find First Adjacent That Has More Than 2
             for(Country c : currentPlayer.getCapturedCountries()){ //for each country owned
