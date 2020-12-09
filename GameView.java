@@ -1402,7 +1402,7 @@ class AttackGUI extends JFrame
 
     private JPanel cbp1, cbp2;
 
-    private JComboBox attDice, defDice, defDie;
+    private JComboBox attDice, defDice;
 
     // Battle Stats
     private String attackingCountry, defendingCountry, attackingCountryTroops, defendingCountryTroops, attPlayer, defPlayer;
@@ -1768,8 +1768,6 @@ class AttackGUI extends JFrame
 
     String getDDiceAmount() { return defDice.getSelectedItem().toString(); }
 
-    String getDDiceAIAmount(){ return defDie.getSelectedItem().toString(); }
-
     void setRollResult(String s)
     {
         results.append(s);
@@ -1959,6 +1957,10 @@ class aiGUI extends JFrame{
         setResizable(false);
         setPreferredSize(new Dimension(500, 400));
         add(userDefDice());
+
+        pack();
+        setVisible(true);
+        toFront();
     }
     public void aiActionListener(ActionListener o){
         cb1.addActionListener(o);
@@ -1967,19 +1969,23 @@ class aiGUI extends JFrame{
         p = new JPanel(new GridBagLayout());
         p.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder("Select Defender Dice - "),BorderFactory.createEmptyBorder(1,1,1,1)));
         cb1 = new JComboBox();
-        cb1.setActionCommand("Number of Dice");
-        p.add(cb1);
         submit = new JButton("Submit");
+        submit.setActionCommand("Submit");
+        p.add(cb1);
         p.add(submit);
         return p;
     }
     
-    void setDefDice(String[] s)
+    public void setDefDice(String[] s)
     {
         System.out.println(s.length);
         for(int i=0; i<s.length; ++i)
         {
             cb1.addItem(s[i]);
         }
+    }
+
+    public String getDefDice(){
+        return cb1.getSelectedItem().toString();
     }
 }

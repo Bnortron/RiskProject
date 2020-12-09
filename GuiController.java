@@ -337,16 +337,7 @@ class BoardController implements ActionListener, ListSelectionListener
         else if(o.equals("AI Turn")){
             aiPhase = new aiGUI();
             aiPhase.aiActionListener(new aiPhaseController(model, aiPhase, view));
-            //AI Button
-            //AI Reinforce
-            //Randomize A/F
-                //AI Attack
-                    //SetACDC
-                    //Popup list
-                    //AI Attack Stage
-                //AI Fortify
-
-        }
+          }
         else if(o.equals("End Turn"))
         {
             // Update Model
@@ -738,14 +729,18 @@ class aiPhaseController implements ActionListener{
     }
     @Override
     public void actionPerformed(ActionEvent e) {
-        
+        String o = e.getActionCommand();
         model.aiReinforce();
         for(int i = 0; i<4; i++){ //AI attacks only 4 times to save time
-        model.setACDC();
-        view = new aiGUI();
-        board.add(view.userDefDice());
-        view.userDefDice();
-        model.aiAttackStage(); 
+            model.setACDC();
+            view = new aiGUI(); //Dont think this is needed
+            board.add(view.userDefDice()); //dont think this is needed
+            view.userDefDice(); //dont know if this is needed either
+            view.setDefDice(model.allowedDefDice(model.getDefenderTroops()));
+            if(o.equals("Submit")){
+                model.setDefDice(view.getDefDice());
+            }
+            model.aiAttackStage(); 
         }
         model.aiFortify();  
     }

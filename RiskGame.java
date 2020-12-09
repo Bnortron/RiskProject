@@ -5,6 +5,13 @@ import java.util.Random;
 import java.util.Scanner;
 import java.io.File;
 
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.DocumentBuilder;
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
+import org.w3c.dom.Node;
+import org.w3c.dom.Element;
+
 /**
  * Model class for RiskGame that stores and processes game data
  *
@@ -36,6 +43,7 @@ public class RiskGame implements Serializable
     private ArrayList<Player> players;
     private ArrayList<Country> countries;
     private ArrayList<Continent> continents;
+    private boolean validMap = false;
 
     // For Reinforcement Phase
     private boolean reinforcementPhaseActive = false;
@@ -131,40 +139,39 @@ public class RiskGame implements Serializable
             }
         }
 
-        // Set current turn
-        currentPlayer = players.get(0);
-        System.out.println("Turn Order:");
-        for(Player p:players){ System.out.println(p.getName()); }
+        
 
-        // Set Countries & Continents
-        // Set up countries
-        try
-        {
-            setC_C();
+
+            // Set current turn
+            currentPlayer = players.get(0);
+            System.out.println("Turn Order:");
+            for(Player p:players){ 
+                System.out.println(p.getName()); 
+            }
+
+        while(!validMap){
+
+            // Set the Map
+            try
+            {
+            setupMap("resources/Country.txt");
             //System.out.println("Country Amount: " + countries.size());
-        }
-        catch(Exception e)
-        {
-            System.out.println(e.getMessage());
-        }
+            }
+            catch(Exception e)
+            {
+                System.out.println(e.getMessage());
+            }
 
-        // Set up adjacent countries
-        try
-        {
-            setAdjacents();
-        }
-        catch(Exception e)
-        {
-            System.out.println(e.getMessage());
-        }
+            
 
-        // Assign Countries & Troops
-        assignCountriesTroops();
+            // Assign Countries & Troops
+            assignCountriesTroops();
 
-        // Start in reinforcement stage
-        setReinforcementAmount();
+            // Start in reinforcement stage
+            setReinforcementAmount();
+            checkMap();
+        }
     }
-
     /**
      * Parses a text file of continents/countries to an ArrayList, setting up the game map
      * First word in each line of the text file is a continent
@@ -178,100 +185,100 @@ public class RiskGame implements Serializable
      *
      * @throws Exception: throws exception if text file not found
      */
-    private void setC_C() throws Exception
+    private void setupMap(String fileName) throws Exception
     {
-        Scanner sc = new Scanner(new File("resources/Country.txt"));
 
-        while(sc.hasNextLine())
-        {
-            ArrayList<Country> c = new ArrayList<>();
-            String s = sc.nextLine();
-            //System.out.println(s);
+        try{
+                File fXmlFile = new File(fileName);
+                DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+                DocumentBuilder dB = dbFactory.newDocumentBuilder();
+                Document doc = dB.parse(fXmlFile);
+                doc.getDocumentElement().normalize();
+                NodeList nL = doc.getElementsByTagName("continent");
 
-            int i = s.indexOf("-");
-            String firstWord = s.substring(0,i);
-            String restOfLine = s.substring(i+2);
+                //This loop creates all the continents and coutnries
+                for(int i =0; i< nL.getLength(); i++){ //Cycles through all continents
+                    if(nL.getLength()==0) break;
+                    Node continentList = nL.item(i);
+                    ArrayList<Country> c = new ArrayList<>();
+                    NodeList countryList = continentList.getChildNodes();
 
-            String[] arrC = restOfLine.split(",");
+                    for(int j = 0; j<countryList.getLength(); j++){ //Cycles through all countries
+                        if(countryList.getLength()==0)break;
+                        String countryName = countryList.item(j).toString();
+                        Country newCountry = new Country(countryName);
+                        c.add(newCountry);
+                        countries.add(newCountry);
+                    }
+                    String continentName = continentList.getNodeName().toString();
+                    int bonusTroops=0;
 
-            for(String t: arrC){
-                //System.out.println(t);
-                c.add(new Country(t));
-                countries.add(new Country(t));
-            }
+                    if(countryList.getLength()<=4){
+                        bonusTroops = 2;
 
-            if(firstWord.equals("North America"))
-            {
-                Continent tempContinent = new Continent(firstWord, c,5);
-                continents.add(tempContinent);
-            }
-            if(firstWord.equals("South America"))
-            {
-                Continent tempContinent = new Continent(firstWord, c,2);
-                continents.add(tempContinent);
-            }
-            if(firstWord.equals("Europe"))
-            {
-                Continent tempContinent = new Continent(firstWord, c,5);
-                continents.add(tempContinent);
-            }
-            if(firstWord.equals("Africa"))
-            {
-                Continent tempContinent = new Continent(firstWord, c,3);
-                continents.add(tempContinent);
-            }
-            if(firstWord.equals("Asia"))
-            {
-                Continent tempContinent = new Continent(firstWord, c,7);
-                continents.add(tempContinent);
-            }
-            if(firstWord.equals("Australia"))
-            {
-                Continent tempContinent = new Continent(firstWord, c,2);
-                continents.add(tempContinent);
-            }
+                    }else if(countryList.getLength()<=6){
+                        bonusTroops = 3;
 
-        }
+                    }else if(countryList.getLength()<=9){
+                        bonusTroops = 5;
 
-        sc.close();
-    }
+                    }else if(countryList.getLength()>9){
+                        bonusTroops = 7;
 
-    /**
-     * Uses a scanner to parse a text file of adjacent countries for a selected country
-     *
-     * First word in each line is the selected country, and the following words in the same line are all the adjacent countries to that country
-     * The adjacent countries are stored in an ArrayList inside the country class for the country object from the first word of each line
-     *
-     * @author Braxton Martin
-     * @author Tyler Leung
-     * @throws Exception
-     */
-    private void setAdjacents() throws Exception
-    {
-        Scanner sc = new Scanner(new File("resources/Adjacent.txt"));
+                    }
+                    Continent newContinent = new Continent(continentName,c,bonusTroops);
+                    continents.add(newContinent);
+                }
 
-        while(sc.hasNextLine())
-        {
-            String s = sc.nextLine();
+                //This loop instantiates all the adjacents
+                for(int i =0; i<nL.getLength();i++){
 
-            int i = s.indexOf("-");
-            String firstWord = s.substring(0,i);
-            String restOfLine = s.substring(i+2);
+                    if(nL.getLength()==0) break;
+                    Node continentList = nL.item(i);
+                    NodeList countryList = continentList.getChildNodes();
 
-            String[] arr = restOfLine.split(",");
-            for(Country coun : countries){
-                if(firstWord.equals(coun.getName())){
-                    for(Country c : countries){
-                        for(String adj : arr){
-                            if(adj.equals(c.getName())){
-                                coun.addAdjacents(c);
+                    for(int j=0; j<countryList.getLength();j++){
+                        if(countryList.getLength()==0)break;
+
+                        String cName = countryList.item(j).toString();
+                        Node thisCountry = countryList.item(j);
+                        NodeList adjacentList = thisCountry.getChildNodes();
+
+                        for(int t=0; t<adjacentList.getLength();t++){
+                            if(adjacentList.getLength()==0)break;
+                            String adjacentName = adjacentList.item(t).toString();
+
+                            for(Country coun : countries){
+
+                                if(cName.equals(coun.getName())){
+
+                                    for(Country c : countries){
+                   
+                                        if(adjacentName.equals(c.getName())){
+                                            coun.addAdjacents(c);
+                                        }
+                                        
+                                    }
+                                }
                             }
                         }
                     }
                 }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public void checkMap(){
+        if(continents.size()<0){
+            if(countries.size()>players.size()){
+                boolean check = true;
+                for(Country c : countries){
+                    if(c.getAdjacents().size()==0)check=false;
+                }
+                if(check)validMap = true;
             }
         }
-        sc.close();
     }
 
     /**
