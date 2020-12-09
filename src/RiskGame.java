@@ -5,6 +5,8 @@ import java.util.Random;
 import java.util.Set;
 import java.io.FileReader;
 import java.io.Reader;
+
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.*;
 
@@ -118,6 +120,15 @@ public class RiskGame implements Serializable
      *
      * @param ai: ArrayList of booleans that represent whether a given player is designated as an AI
      */
+    /**
+     * Sets up the players, turn order, the map (loads countries/continents/adjacencies from text file), & deployment phase (randomly assigns countries to each player, & troops randomly to those countries)
+     *
+     * @author Braden Norton
+     * @author Braxton Martin
+     * @author Tyler Leung
+     *
+     * @param ai: ArrayList of booleans that represent whether a given player is designated as an AI
+     */
     void initializeGame(ArrayList<String> playerList, ArrayList<Boolean> ai)
     {
         // Shuffle player names to establish random turn order
@@ -135,40 +146,40 @@ public class RiskGame implements Serializable
             }
         }
 
-        
+        // Set current turn
+        currentPlayer = players.get(0);
+        System.out.println("Turn Order:");
+        for(Player p:players){ System.out.println(p.getName()); }
 
-
-            // Set current turn
-            currentPlayer = players.get(0);
-            System.out.println("Turn Order:");
-            for(Player p:players){ 
-                System.out.println(p.getName()); 
-            }
-
-        
-            countries.clear();
-            continents.clear();
-            // Set the Map
-            try
-            {
-            setupMap("resources/WorldMap.json");
+        // Set Countries & Continents
+        // Set up countries
+        try
+        {
+            setC_C();
             //System.out.println("Country Amount: " + countries.size());
-            }
-            catch(Exception e)
-            {
-                System.out.println(e.getMessage());
-            }
+        }
+        catch(Exception e)
+        {
+            System.out.println(e.getMessage());
+        }
 
-            
+        // Set up adjacent countries
+        try
+        {
+            setAdjacents();
+        }
+        catch(Exception e)
+        {
+            System.out.println(e.getMessage());
+        }
 
-            // Assign Countries & Troops
-            assignCountriesTroops();
+        // Assign Countries & Troops
+        assignCountriesTroops();
 
-            // Start in reinforcement stage
-            setReinforcementAmount();
-            checkMap();
-        
+        // Start in reinforcement stage
+        setReinforcementAmount();
     }
+
     /**
      * Parses a text file of continents/countries to an ArrayList, setting up the game map
      * First word in each line of the text file is a continent
@@ -182,6 +193,115 @@ public class RiskGame implements Serializable
      *
      * @throws Exception: throws exception if text file not found
      */
+    private void setC_C() throws Exception
+    {
+        Scanner sc = new Scanner(new File("resources/Country.txt"));
+
+        while(sc.hasNextLine())
+        {
+            ArrayList<Country> c = new ArrayList<>();
+            String s = sc.nextLine();
+            //System.out.println(s);
+
+            int i = s.indexOf("-");
+            String firstWord = s.substring(0,i);
+            String restOfLine = s.substring(i+2);
+
+            String[] arrC = restOfLine.split(",");
+
+            for(String t: arrC){
+                //System.out.println(t);
+                c.add(new Country(t));
+                countries.add(new Country(t));
+            }
+
+            if(firstWord.equals("North America"))
+            {
+                Continent tempContinent = new Continent(firstWord, c,5);
+                continents.add(tempContinent);
+            }
+            if(firstWord.equals("South America"))
+            {
+                Continent tempContinent = new Continent(firstWord, c,2);
+                continents.add(tempContinent);
+            }
+            if(firstWord.equals("Europe"))
+            {
+                Continent tempContinent = new Continent(firstWord, c,5);
+                continents.add(tempContinent);
+            }
+            if(firstWord.equals("Africa"))
+            {
+                Continent tempContinent = new Continent(firstWord, c,3);
+                continents.add(tempContinent);
+            }
+            if(firstWord.equals("Asia"))
+            {
+                Continent tempContinent = new Continent(firstWord, c,7);
+                continents.add(tempContinent);
+            }
+            if(firstWord.equals("Australia"))
+            {
+                Continent tempContinent = new Continent(firstWord, c,2);
+                continents.add(tempContinent);
+            }
+
+        }
+
+        sc.close();
+    }
+
+    /**
+     * Uses a scanner to parse a text file of adjacent countries for a selected country
+     *
+     * First word in each line is the selected country, and the following words in the same line are all the adjacent countries to that country
+     * The adjacent countries are stored in an ArrayList inside the country class for the country object from the first word of each line
+     *
+     * @author Braxton Martin
+     * @author Tyler Leung
+     * @throws Exception
+     */
+    private void setAdjacents() throws Exception
+    {
+        Scanner sc = new Scanner(new File("resources/Adjacent.txt"));
+
+        while(sc.hasNextLine())
+        {
+            String s = sc.nextLine();
+
+            int i = s.indexOf("-");
+            String firstWord = s.substring(0,i);
+            String restOfLine = s.substring(i+2);
+
+            String[] arr = restOfLine.split(",");
+            for(Country coun : countries){
+                if(firstWord.equals(coun.getName())){
+                    for(Country c : countries){
+                        for(String adj : arr){
+                            if(adj.equals(c.getName())){
+                                coun.addAdjacents(c);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        sc.close();
+    }
+    /*
+    /**
+     * Parses a text file of continents/countries to an ArrayList, setting up the game map
+     * First word in each line of the text file is a continent
+     * the rest of the words in the line (separated by commas) are countries that reside within that continent
+     *
+     * This method adds creates a continent, which sets: The name, The countries it holds, Amount of bonus troops given for owning the whole continent
+     * When a continent is added, all the countries are added to the game as well in an arraylist of 42 countries
+     * Additionally, the countries residing in the continent are added to an ArrayList held within the continent class
+     *
+     *@author Braxton Martin
+     *
+     * @throws Exception: throws exception if text file not found
+     
     private void setupMap(String fileName) throws Exception
     {
         JSONParser parser = new JSONParser();
@@ -275,7 +395,7 @@ public class RiskGame implements Serializable
     }catch(Exception e){
         e.printStackTrace();
     }
-}
+    */
 
     public void checkMap(){
         if(continents.size()<0){
@@ -1109,10 +1229,11 @@ public class RiskGame implements Serializable
     public void aiFortify(){
         //Select Random Country
         String fortifyCountry = randomAICountry();
+        
         //Find All Adjacent Country
         ArrayList<String> fortifiableCountries = getFortifiableCountries(fortifyCountry);
         //Check If Random Country Has Less Than 2 Troops
-        setCurrentCountry(fortifyCountry); 
+        setCurrentCountry(fortifyCountry);
         System.out.println(cCountry);
         System.out.println(cCountry.getTroops());
         if(cCountry.getTroops() > 2 ){ //if random country has less than 2 troops
@@ -1149,6 +1270,8 @@ public class RiskGame implements Serializable
             rCountry = randomAICountry();
             Random rInt = new Random();
             int randTroops = rInt.nextInt(totalBonus) + 1;
+            System.out.println(randTroops);
+            System.out.println(rCountry);
             for(Country c: currentPlayer.getCapturedCountries())
             {
                 if(c.getName().equals(rCountry))
@@ -1159,7 +1282,8 @@ public class RiskGame implements Serializable
                     // Remove troops from total reinforcement amount
                     totalBonus -= randTroops;
                 }
-            } 
+            }
+            System.out.println(totalBonus); 
         }
     }
 }
