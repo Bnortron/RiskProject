@@ -7,11 +7,11 @@ import java.util.Set;
 import java.io.File;
 import java.io.FileReader;
 import java.io.Reader;
-
+/*
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.*;
-
+*/
 /**
  * Model class for RiskGame that stores and processes game data
  *
@@ -290,7 +290,7 @@ public class RiskGame implements Serializable
         }
         sc.close();
     }
-
+    /*
     /**
      * Parses a text file of continents/countries to an ArrayList, setting up the game map
      * First word in each line of the text file is a continent
@@ -303,7 +303,7 @@ public class RiskGame implements Serializable
      *@author Braxton Martin
      *
      * @throws Exception: throws exception if text file not found
-     */
+     
     private void setupMap(String fileName) throws Exception
     {
 
@@ -360,6 +360,7 @@ public class RiskGame implements Serializable
             e.printStackTrace();
         }
     }
+    */
 
     public void checkMap(){
         if(continents.size()<0){
@@ -1037,7 +1038,7 @@ public class RiskGame implements Serializable
      * @return name of random country
      */
     public String randomAICountry(){
-        int numAICountry = currentPlayer.getCapturedCountries().size();
+        int numAICountry = currentPlayer.numCapturedCountries();
         Random rnd = new Random();
         int rndNum = rnd.nextInt(numAICountry);
         String randomCountry = currentPlayer.getCapturedCountries().get(rndNum).getName();
@@ -1052,10 +1053,12 @@ public class RiskGame implements Serializable
     public void setACDC(){
         String ac = randomAICountry();
         setAttackCountry(ac);
+        System.out.println(getAttacker());
         Random rndIndex = new Random();
         int rndDefend = rndIndex.nextInt(getAttackableCountries(ac).length);
         String dc = getAttackableCountries(ac)[rndDefend];
         setDefendCountry(dc);
+        System.out.println(getDefender());
         setACountryTroops();
         setDCountryTroops();
     }
@@ -1191,10 +1194,13 @@ public class RiskGame implements Serializable
     public void aiFortify(){
         //Select Random Country
         String fortifyCountry = randomAICountry();
+        
         //Find All Adjacent Country
         ArrayList<String> fortifiableCountries = getFortifiableCountries(fortifyCountry);
         //Check If Random Country Has Less Than 2 Troops
         setCurrentCountry(fortifyCountry);
+        System.out.println(cCountry);
+        System.out.println(cCountry.getTroops());
         if(cCountry.getTroops() > 2 ){ //if random country has less than 2 troops
             //Find First Adjacent That Has More Than 2
             for(Country c : currentPlayer.getCapturedCountries()){ //for each country owned
@@ -1229,6 +1235,8 @@ public class RiskGame implements Serializable
             rCountry = randomAICountry();
             Random rInt = new Random();
             int randTroops = rInt.nextInt(totalBonus) + 1;
+            System.out.println(randTroops);
+            System.out.println(rCountry);
             for(Country c: currentPlayer.getCapturedCountries())
             {
                 if(c.getName().equals(rCountry))
@@ -1239,7 +1247,8 @@ public class RiskGame implements Serializable
                     // Remove troops from total reinforcement amount
                     totalBonus -= randTroops;
                 }
-            } 
+            }
+            System.out.println(totalBonus); 
         }
     }
 }

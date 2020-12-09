@@ -2034,7 +2034,7 @@ class aiGUI extends JFrame{
         toFront();
     }
     public void aiActionListener(ActionListener o){
-        cb1.addActionListener(o);
+        submit.addActionListener(o);
     }
     public JPanel userDefDice(){
         p = new JPanel(new GridBagLayout());
