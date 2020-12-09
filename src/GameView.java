@@ -5,6 +5,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
 import javax.swing.DefaultListModel;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
  * View class that represents the visualization of the data that RiskGame model contains
@@ -15,7 +16,7 @@ import javax.swing.DefaultListModel;
 public class GameView extends JFrame
 {
     // MenuGUI Options
-    private JButton start, load, quit;
+    private JButton start, load, quit, customGame, savedGame;
 
     // MenuGUI Panel
     private JPanel mPanel;
@@ -30,10 +31,24 @@ public class GameView extends JFrame
         setPreferredSize(new Dimension(300, 300));
         setLocationRelativeTo(null);
         setResizable(false);
+        initializeOptions();
         add(menuGUI());
         pack();
         setVisible(true);
         toFront();
+    }
+
+    void initializeOptions()
+    {
+        // Buttons
+        start = new JButton("Start");
+        start.setActionCommand("Start");
+
+        load = new JButton("Load");
+        load.setActionCommand("Load");
+
+        quit = new JButton("Quit");
+        quit.setActionCommand("Quit");
     }
 
     /**
@@ -62,16 +77,6 @@ public class GameView extends JFrame
         lP.add(welcome);
         lP.add(choose);
 
-        // Buttons
-        start = new JButton("Start");
-        start.setActionCommand("Start");
-
-        load = new JButton("Load");
-        load.setActionCommand("Load");
-
-        quit = new JButton("Quit");
-        quit.setActionCommand("Quit");
-
         // Add components to panel
         mPanel.add(lP); // add welcome messages
         mPanel.add(start);
@@ -91,23 +96,88 @@ public class GameView extends JFrame
         System.exit(0);
     }
 
-    void loadFailed()
+    public void menuActionListener(ActionListener o)
     {
-        // Fail popup
-        JFrame f = new JFrame();
-        JOptionPane.showMessageDialog(f, "No file selected");
+        start.addActionListener(o);
+        load.addActionListener(o);
+        quit.addActionListener(o);
+    }
+}
+
+//====================================================================================================//
+
+class LoadGUI extends JFrame {
+    // LoadGUI options
+    private JButton customGame, savedGame, back;
+
+    public LoadGUI() {
+        setTitle("Risk GUI");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setPreferredSize(new Dimension(300, 300));
+        setLocationRelativeTo(null);
+        setResizable(false);
+        add(loadTypes());
+        pack();
+        setVisible(true);
+        toFront();
     }
 
-    String loadGame()
-    {
-        JFrame loadFrame = new JFrame();
+    private JPanel loadTypes() {
+        // Create panels
+        JPanel p = new JPanel();
+        p.setLayout(new GridLayout(4, 1));
 
+        // Create text display
+        JLabel loadText = new JLabel("Please Choose Game Type:");
+        loadText.setFont(new Font("Serif", Font.BOLD, 20));
+        loadText.setHorizontalAlignment(JLabel.CENTER);
+
+        // Create buttons
+        customGame = new JButton("Load Custom Game");
+        customGame.setActionCommand("custom");
+
+        savedGame = new JButton("Load Saved Game");
+        savedGame.setActionCommand("saved");
+
+        back = new JButton("Back To Main Menu");
+        back.setActionCommand("back");
+
+        // Add components
+        p.add(loadText);
+        p.add(savedGame);
+        p.add(customGame);
+        p.add(back);
+
+        // Return panel
+        return p;
+    }
+
+    public void loadGUIActionListeners(ActionListener o) {
+        savedGame.addActionListener(o);
+        customGame.addActionListener(o);
+        back.addActionListener(o);
+    }
+
+    String loadGame(String type)
+    {
+        // Create JFileChooser
+        JFrame loadFrame = new JFrame();
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Specify a file to Open");
 
-        int userSelection = fileChooser.showOpenDialog(loadFrame);
+        // Create Extension Filer
+        if(type.equals("saved"))
+        {
+            FileNameExtensionFilter filter = new FileNameExtensionFilter("Serialized Files", "ser");
+            fileChooser.setFileFilter(filter);
+        }
+        else if(type.equals("custom"))
+        {
+            FileNameExtensionFilter filter = new FileNameExtensionFilter("JSON File", "json");
+            fileChooser.setFileFilter(filter);
+        }
 
-        if (userSelection == JFileChooser.APPROVE_OPTION) {
+        if (fileChooser.showOpenDialog(loadFrame) == JFileChooser.APPROVE_OPTION) {
             File fileToSave = fileChooser.getSelectedFile();
             //System.out.println("Save as file: " + fileToSave.getAbsolutePath());
             return ("" +fileToSave.getAbsolutePath());
@@ -118,13 +188,15 @@ public class GameView extends JFrame
         }
     }
 
-    public void menuActionListener(ActionListener o)
+    void loadFailed()
     {
-        start.addActionListener(o);
-        load.addActionListener(o);
-        quit.addActionListener(o);
+        // Fail popup
+        JFrame f = new JFrame();
+        JOptionPane.showMessageDialog(f, "No file selected");
     }
 }
+
+//====================================================================================================//
 
 class PlayerAmountGUI extends JFrame
 {
@@ -1254,13 +1326,12 @@ class BoardGUI extends JFrame
 
     String saveGame() {
         JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setDialogTitle("Specify a file to save");
+        fileChooser.setDialogTitle("Save Game");
 
         int userSelection = fileChooser.showSaveDialog(this);
 
         if (userSelection == JFileChooser.APPROVE_OPTION) {
             File fileToSave = fileChooser.getSelectedFile();
-            //System.out.println("Save as file: " + fileToSave.getAbsolutePath());
             return ("" +fileToSave.getAbsolutePath());
         }
         else

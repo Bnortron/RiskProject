@@ -2,11 +2,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Scanner;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
  * Controller class that controls the data flow into model object and updates the view whenever data changes.
@@ -14,13 +12,14 @@ import javax.swing.filechooser.FileNameExtensionFilter;
  *
  * Controllers:
  *
- * GUIController -
- * PlayerAmountController -
+ * GUIController
+ * LoadController
+ * PlayerAmountController
  * PlayerNameController
  * BoardController
- * ReinforcementPhaseController -
- * AttackPhaseController -
- * FortifyPhaseController -
+ * ReinforcementPhaseController
+ * AttackPhaseController
+ * FortifyPhaseController
  *
  *
  * @author Braden Norton
@@ -31,20 +30,12 @@ public class GuiController implements ActionListener
     // Risk model
     private RiskGame model;
 
-    // Loaded Model
-    private RiskGame loadModel;
-
     // GUI View
     private GameView view;
 
     // Next Frame
     private PlayerAmountGUI next;
-
-    // Load Game Frame
-    private BoardGUI start;
-
-    // Load Game Reader
-    private ObjectInputStream objectReader;
+    private LoadGUI load;
 
     /**
      * Constructor for controller
@@ -91,26 +82,96 @@ public class GuiController implements ActionListener
         }
         else if(o.equals("Load"))
         {
-            // Update Model & View
-            try {
-                loadGame();
-            } catch (IOException | ClassNotFoundException ex) {
-                ex.printStackTrace();
-            }
+            // Open LoadGUI
+            load = new LoadGUI();
+            load.loadGUIActionListeners(new LoadController(model, load));
+            view.dispose();
         }
         else
         {
-            System.out.println("Quit Selected");
-
-            // Quit Game
-            view.dispose();
             view.quitGame();
         }
     }
+}
+//====================================================================================================//
 
-    void loadGame() throws IOException, ClassNotFoundException {
+/**
+ * This class handles Users loading either a custom map or saved game file from LoadGUI and updates the model/opens next GUI
+ *
+ * @author Braden Norton
+ */
+class LoadController implements ActionListener
+{
+    // Risk model
+    private RiskGame model;
+
+    // LoadGUI view
+    private LoadGUI view;
+
+    // Loaded Model
+    private RiskGame loadModel;
+
+    // Load Game Frame
+    private BoardGUI start;
+
+    // Next Frame
+    private PlayerAmountGUI customMap;
+
+    // Load Game Reader
+    private ObjectInputStream objectReader;
+
+    /**
+     * Constructor
+     *
+     * @param m Model
+     * @param v View
+     */
+    public LoadController(RiskGame m, LoadGUI v)
+    {
+        this.model = m;
+        this.view = v;
+    }
+
+    /**
+     * Action handler for view buttons
+     *
+     * @param e ActionEvent
+     */
+    public void actionPerformed(ActionEvent e) {
+        // Get ActionEvent
+        String o = e.getActionCommand();
+
+        if(o.equals("saved") || o.equals("custom"))
+        {
+            try {
+                loadGame(o);
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            } catch (ClassNotFoundException ex) {
+                ex.printStackTrace();
+            }
+        }
+        else if(o.equals("custom"))
+        {
+
+        }
+        else
+        {
+
+        }
+    }
+
+    /**
+     * Loads a save file or custom game file, depending on the file type specified by the user
+     *
+     * @param type File type determined by the buttons on LoadGUI
+     * @throws IOException
+     * @throws ClassNotFoundException
+     * @author Braden Norton
+     */
+    void loadGame(String type) throws IOException, ClassNotFoundException {
         // Get Save File
-        String loadFile = view.loadGame();
+        String loadFile = view.loadGame(type);
 
         // Load Model
         if(!loadFile.equals("No path selected"))
@@ -121,10 +182,18 @@ public class GuiController implements ActionListener
             objectReader.close();
 
             // Initialize Game
-            start = new BoardGUI(loadModel.getPlayers(), loadModel.getCurrentPlayer());
-            start.boardActionListener(new BoardController(loadModel, start), new BoardController(loadModel, start));
+            if(type.equals("saved"))
+            {
+                start = new BoardGUI(loadModel.getPlayers(), loadModel.getCurrentPlayer());
+                start.boardActionListener(new BoardController(loadModel, start), new BoardController(loadModel, start));
+            }
+            else if(type.equals("custom"))
+            {
+                // Do something with the custom map object
+            }
 
-            // Close MenuGUI
+
+            // Close loadGUI
             view.dispose();
         }
         else
@@ -137,7 +206,7 @@ public class GuiController implements ActionListener
 //====================================================================================================//
 
 /**
- *
+ * Handles user input from PlayerAmountGUI & updates model/view from input data
  *
  * @author Braden Norton
  * @version 11/27/20
@@ -197,7 +266,7 @@ class PlayerAmountController implements ActionListener
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 /**
- *
+ * Handles user actions on PlayerNameGUI & updates model/view with input data
  *
  * @author Braden Norton
  * @version 11/27/20
@@ -271,7 +340,7 @@ class PlayerNameController implements ActionListener
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 /**
- *
+ * Handles user selection on BoardGUI & updates model/view using the input data
  *
  * @author Braden Norton
  * @version 11/27/20
@@ -363,6 +432,15 @@ class BoardController implements ActionListener, ListSelectionListener
         }
     }
 
+    /**
+     * List selection listener for the game state lists
+     *
+     * When a country in one of the lists is selected, the name of the player who owns the list & the country selected, are passed to GameView
+     * GameView then updates a text area with the amount of troops present in the selected country, which is displayed under the list
+     *
+     * @param e
+     * @author Braden Norton
+     */
     public void valueChanged(ListSelectionEvent e)
     {
         // Get list selected
@@ -397,6 +475,16 @@ class BoardController implements ActionListener, ListSelectionListener
         }
     }
 
+    /**
+     * Checks the model to see whether the current player is in the Reinforce, Attack, or Foritfy phase
+     * The boardGUI buttons are then updated through GameView to reflect the phase
+     *
+     * Reinforce: Reinforce button enabled, Attack, Fortify, End Turn buttons disabled (can't do anything with your turn until all reinforcements placed)
+     * Attack: Attack, Fortify, End Turn buttons are enabled, Reinforce button disabled (can only reinforce @ start of turn)
+     * Fortify (Fortify has been clicked & troops were moved): End Turn button enabled, Reinforce, Attack, Fortify buttons all disabled (Turn is over after you Fortify)
+     *
+     * @author Braden Norton
+     */
     void checkPhase()
     {
         // Reinforcement has been completed, but fortify has not
@@ -411,9 +499,16 @@ class BoardController implements ActionListener, ListSelectionListener
         }
     }
 
+    /**
+     * Menu selection option that allows player to save the current state of the game
+     *
+     * @param fileName String obtained from JFileChooser of the desired save file name
+     * @param model Current state of the RiskModel model, saves all it's data
+     * @throws IOException Input/Output error occurs during the save
+     */
     void saveGame(String fileName, RiskGame model) throws IOException
     {
-        objectWriter = new ObjectOutputStream(new FileOutputStream(fileName));
+        objectWriter = new ObjectOutputStream(new FileOutputStream(fileName+".ser"));
         objectWriter.writeObject(model);
         objectWriter.close();
     }
@@ -422,7 +517,7 @@ class BoardController implements ActionListener, ListSelectionListener
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 /**
- *
+ * Handles user input for ReinforceGUI and updates model/view with input data
  *
  * @author Braden Norton
  * @version 11/27/20
@@ -459,9 +554,6 @@ class ReinforcePhaseController implements ActionListener
 
         if(o.equals("Submit"))
         {
-            System.out.println("Submit Selected");
-            System.out.println("Amount of troops to reinforce " + view.getCountry() + ": " + view.getReinforceAmount());
-
             // Update Model
             model.reinforcementStage(view.getReinforceAmount(), view.getCountry());
 
@@ -491,7 +583,7 @@ class ReinforcePhaseController implements ActionListener
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 /**
- *
+ * Handles user input for AttackGUI and updates model/view with input data
  *
  * @author Braden Norton
  * @version 11/27/20
@@ -568,6 +660,11 @@ class AttackPhaseController implements ActionListener, ListSelectionListener
             }
         }
 
+    /**
+     * List selection handler for the selection of countries phase in AttackGUI
+     *
+     * @param e country in list was selected
+     */
     public void valueChanged(ListSelectionEvent e)
     {
         // Get list selected
@@ -596,8 +693,7 @@ class AttackPhaseController implements ActionListener, ListSelectionListener
     }
 
     /**
-     * Updates the results text area in battle gui frame with results of roll
-     * Displays: Attack dice roll, Defence dice roll, amount of attack troops lost, amount of defence troops lost
+     * Updates the AttackGUI results window w/the results of the roll
      *
      * @author Braden Norton
      */
@@ -619,6 +715,11 @@ class AttackPhaseController implements ActionListener, ListSelectionListener
         view.setBattleResults(model.getACountryTroops(), model.getDCountryTroops());
     }
 
+    /**
+     * Updates the main BoardGUI turn action window with the final results of the Attack (lost troops/country)
+     *
+     * @author Braden Norton
+     */
     void updateBoard()
     {
         board.updateTurnArea("\n"+"Attack: " + model.getAttacker() + " attacking " + model.getDefender());
@@ -634,7 +735,7 @@ class AttackPhaseController implements ActionListener, ListSelectionListener
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 /**
- *
+ * Handles user input for FortifyGUI and updates model/view with input data
  *
  * @author Braden Norton
  * @version 11/27/20
@@ -691,6 +792,12 @@ class FortifyPhaseController implements ActionListener, ListSelectionListener
         }
     }
 
+    /**
+     * List selection handler
+     * Updates lists during the select country part of the Fortify phase
+     *
+     * @param e when user selects a list
+     */
     public void valueChanged(ListSelectionEvent e)
     {
         // Get list selected
@@ -713,6 +820,8 @@ class FortifyPhaseController implements ActionListener, ListSelectionListener
 }
 
 /**
+ * Handles user input for aiGUI and updates model/view with input data
+ *
  * @author Tyler Leung
  * @author Braxton Martin
  */
