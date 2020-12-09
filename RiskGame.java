@@ -3,9 +3,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.Set;
 import java.io.File;
-import org.json.*;
-import java.io.InputStream;
+import java.io.FileReader;
+import java.io.Reader;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.*;
 
 /**
  * Model class for RiskGame that stores and processes game data
@@ -185,13 +190,43 @@ public class RiskGame implements Serializable
     {
 
         try{
-           JSONObject jsonO = new JSONObject(fileName);
+            JSONParser parser = new JSONParser();
+            Reader reader = new FileReader(fileName);
+    
+            Object obj = parser.parse(reader);
+    
+            JSONObject jsonObject = (JSONObject) obj;
 
-           JSONArray countriesList = (JSONArray) jsonO.get("countries");
-           System.out.println(countriesList.getJSONObject(0));
-                      
+            Set keys = jsonObject.keySet();
 
-                            for(Country coun : countries){
+            System.out.println(keys); //Prints out [South America, Asia, Europe, Africa, Australia, North America]
+
+            Object[] obArr = keys.toArray();
+
+           // JSONObject[] jobArr = (JSONObject[])obArr;
+
+            JSONObject continentObj = (JSONObject)jsonObject.get(obArr[0]);
+            
+            //System.out.println(continentObj.keySet()); //This prints out [bonusTroops, countries, numCountries]
+
+            Set continentKeys = continentObj.keySet();
+
+            Object[] continentArr = continentKeys.toArray();
+
+            JSONObject countryJObj = (JSONObject)continentObj.get(continentArr[1]);
+
+            //JSONObject countryName = (JSONObject)continentObj.get(countryArr[1]);
+
+            //System.out.println(countryJObj.keySet()); //Prints out "countries"
+
+            Set countrySet = countryJObj.keySet();
+                     
+            Object[] countryArr = countrySet.toArray();
+
+           // System.out.println(countryArr[0]);
+           
+        
+                                    for(Country coun : countries){
 
                                 if(fileName.equals(coun.getName())){
 

@@ -1,50 +1,47 @@
 {
-    "North America":
-    {
+    "North America": {
         "countries":{
             "Alaska":{
-                "continent":"North America",
+                "continentName":"North America",
                 "adjacents":["Alberta,Northwest Territory,Kamchatka"]
             },
             "Alberta":{
-                "continent":"North America",
+                "continentName":"North America",
                 "adjacents":["Alaska,Northwest Territory,Ontario,Western United States"]
             },
             "Central America":{
-                "continent":"North America",
+                "continentName":"North America",
                 "adjacents":["Western United States,Venezuela"]
             },
             "Eastern United States":{
-                "continent":"North America",
+                "continentName":"North America",
                 "adjacents":["Western United States,Ontario,Quebec"]
             },
             "Greenland":{
-                "continent":"North America",
+                "continentName":"North America",
                 "adjacents":["Northwest Territory,Ontario,Quebec,Iceland"]
             },
             "Northwest Territory":{
-                "continent":"North America",
+                "continentName":"North America",
                 "adjacents":["Alaska,Greenland,Ontario,Alberta"]
             },
             "Ontario":{
-                "continent":"North America",
+                "continentName":"North America",
                 "adjacents":["Northwest Territory,Greenland,Quebec,Eastern United States,Western United States,Alberta"]
             },
             "Quebec":{
-                "continent":"North America",
+                "continentName":"North America",
                 "adjacents":["Ontario,Greenland,Eastern United States"]
             },
             "Western United States":{
-                "continent":"North America",
+                "continentName":"North America",
                 "adjacents":["Alberta,Ontario,Eastern United States,Central America"]
             }
         },
         "bonusTroops": 5,
         "numCountries": 9
     },
-
-    "South America":
-    {
+    "South America" :{
         "countries":{
             "Argentina":{
                 "continent":"South America",
@@ -97,6 +94,7 @@
                 "adjacents":["Great Britain,Northern Europe,Southern Europe,North Africa"]
             }
         },
+        
         "bonusTroops":5,
         "numCountries":8
     },
