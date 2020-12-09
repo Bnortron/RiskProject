@@ -844,8 +844,7 @@ class BoardGUI extends JFrame
     {
         // Create Panel
         topPanel = new JPanel();
-        topPanel.setLayout(new GridLayout(1,4));
-
+        topPanel.setLayout(new GridLayout(1,5));
 
         // JButtons
         // Reinforce
@@ -882,6 +881,7 @@ class BoardGUI extends JFrame
         topPanel.add(attack);
         topPanel.add(fortify);
         topPanel.add(endTurn);
+        topPanel.add(aiTurn);
 
         // Return Panel
         return topPanel;
