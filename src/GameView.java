@@ -850,31 +850,38 @@ class BoardGUI extends JFrame
         // Reinforce
         reinforce = new JButton("Reinforce");
         reinforce.setActionCommand("Reinforce");
-        if(currentPlayer.isAI()) reinforce.setEnabled(false);
 
         // Attack
         attack = new JButton("Attack");
         attack.setActionCommand("Attack");
-        attack.setEnabled(false);
 
         // Fortify
         fortify = new JButton("Fortify");
         fortify.setActionCommand("Fortify");
-        fortify.setEnabled(false);
 
         //AI Turn
         aiTurn = new JButton("Do AI Turn");
         aiTurn.setActionCommand("AI Turn");
-        if(currentPlayer.isAI()){
-            aiTurn.setEnabled(true);
-        }else{
-            aiTurn.setEnabled(false);
-        }
+        
 
         // End Turn
         endTurn = new JButton("End Turn");
         endTurn.setActionCommand("End Turn");
-        endTurn.setEnabled(false);
+
+        //Button Enables
+        if(currentPlayer.isAI()){
+            reinforce.setEnabled(false);
+            attack.setEnabled(false);
+            fortify.setEnabled(false);
+            aiTurn.setEnabled(true);
+            endTurn.setEnabled(false);
+        } else {
+            reinforce.setEnabled(true);
+            attack.setEnabled(false);
+            fortify.setEnabled(false);
+            aiTurn.setEnabled(false);
+            endTurn.setEnabled(false);
+        }
 
         // Add components to panel
         topPanel.add(reinforce);
