@@ -10,6 +10,17 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 /**
  * View class that represents the visualization of the data that RiskGame model contains
  *
+ * Contains 8 nested classes that each represent a different frame for user input:
+ *
+ * LoadGUI: Options for loading saved game or custom game
+ * PlayerAmountGUI: Options for the amount of players are playing a new game (2-6)
+ * PlayerNameGUI: Options for the names of each player & whether they're AI or Human
+ * BoardGUI: Options for Reinforce/Attack/Fortify phases, End Turn, Map state lists, AI Turn, and it displays the current player stats (Name, total troops, owned countries, owned continents, bonus troops)
+ * ReinforceGUI: Options for the Reinforce phase (Move certain amount of reinforcements to selected country)
+ * AttackGUI: Options for the Attack phase (which country to attack/how many dice to use), displays the battle results
+ * FortifyGUI: Options for Fortify phase (which adj country to reinforce from a certain country, and how many troops to send)
+ * aiGUI: Options for the AI turn
+ *
  * @author Braden Norton
  * @version 11/17/20
  */
@@ -38,6 +49,11 @@ public class GameView extends JFrame
         toFront();
     }
 
+    /**
+     * Initialize the buttons & set their action command words
+     *
+     * @author Braden Norton
+     */
     void initializeOptions()
     {
         // Buttons
@@ -87,6 +103,11 @@ public class GameView extends JFrame
         return mPanel;
     }
 
+    /**
+     * Displays a JOptionPane that confirms the user has quit the game
+     *
+     * @author Braden Norton
+     */
     void quitGame()
     {
         // Exit Popup
@@ -96,6 +117,11 @@ public class GameView extends JFrame
         System.exit(0);
     }
 
+    /**
+     * Adds action listeners to the buttons
+     *
+     * @param o ActionListener object
+     */
     public void menuActionListener(ActionListener o)
     {
         start.addActionListener(o);
@@ -110,6 +136,11 @@ class LoadGUI extends JFrame {
     // LoadGUI options
     private JButton customGame, savedGame, back;
 
+    /**
+     * Constructor
+     *
+     * @Braden Norton
+     */
     public LoadGUI() {
         setTitle("Risk GUI");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -122,6 +153,12 @@ class LoadGUI extends JFrame {
         toFront();
     }
 
+    /**
+     * Creates the panel w/load buttons (Custom game, Saved game, Back)
+     *
+     * @return load option panel
+     * @author Braden Norton
+     */
     private JPanel loadTypes() {
         // Create panels
         JPanel p = new JPanel();
@@ -152,12 +189,28 @@ class LoadGUI extends JFrame {
         return p;
     }
 
+    /**
+     *
+     * @param o added ActionListener to each button
+     */
     public void loadGUIActionListeners(ActionListener o) {
         savedGame.addActionListener(o);
         customGame.addActionListener(o);
         back.addActionListener(o);
     }
 
+    /**
+     * Prompts user to select a file to load through the use of a JFileChooser, based on the type of file selected from the LoadGUI options, and saves that file path to a String
+     *
+     * If user selected "Saved Game": JFileChooser will allow user to open files that are saved under the .ser file type (Saved games use Serialization interface)
+     * If user selected "Custom Game": JFileChooser will allow user to open files that are saved as .json type (Custom maps are in JSON format)
+     * If user cancels: File location String will be set to "No path selected"
+     *
+     * @param type Either "saved" or "custom", per LoadGUI option action commands
+     * @return String that holds the location of desired file path to be opened
+     *
+     * @author Braden Norton
+     */
     String loadGame(String type)
     {
         // Create JFileChooser
@@ -188,6 +241,11 @@ class LoadGUI extends JFrame {
         }
     }
 
+    /**
+     * Prompts user with JOptionPane alert if no file was selected for loading the game
+     *
+     * @author Braden Norton
+     */
     void loadFailed()
     {
         // Fail popup
@@ -198,10 +256,21 @@ class LoadGUI extends JFrame {
 
 //====================================================================================================//
 
+/**
+ * Amount of players options
+ *
+ * @author Braden Norton
+ */
 class PlayerAmountGUI extends JFrame
 {
     // PlayerAmountGUI options
     private JButton p2,p3,p4,p5,p6;
+
+    /**
+     * Constructor
+     *
+     * @author Braden Norton
+     */
     public PlayerAmountGUI()
     {
         setTitle("Risk GUI");
@@ -215,6 +284,11 @@ class PlayerAmountGUI extends JFrame
         toFront();
     }
 
+    /**
+     * Creates panel for amount of players options
+     *
+     * @return created panel
+     */
     private JPanel playerAmount()
     {
         // Main panel
@@ -255,6 +329,10 @@ class PlayerAmountGUI extends JFrame
         return pPanel;
     }
 
+    /**
+     *
+     * @param o added ActionListeners to the player amount options
+     */
     public void playerAmountActionListener(ActionListener o)
     {
         // Player menu
@@ -266,6 +344,11 @@ class PlayerAmountGUI extends JFrame
     }
 }
 
+/**
+ * Player Names & whether they're AI or Human options
+ *
+ * @author Braden Norton
+ */
 class PlayerNameGUI extends JFrame
 {
     // Player amount
@@ -283,6 +366,11 @@ class PlayerNameGUI extends JFrame
     // Player name input
     private JTextField name1,name2,name3,name4,name5,name6;
 
+    /**
+     * Constructor
+     *
+     * @param players Amount of players selected from PlayerAmountGUI options
+     */
     public PlayerNameGUI(int players)
     {
         // set player amount
@@ -386,8 +474,7 @@ class PlayerNameGUI extends JFrame
 
     /**
      *
-     *
-     * @return JPanel with the options
+     * @return JPanel with options (name,Ai/Human) for the amount of players selected in PlayerAmountGUI
      */
     private JPanel twoPlayersGUI()
     {
@@ -424,6 +511,10 @@ class PlayerNameGUI extends JFrame
         return twoPanel;
     }
 
+    /**
+     *
+     * @return JPanel with options (name,Ai/Human) for the amount of players selected in PlayerAmountGUI
+     */
     private JPanel threePlayersGUI()
     {
         // Create main panel
@@ -468,6 +559,10 @@ class PlayerNameGUI extends JFrame
         return threePanel;
     }
 
+    /**
+     *
+     * @return JPanel with options (name,Ai/Human) for the amount of players selected in PlayerAmountGUI
+     */
     private JPanel fourPlayersGUI()
     {
         // Create main panel
@@ -527,6 +622,10 @@ class PlayerNameGUI extends JFrame
         return fourPanel;
     }
 
+    /**
+     *
+     * @return JPanel with options (name,Ai/Human) for the amount of players selected in PlayerAmountGUI
+     */
     private JPanel fivePlayersGUI()
     {
         // Create main panel
@@ -592,6 +691,10 @@ class PlayerNameGUI extends JFrame
         return fivePanel;
     }
 
+    /**
+     *
+     * @return JPanel with options (name,Ai/Human) for the amount of players selected in PlayerAmountGUI
+     */
     private JPanel sixPlayersGUI()
     {
         // Create main Panel
@@ -663,6 +766,10 @@ class PlayerNameGUI extends JFrame
         return sixPanel;
     }
 
+    /**
+     *
+     * @param o ActionListener added to each option in PlayerNameGUI
+     */
     public void playerNameActionListener(ActionListener o)
     {
         // JTextFields
@@ -686,6 +793,13 @@ class PlayerNameGUI extends JFrame
         ai6.addActionListener(o);
     }
 
+    /**
+     * Saves the names entered into each JTextField to an ArrayList of Strings
+     *
+     * @return list of entered names
+     *
+     * @author Braden Norton
+     */
     ArrayList<String> getNames()
     {
         // Create list
@@ -716,6 +830,16 @@ class PlayerNameGUI extends JFrame
         return names;
     }
 
+    /**
+     * Saves AI checkbox selections to an ArrayList of Booleans for each player
+     *
+     * Saves true to list if AI checkbox selected for that player
+     * Saves false otherwise for that player
+     *
+     * @return list of AI players
+     *
+     * @author Braden Norton
+     */
     ArrayList<Boolean> getAI()
     {
         // Create list
@@ -759,6 +883,11 @@ class PlayerNameGUI extends JFrame
     }
 }
 
+/**
+ * Displays all the possible game options once the setup is complete (players chosen & map created)
+ *
+ * @author Braden Norton
+ */
 class BoardGUI extends JFrame
 {
     // BoardGUI options
@@ -789,6 +918,12 @@ class BoardGUI extends JFrame
     private int cpBonusReinforcements;
     private int turnNumber;
 
+    /**
+     * Constructor
+     *
+     * @param players list of players playing the game
+     * @param p current player
+     */
     public BoardGUI(ArrayList<Player> players, Player p)
     {
         // Set Player List
@@ -819,6 +954,11 @@ class BoardGUI extends JFrame
         toFront();
     }
 
+    /**
+     * Adds menu to the BoardGUI frame with save and quit options
+     *
+     * @author
+     */
     void addMenu()
     {
         // Create Menu
@@ -840,6 +980,12 @@ class BoardGUI extends JFrame
         setJMenuBar(menubar);
     }
 
+    /**
+     *
+     * @return Panel that holds all the buttons on the board
+     *
+     * @author Braden Norton
+     */
     private JPanel boardGUIButtons()
     {
         // Create Panel
@@ -894,6 +1040,12 @@ class BoardGUI extends JFrame
         return topPanel;
     }
 
+    /**
+     *
+     * @return Panel that displays the current player stats (name, troops, owned countries/continents)
+     *
+     * @author Braden Norton
+     */
     private JPanel boardGUIPlayerStats()
     {
         // Create Panel
@@ -934,11 +1086,15 @@ class BoardGUI extends JFrame
         return statPanel;
     }
 
+    /**
+     *
+     * @param name Current player name
+     * @return JScrollPane that displays the current players turn
+     *
+     * @author Braden Norton
+     */
     private JScrollPane boardGUI(String name)
     {
-        // Create Panel
-        bPanel = new JPanel();
-
         // JTextArea in JScrollPane
         // Display actions during player turns
         turn = new JTextArea("---------------\n");
@@ -951,22 +1107,12 @@ class BoardGUI extends JFrame
         return jp;
     }
 
-    private JPanel turnHistory()
-    {
-        // Create Panel
-        turnHistoryPanel = new JPanel();
-
-        turnNumber = 1;
-        turnHistory = new JTextArea("---------------\n");
-        turnHistory.setEditable(false);
-        turnHistory.append("Turn: " + turnNumber + "\n");
-        JScrollPane jp = new JScrollPane(turn);
-        turn.append("---------------\n");
-
-        // Return panel
-        return turnHistoryPanel;
-    }
-
+    /**
+     *
+     * @return Panel that holds the lists of owned countries for each player in the game
+     *
+     * @author Braden Norton
+     */
     private JPanel mapStateGUI()
     {
         msPanel = new JPanel();
@@ -1091,6 +1237,12 @@ class BoardGUI extends JFrame
         return msPanel;
     }
 
+    /**
+     * Add listeners for the amount of players in the game
+     *
+     * @param e Actionlisteners added to the BoardGUI buttons
+     * @param o ListSelectionListeners added to the BoardGUI lists (map state)
+     */
     public void boardActionListener(ActionListener e, ListSelectionListener o)
     {
         // ActionListeners
@@ -1129,6 +1281,11 @@ class BoardGUI extends JFrame
         }
     }
 
+    /**
+     * Updates the player stats panel w/the stats of the player passed
+     *
+     * @param p Player to display stats of
+     */
     void setCurrentPlayer(Player p)
     {
         this.currentPlayer = p;
@@ -1139,112 +1296,98 @@ class BoardGUI extends JFrame
         this.cpContinentAmount = p.getCapturedContinents().size();
     }
 
-    void initializeLists()
-    {
-        updateP1OCList(allPlayers.get(0).capturedCountriesToString());
-        updateP2OCList(allPlayers.get(1).capturedCountriesToString());
-        if(allPlayers.size() > 2)
-        {
-            updateP3OCList(allPlayers.get(2).capturedCountriesToString());
-            if(allPlayers.size() > 3)
-            {
-                updateP4OCList(allPlayers.get(3).capturedCountriesToString());
-                if(allPlayers.size() > 4)
-                {
-                    updateP5OCList(allPlayers.get(4).capturedCountriesToString());
-                    if(allPlayers.size() > 5)
-                    {
-                        updateP6OCList(allPlayers.get(5).capturedCountriesToString());
-                    }
-                }
-            }
-        }
-    }
-
-    void updateP1OCList(ArrayList<String> a)
-    {
-        oc1.clearSelection();
-        p1OC.clear();
-        for(int i =0; i<a.size(); ++i)
-        {
-            p1OC.addElement(a.get(i));
-        }
-    }
-
-    void updateP2OCList(ArrayList<String> a)
-    {
-        oc2.clearSelection();
-        p2OC.clear();
-        for(int i =0; i<a.size(); ++i)
-        {
-            p2OC.addElement(a.get(i));
-        }
-    }
-
-    void updateP3OCList(ArrayList<String> a)
-    {
-        oc3.clearSelection();
-        p3OC.clear();
-        for(int i =0; i<a.size(); ++i)
-        {
-            p3OC.addElement(a.get(i));
-        }
-    }
-
-    void updateP4OCList(ArrayList<String> a)
-    {
-        oc4.clearSelection();
-        p4OC.clear();
-        for(int i =0; i<a.size(); ++i)
-        {
-            p4OC.addElement(a.get(i));
-        }
-    }
-
-    void updateP5OCList(ArrayList<String> a)
-    {
-        oc5.clearSelection();
-        p5OC.clear();
-        for(int i =0; i<a.size(); ++i)
-        {
-            p5OC.addElement(a.get(i));
-        }
-    }
-
-    void updateP6OCList(ArrayList<String> a)
-    {
-        oc6.clearSelection();
-        p6OC.clear();
-        for(int i =0; i<a.size(); ++i)
-        {
-            p6OC.addElement(a.get(i));
-        }
-    }
-
+    /**
+     * @return the list that holds player 1's owned countries
+     *
+     * @author Braden Norton
+     */
     JList l1() { return oc1; }
 
+    /**
+     * @return the list that holds player 2's owned countries
+     *
+     * @author Braden Norton
+     */
     JList l2() { return oc2; }
 
+    /**
+     * @return the list that holds player 3's owned countries
+     *
+     * @author Braden Norton
+     */
     JList l3() { return oc3; }
 
+    /**
+     * @return the list that holds player 4's owned countries
+     *
+     * @author Braden Norton
+     */
     JList l4() { return oc4; }
 
+    /**
+     * @return the list that holds player 5's owned countries
+     *
+     * @author Braden Norton
+     */
     JList l5() { return oc5; }
 
+    /**
+     * @return the list that holds player 6's owned countries
+     *
+     * @author Braden Norton
+     */
     JList l6() { return oc6; }
 
+    /**
+     * @return selected country in player 1's list as a String
+     *
+     * @author Braden Norton
+     */
     String getL1(){ return oc1.getSelectedValue().toString();}
 
+    /**
+     * @return selected country in player 2's list as a String
+     *
+     * @author Braden Norton
+     */
     String getL2(){return oc2.getSelectedValue().toString();}
 
+    /**
+     * @return selected country in player 3's list as a String
+     *
+     * @author Braden Norton
+     */
     String getL3() {return oc3.getSelectedValue().toString();}
 
+    /**
+     * @return selected country in player 4's list as a String
+     *
+     * @author Braden Norton
+     */
     String getL4() {return oc4.getSelectedValue().toString();}
 
+    /**
+     * @return selected country in player 5's list as a String
+     *
+     * @author Braden Norton
+     */
     String getL5(){return oc5.getSelectedValue().toString();}
 
+    /**
+     * @return selected country in player 6's list as a String
+     *
+     * @author Braden Norton
+     */
     String getL6(){return oc6.getSelectedValue().toString();}
 
+    /**
+     * Get the amount of troops residing in the selected country, and update the appropriate players TextArea underneath the list with the value
+     *
+     * @param p Player that owns the selected country
+     * @param s Name of the selected country
+     *
+     * @author Braden Norton
+     */
     void getTroopsInCountry(Player p, String s)
     {
         int n = p.getTurnPosition();
@@ -1262,6 +1405,11 @@ class BoardGUI extends JFrame
         }
     }
 
+    /**
+     * Enables other phase buttons once reinforcement phase is complete
+     *
+     * @author Braden Norton
+     */
     void reinforcementPhaseComplete()
     {
         reinforce.setEnabled(false);
@@ -1270,6 +1418,11 @@ class BoardGUI extends JFrame
         endTurn.setEnabled(true);
     }
 
+    /**
+     * Disables all buttons except for End Turn once a player completes Fortify phase
+     *
+     * @author Braden Norton
+     */
     void fortifyPhaseComplete()
     {
         reinforce.setEnabled(false);
@@ -1278,6 +1431,13 @@ class BoardGUI extends JFrame
         endTurn.setEnabled(true);
     }
 
+    /**
+     * Updates the results ScrollPane on main board with given string & automatically scrolls to bottom of the Pane
+     *
+     * @param s String of text to add to Pane
+     *
+     * @author Braden Norton
+     */
     void updateTurnArea(String s)
     {
         turn.append(s+"\n");
@@ -1292,6 +1452,13 @@ class BoardGUI extends JFrame
         turn.append("---------------\n");
     }
 
+    /**
+     * Reset the board for the next player when the previous player ends their turn
+     *
+     * @param p new Current Player
+     *
+     * @author Braden Norton
+     */
     void nextTurn(Player p)
     {
         setCurrentPlayer(p);
@@ -1306,6 +1473,13 @@ class BoardGUI extends JFrame
         revalidate();
     }
 
+    /**
+     * Update the amount of players playing, and the current player stats
+     *
+     * @param players
+     *
+     * @author Braden Norton
+     */
     void updateStats(ArrayList<Player> players)
     {
         this.allPlayers = players;
@@ -1314,6 +1488,15 @@ class BoardGUI extends JFrame
         ownedContinents.setText(""+currentPlayer.getCapturedContinents().size());
     }
 
+    /**
+     * Updates the country lists in game state panel if the attacking player claimed ownership of the defending country during the Attack phase
+     *
+     * @param att Attacking player
+     * @param def Defending player
+     * @param c Name of country that attacker gained/defender lost
+     *
+     * @author Braden Norton
+     */
     void updateCountryLists(Player att, Player def, String c)
     {
         if(att.getTurnPosition() == 0) { p1OC.addElement(c);}
@@ -1331,6 +1514,13 @@ class BoardGUI extends JFrame
         else if(def.getTurnPosition()==5){ p6OC.removeElement(c); }
     }
 
+    /**
+     * Prompts user with JFileChooser & saves user provided save path as String with .ser extension
+     *
+     * @return String that contains the desired file's save path
+     *
+     * @author Braden Norton
+     */
     String saveGame() {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Save Game");
@@ -1347,6 +1537,12 @@ class BoardGUI extends JFrame
         }
     }
 
+    /**
+     * User selected quit from the board menu (quit w/out saving)
+     * Game closes and prompts user w/JOptionPane informing them that the game has been exited
+     *
+     * @author Braden Norton
+     */
     void quitGame()
     {
         // Exit Popup
@@ -1357,6 +1553,11 @@ class BoardGUI extends JFrame
     }
 }
 
+/**
+ * Displays Reinforce Phase options
+ *
+ * @author Braden Norton
+ */
 class ReinforceGUI extends JFrame
 {
     // ReinforceGUI options
@@ -1374,6 +1575,12 @@ class ReinforceGUI extends JFrame
 
     private JComboBox movableTroops;
 
+    /**
+     * Constructor
+     *
+     * @param cp Current Player
+     * @param validMovement List of eligible troop movement amounts as Strings
+     */
     public ReinforceGUI(Player cp, ArrayList<String> validMovement)
     {
         // Set list
@@ -1393,6 +1600,12 @@ class ReinforceGUI extends JFrame
         toFront();
     }
 
+    /**
+     *
+     * @return Panel that displays the options for submitting a Reinforcement (which country to reinforce and how many troops) or to return back to the board
+     *
+     * @author Braden Norton
+     */
     private JPanel reinforcePanel()
     {
         // Create panel
@@ -1441,6 +1654,12 @@ class ReinforceGUI extends JFrame
         return p;
     }
 
+    /**
+     *
+     * @param o Action listeners added to the ReinforceGUI options
+     *
+     * @author Braden Norton
+     */
     void reinforceActionListener(ActionListener o)
     {
         movableTroops.addActionListener(o);
@@ -1448,11 +1667,21 @@ class ReinforceGUI extends JFrame
         back.addActionListener(o);
     }
 
+    /**
+     * @return Selected country from owned country list
+     *
+     * @author Braden Norton
+     */
     String getCountry()
     {
         return ocList.getSelectedValue().toString();
     }
 
+    /**
+     * @return Selected value from valid movable troops list, casted to an Integer
+     *
+     * @author Braden Norton
+     */
     int getReinforceAmount()
     {
         String value = (String)movableTroops.getSelectedItem();
@@ -1460,6 +1689,11 @@ class ReinforceGUI extends JFrame
     }
 }
 
+/**
+ * Displays all the options during the Attack Phase
+ *
+ * @author Braden Norton
+ */
 class AttackGUI extends JFrame
 {
     // Current Player
@@ -1485,6 +1719,13 @@ class AttackGUI extends JFrame
     // Battle Stats
     private String attackingCountry, defendingCountry, attackingCountryTroops, defendingCountryTroops, attPlayer, defPlayer;
 
+    /**
+     * Constructor
+     *
+     * @param cp Current Player
+     *
+     * @author Braden Norton
+     */
     public AttackGUI(Player cp)
     {
         // Set current player
@@ -1504,6 +1745,11 @@ class AttackGUI extends JFrame
         toFront();
     }
 
+    /**
+     * Creates all the options that can be displayed during the attack phase
+     *
+     * @author Braden Norton
+     */
     void initializeOptions()
     {
         // Create JTextArea
@@ -1615,6 +1861,11 @@ class AttackGUI extends JFrame
         results.setEditable(false);
     }
 
+    /**
+     * @return Panel that displays a list of countries that the current player owns, a list of countries they can attack depending on the selected owned country & button to select attack/def countries
+     *
+     * @author Braden Norton
+     */
     private JPanel attackPanel()
     {
         // Create Panel
@@ -1654,6 +1905,11 @@ class AttackGUI extends JFrame
         return attackPanel;
     }
 
+    /**
+     * @return Panel with amount of dice that the attacker and defender can use depending on the selected countries from attackPanel
+     *
+     * @author Braden Norton
+     */
     JPanel chooseDicePanel()
     {
         // Set att/def selected countries
@@ -1689,6 +1945,11 @@ class AttackGUI extends JFrame
         return cdPanel;
     }
 
+    /**
+     * @return Panel with attacker/defender stats, results window, and buttons to roll the dice and initiate attack or exit attack
+     *
+     * @author Braden Norton
+     */
     JPanel battlePanel()
     {
         // Set att/def stats
@@ -1745,6 +2006,13 @@ class AttackGUI extends JFrame
         return battleP;
     }
 
+    /**
+     * Sets the attacking & defending player names and opens dice selection panel when countries are selected from attackPanel
+     * @param aPlayer Attacking player
+     * @param dPlayer Defending player
+     *
+     * @author Braden Norton
+     */
     void chooseDiceStage(String aPlayer, String dPlayer)
     {
         // Set Attacking & Defending player
@@ -1757,6 +2025,11 @@ class AttackGUI extends JFrame
         revalidate();
     }
 
+    /**
+     * Opens battlePanel when dice are selected from dice selection panel
+     *
+     * @author Braden Norton
+     */
     void battleStage()
     {
         getContentPane().removeAll();
@@ -1764,6 +2037,10 @@ class AttackGUI extends JFrame
         revalidate();
     }
 
+    /**
+     * @param o listeners added to buttons in AttackGUI
+     * @param e listeners added to lists in AttackGUI
+     */
     public void attackActionListener(ActionListener o, ListSelectionListener e)
     {
         battle.addActionListener(o);
@@ -1776,26 +2053,54 @@ class AttackGUI extends JFrame
         ocCurrent.addListSelectionListener(e);
     }
 
+    /**
+     * Removes list selection listener of the Attackable country list when updating the list once a new owned country is selected
+     * @param o Listener removed
+     *
+     * @author Braden Norton
+     */
     public void removeACListener(ListSelectionListener o) { aCountries.removeListSelectionListener(o); }
 
+    /**
+     * @param o listener added to attackable country list
+     *
+     * @author Braden Norton
+     */
     public void acCountryActionListener(ListSelectionListener o){aCountries.addListSelectionListener(o);}
 
+    /**
+     * @return List object for owned countries
+     *
+     * @author Braden Norton
+     */
     JList getOCList() { return ocCurrent; }
 
+    /**
+     * @return List object for attackable countries
+     *
+     * @author Braden Norton
+     */
     JList getACList() { return aCountries; }
 
+    /**
+     * @return Country name selected from owned country list as String
+     *
+     * @author Braden Norton
+     */
     String getOCListValue(){ return ocCurrent.getSelectedValue().toString();}
 
+    /**
+     * @return Country name selected from attackable country list as String
+     *
+     * @author Braden Norton
+     */
     String getACListValue() { return aCountries.getSelectedValue().toString();}
 
-    void updateOCList(ArrayList<String> l)
-    {
-        for(int i=0; i<l.size(); ++i)
-        {
-            currentPlayerOC.addElement(l.get(i));
-        }
-    }
-
+    /**
+     * Updates the attackable country list when a new owned country is selected to the attackable countries from the new owned country selection
+     *
+     * @param l list of attackable country names from selected owned country
+     */
     void updateACList(String[] l)
     {
         dList.clear();
@@ -1805,16 +2110,34 @@ class AttackGUI extends JFrame
         }
     }
 
+    /**
+     * Sets the amount of troops in the attacking country
+     * @param s troop amount
+     *
+     * @author Braden Norton
+     */
     void updateOCTroops(int s)
     {
         ocTroops.setText(""+s);
     }
 
+    /**
+     * Sets the amount of troops in the defending country
+     * @param t troop amount
+     *
+     * @author Braden Norton
+     */
     void updateACTroops(int t)
     {
         acTroops.setText("" + t);
     }
 
+    /**
+     * Sets the amount of allowed dice for the attacker
+     * @param s List of allowed dice options
+     *
+     * @author Braden Norton
+     */
     void setAttDice(String[] s)
     {
         for(int i=0; i<s.length; ++i)
@@ -1823,6 +2146,12 @@ class AttackGUI extends JFrame
         }
     }
 
+    /**
+     * Sets the amount of allowed dice for the defender
+     * @param s List of allowed dice options
+     *
+     * @author Braden Norton
+     */
     void setDefDice(String[] s)
     {
         System.out.println(s.length);
@@ -1832,6 +2161,10 @@ class AttackGUI extends JFrame
         }
     }
 
+    /**
+     * Sets the amount of allowed dice for the AI
+     * @param s List of allowed dice options
+     */
     void setAIDefDice(String[] s)
     {
         int temp = 0;
@@ -1842,27 +2175,54 @@ class AttackGUI extends JFrame
         System.out.println(temp);
     }
 
+    /**
+     * @return amount of the dice the attacker will use as a String from the combo box
+     */
     String getADiceAmount() { return attDice.getSelectedItem().toString(); }
 
+    /**
+     * @return amount of the dice the defender will use as a String from the combo box
+     */
     String getDDiceAmount() { return defDice.getSelectedItem().toString(); }
 
+    /**
+     * Update the battlePanel results window
+     * @param s String to add to panel
+     */
     void setRollResult(String s)
     {
         results.append(s);
     }
 
+    /**
+     * Update the battlePanel troop amount for attacker/defender after the roll
+     * @param a troops remaining in attacking country
+     * @param d troops remaining in defending country
+     *
+     * @author Braden Norton
+     */
     void setBattleResults(int a, int d)
     {
         attTroops.setText("" + a);
         defTroops.setText("" + d);
     }
 
+    /**
+     * Disable the roll button once the battle has ended & all dice were rolled
+     *
+     * @author Braden Norton
+     */
     void disableRoll()
     {
         roll.setEnabled(false);
     }
 }
 
+/**
+ * Displays the options for the Fortify Phase
+ *
+ * @author Braden Norton
+ */
 class FortifyGUI extends JFrame
 {
     // Current player
@@ -1875,6 +2235,13 @@ class FortifyGUI extends JFrame
     private JComboBox movableTroops;
     private JScrollPane ocSP, adjSP;
 
+    /**
+     * Constructor
+     *
+     * @param p current player
+     *
+     * @author Braden Norton
+     */
     public FortifyGUI(Player p)
     {
         // Set current player
@@ -1894,6 +2261,11 @@ class FortifyGUI extends JFrame
         toFront();
     }
 
+    /**
+     * Create the options for the fortify phase
+     *
+     * @author Braden Norton
+     */
     void initializeOptions()
     {
         // Lists
@@ -1929,6 +2301,11 @@ class FortifyGUI extends JFrame
         cb.add(movableTroops);
     }
 
+    /**
+     * @return Panel with the lists for the user to select which country to Fortify from owned countries and which country to fortify from
+     *
+     * @author Braden Norton
+     */
     private JPanel countrySelectPanel()
     {
         // Create Panels
@@ -1955,6 +2332,11 @@ class FortifyGUI extends JFrame
         return fPanel;
     }
 
+    /**
+     * @return panel that prompts user to select how many troops to fortify with
+     *
+     * @author Braden Norton
+     */
     private JPanel fortifyAmountPanel()
     {
         setSize(new Dimension(300, 200));
@@ -1975,6 +2357,11 @@ class FortifyGUI extends JFrame
         return fPanel;
     }
 
+    /**
+     * Opens fortifyAmountPanel once the countries are selected
+     *
+     * @author Braden Norton
+     */
     void fortifyAmountStage()
     {
         getContentPane().removeAll();
@@ -1982,6 +2369,12 @@ class FortifyGUI extends JFrame
         revalidate();
     }
 
+    /**
+     * @param o Listeners added to buttons
+     * @param e Listeners added to lists
+     *
+     * @author Braden Norton
+     */
     public void fortifyActionListener(ActionListener o, ListSelectionListener e)
     {
         movableTroops.addActionListener(o);
@@ -1992,12 +2385,34 @@ class FortifyGUI extends JFrame
         adj.addListSelectionListener(e);
     }
 
+    /**
+     * @return List object of owned countries
+     *
+     * @author Braden Norton
+     */
     JList getOwnedList() { return owned; }
 
+    /**
+     * @return gets selected country in owned country list as String
+     *
+     * @author Braden Norton
+     */
     String getOwnedListValue() { return owned.getSelectedValue().toString(); }
 
+    /**
+     * @return gets selected country in adjacent owned country list as String
+     *
+     * @author Braden Norton
+     */
     String getAdjListValue() { return adj.getSelectedValue().toString(); }
 
+    /**
+     * Sets the adjacently owned country list to contain all the adjacently owned countries of a selected owned country
+     *
+     * @param a list of adjacently owned countries
+     *
+     * @author Braden Norton
+     */
     void setAdjList(ArrayList<String> a)
     {
         adjModel.clear();
@@ -2007,6 +2422,13 @@ class FortifyGUI extends JFrame
         }
     }
 
+    /**
+     * Sets amount to fortify combo box w/the valid troop movement options
+     *
+     * @param s valid troop movement options list
+     *
+     * @author Braden Norton
+     */
     void setAmountToFortify(ArrayList<String> s)
     {
         for(int i=0; i<s.size();++i)
@@ -2015,6 +2437,11 @@ class FortifyGUI extends JFrame
         }
     }
 
+    /**
+     * @return User selected troop movement amount from movable troops combo box
+     *
+     * @author Braden Norton
+     */
     int getFortifyTroopAmount() { return movableTroops.getSelectedIndex(); }
 }
 
