@@ -8,7 +8,6 @@ public class Continent implements Serializable
     private int additionalTroops; // Additional troops given in reinforcement stage if whole continent owned
     private ArrayList<Country> residingCountries; // Countries residing in continent
     private Player owner; // Owner of every country in this continent
-    private boolean owned;
 
     /**
      * Continent Constructor
@@ -75,6 +74,10 @@ public class Continent implements Serializable
      */
     void setOwner(Player p)
     {
-        this.owner = p;
+        owner = p;
+    }
+
+    Player getOwner(){
+        return owner;
     }
 }
