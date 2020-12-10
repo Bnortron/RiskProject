@@ -1,3 +1,4 @@
+package src;
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.event.*;
@@ -1481,9 +1482,8 @@ class BoardGUI extends JFrame
         boardPanel.add(boardGUI(cpName));
         boardPanel.add(mapStateGUI());
         add(boardPanel);
-        revalidate();
         newTurn();
-
+        revalidate();
     }
 
     /**

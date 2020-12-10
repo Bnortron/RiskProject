@@ -1,3 +1,4 @@
+package src;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
@@ -425,13 +426,13 @@ class BoardController implements ActionListener, ListSelectionListener
             fPhase.fortifyActionListener(new FortifyPhaseController(model, fPhase, view),new FortifyPhaseController(model, fPhase, view));
         }
         else if(o.equals("AI Turn")){
-            //view.aiPhaseComplete();
             aiPhase = new aiGUI();
             aiPhase.aiActionListener(new aiPhaseController(model, aiPhase, view));
             model.aiReinforce();
-            //view.updateTurnArea("Reinforcement: "+ model.getReinforcedAI() +" added to " + model.getReinforcedCountry());
+            view.updateTurnArea("Troops added to " + model.getReinforcedCountry());
             model.setACDC();
             aiPhase.setDefDice(model.allowedDefDice(model.getDefenderTroops()));
+            model.aiFortify();
           }
         else if(o.equals("End Turn"))
         {
@@ -442,7 +443,6 @@ class BoardController implements ActionListener, ListSelectionListener
             // Update View
             view.nextTurn(model.getCurrentTurn());
             view.boardActionListener(new BoardController(model,view), new BoardController(model,view));
-            view.newTurn();
         }
         else if (o.equals("Save Game"))
         {

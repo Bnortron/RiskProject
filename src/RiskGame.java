@@ -1,3 +1,4 @@
+package src;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -418,7 +419,7 @@ public class RiskGame implements Serializable
         fortifyStageActive = false;
 
         // Set reinforced country
-        this.rCountry = country;
+        rCountry = country;
 
         // Add troops to country & remove troops from total bonus reinforcements
         for(Country c: currentPlayer.getCapturedCountries())
@@ -1011,18 +1012,20 @@ public class RiskGame implements Serializable
 
     int getFortifiedAmount() { return fortifyAmount; }
 
+    void setFortifiedAmount(int i) { fortifyAmount = i;}
+
     void setCurrentCountryName(String s) {ccName = s;}
 
     void setFortifiedCountryName(String s){fcName = s;}
 
     void setCurrentCountry(String s)
     {
-        for(Country c: countries){if(c.getName().equals(s)){this.cCountry = c;}}
+        for(Country c: countries){if(c.getName().equals(s)){cCountry = c;}}
     }
 
     void setFortifiedCountry(String s)
     {
-        for(Country c: countries){if(c.getName().equals(s)){this.fCountry = c;}}
+        for(Country c: countries){if(c.getName().equals(s)){fCountry = c;}}
     }
 
     String getCurrentCountryName(){ return ccName; }
@@ -1201,23 +1204,23 @@ public class RiskGame implements Serializable
 
         //Check If Random Country Has Less Than 2 Troops
         setCurrentCountry(fortifyCountry);
+        setCurrentCountryName(fortifyCountry);
         System.out.println(cCountry);
         System.out.println(cCountry.getTroops());
         if(cCountry.getTroops() > 2 ){ //if random country has less than 2 troops
             //Find First Adjacent That Has More Than 2
             for(Country c : currentPlayer.getCapturedCountries()){ //for each country owned
                 for(String fC : fortifiableCountries){ //for each adjacent country
-                    if(c.getName().equals(fC) && c.getTroops() < 2){ //if the fortifiable country has more than 2 troops
+                    if(c.getName().equals(fC) && c.getTroops() > 2){ //if the fortifiable country has more than 2 troops
                         setFortifiedCountry(fC); //set country to be fortified
+                        setFortifiedCountryName(fC);
                         //Transfer Troops Until Random Country Has 2
                         if(cCountry.getTroops() == 2){ //If Country Has 2 Troops
                             break;
                         }else {
                             fCountry.addTroops(1);
-                            fcName = fCountry.getName();
-
+                            setFortifiedAmount(1);                      
                             cCountry.removeTroops(1);
-                            ccName = cCountry.getName();
                         }
                     }
                 }
