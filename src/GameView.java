@@ -1481,8 +1481,9 @@ class BoardGUI extends JFrame
         boardPanel.add(boardGUI(cpName));
         boardPanel.add(mapStateGUI());
         add(boardPanel);
-        newTurn();
         revalidate();
+        newTurn();
+
     }
 
     /**
