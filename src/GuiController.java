@@ -121,9 +121,6 @@ class LoadController implements ActionListener
     // Next Frame
     private PlayerAmountGUI customMap;
 
-    // Previous Frame
-    private GameView prev;
-
     // Load Game Reader
     private ObjectInputStream objectReader;
 
@@ -157,6 +154,8 @@ class LoadController implements ActionListener
                 ex.printStackTrace();
             } catch (ClassNotFoundException ex) {
                 ex.printStackTrace();
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
         }
         else
@@ -177,7 +176,7 @@ class LoadController implements ActionListener
      * @throws ClassNotFoundException
      * @author Braden Norton
      */
-    void loadGame(String type) throws IOException, ClassNotFoundException {
+    void loadGame(String type) throws Exception {
         // Get Save File
         String loadFile = view.loadGame(type);
 
@@ -197,7 +196,15 @@ class LoadController implements ActionListener
             }
             else if(type.equals("custom"))
             {
-                // Do something with the custom map object
+                // Create the custom map
+                model.setupMap(loadFile);
+
+                // Open PlayerAmountGUI
+                customMap = new PlayerAmountGUI();
+                customMap.playerAmountActionListener(new PlayerAmountController(model, customMap));
+
+                // Close menuGUI
+                view.dispose();
             }
 
 

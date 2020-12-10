@@ -111,15 +111,7 @@ public class RiskGame implements Serializable
         names.add(s);
         System.out.println("Amount of players: " + names.size());
     }
-    /**
-     * Sets up the players, turn order, the map (loads countries/continents/adjacencies from text file), & deployment phase (randomly assigns countries to each player, & troops randomly to those countries)
-     *
-     * @author Braden Norton
-     * @author Braxton Martin
-     * @author Tyler Leung
-     *
-     * @param ai: ArrayList of booleans that represent whether a given player is designated as an AI
-     */
+
     /**
      * Sets up the players, turn order, the map (loads countries/continents/adjacencies from text file), & deployment phase (randomly assigns countries to each player, & troops randomly to those countries)
      *
@@ -131,9 +123,6 @@ public class RiskGame implements Serializable
      */
     void initializeGame(ArrayList<String> playerList, ArrayList<Boolean> ai)
     {
-        // Shuffle player names to establish random turn order
-        Collections.shuffle(playerList);
-
         // Create Players
         System.out.println("Players: " + playerAmount);
         for(int i=0; i<playerAmount; ++i)
@@ -146,10 +135,13 @@ public class RiskGame implements Serializable
             }
         }
 
+        // Shuffle player names to establish random turn order
+        Collections.shuffle(players);
+
         // Set current turn
         currentPlayer = players.get(0);
         System.out.println("Turn Order:");
-        for(Player p:players){ System.out.println(p.getName()); }
+        for(Player p:players){ System.out.println(p.getName()); System.out.println(p.isAI()); }
 
         // Set Countries & Continents
         // Set up countries
@@ -183,7 +175,7 @@ public class RiskGame implements Serializable
      *
      * @throws Exception: throws exception if text file not found
      */
-    private void setupMap(String fileName) throws Exception
+    void setupMap(String fileName) throws Exception
     {
         JSONParser parser = new JSONParser();
         
