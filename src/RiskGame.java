@@ -49,6 +49,7 @@ public class RiskGame implements Serializable
     private int countryBonus;
     private int continentBonus;
     private int totalBonus;
+    private int troopsAdded;
 
     // For Attack Phase
     private String[] d1 = {"1"};
@@ -1269,21 +1270,25 @@ public class RiskGame implements Serializable
         while (totalBonus > 0){
             rCountry = randomAICountry();
             Random rInt = new Random();
-            int randTroops = rInt.nextInt(totalBonus) + 1;
-            System.out.println(randTroops);
+            troopsAdded = rInt.nextInt(totalBonus) + 1;
+            System.out.println(troopsAdded);
             System.out.println(rCountry);
             for(Country c: currentPlayer.getCapturedCountries())
             {
                 if(c.getName().equals(rCountry))
                 {
                     // Add troops to designated country
-                    c.addTroops(randTroops);
+                    c.addTroops(troopsAdded);
 
                     // Remove troops from total reinforcement amount
-                    totalBonus -= randTroops;
+                    totalBonus -= troopsAdded;
                 }
             }
             System.out.println(totalBonus); 
         }
+    }
+
+    public int getReinforcedAI(){
+        return troopsAdded;
     }
 }

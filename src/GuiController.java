@@ -412,9 +412,11 @@ class BoardController implements ActionListener, ListSelectionListener
             fPhase.fortifyActionListener(new FortifyPhaseController(model, fPhase, view),new FortifyPhaseController(model, fPhase, view));
         }
         else if(o.equals("AI Turn")){
+            view.aiPhaseComplete();
             aiPhase = new aiGUI();
             aiPhase.aiActionListener(new aiPhaseController(model, aiPhase, view));
             model.aiReinforce();
+            view.updateTurnArea("Reinforcement: "+ model.getReinforcedAI() +" added to " + model.getReinforcedCountry());
             model.setACDC();
             aiPhase.setDefDice(model.allowedDefDice(model.getDefenderTroops()));
           }
@@ -854,8 +856,19 @@ class aiPhaseController implements ActionListener{
             model.setDefDice(view.getDefDice());
             view.dispose();
             model.aiAttackStage(); 
+            board.updateStats(model.getPlayers());
+            board.updateTurnArea("\n"+"Attack: " + model.getAttacker() + " attacking " + model.getDefender());
+            board.updateTurnArea(model.getAttackingPlayer()+" has lost: "+model.getAttLosses()+" troops in "+model.getAttacker());
+            board.updateTurnArea(model.getDefendingCountryOwner().getName()+" has lost: "+model.getDefLosses()+" troops in "+model.getDefender());
+            if(model.getAttackResult())
+            {
+                board.updateTurnArea(model.getAttackingPlayer()+" has claimed: " + model.getDefender());
+            }  
             model.aiFortify();
-            model.nextTurn();  
+            board.updateTurnArea("\n"+"Fortify: " + model.getCurrentCountryName()+" fortified "+model.getFortifiedCountryName()+" by "+model.getFortifiedAmount());
+            board.updateTurnArea("Troops in "+model.getCurrentCountryName()+": "+model.getTroopsByName(model.getCurrentCountryName()));
+            board.updateTurnArea("Troops in "+model.getFortifiedCountryName()+": "+model.getTroopsByName(model.getFortifiedCountryName()));
+            model.nextTurn();
         } 
     }
 }
