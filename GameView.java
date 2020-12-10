@@ -1432,6 +1432,19 @@ class BoardGUI extends JFrame
     }
 
     /**
+     * Disables all buttons once AI Player Starts Turn
+     * 
+     * @author Tyler Leung
+     */
+    public void aiPhaseComplete(){
+        reinforce.setEnabled(false);
+        attack.setEnabled(false);
+        fortify.setEnabled(false);
+        aiTurn.setEnabled(false);
+        endTurn.setEnabled(false);
+    }
+
+    /**
      * Updates the results ScrollPane on main board with given string & automatically scrolls to bottom of the Pane
      *
      * @param s String of text to add to Pane
