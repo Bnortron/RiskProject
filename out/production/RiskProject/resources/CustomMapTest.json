@@ -1,0 +1,54 @@
+{
+    "Fruits": {
+        "countries":{
+            "Apple":{
+                "continentName":"North America",
+                "adjacents":["Banana"]
+            },
+            "Banana":{
+                "continentName":"North America",
+                "adjacents":["Apple, Kiwi"]
+            },
+            "Kiwi":{
+                "continentName":"North America",
+                "adjacents":["Banana, Orange"]
+            },
+            "Orange":{
+                "continentName":"North America",
+                "adjacents":["Kiwi, Watermelon"]
+            },
+            "Watermelon":{
+                "continentName":"North America",
+                "adjacents":["Orange, Pineapple"]
+            },
+            "Pineapple":{
+                "continentName":"North America",
+                "adjacents":["Watermelon, Corona"]
+            }
+        },
+        "bonusTroops": 5,
+        "numCountries": 6
+    },
+    "Beers" :{
+        "countries":{
+            "Corona":{
+                "continent":"South America",
+                "adjacents":["Pineapple, Heinekin"]
+            },
+            "Heinekin":{
+                "continent":"South America",
+                "adjacents":["Corona, Sapporo"]
+            },
+            "Sapporo":{
+                "continent":"South America",
+                "adjacents":["Heinekin, Coors"]
+            },
+            "Coors":{
+                "continent":"South America",
+                "adjacents":["Sapporo"]
+            }            
+        },
+        "bonusTroops": 2,
+        "numCountries": 4
+    }
+}
