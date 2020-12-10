@@ -101,4 +101,18 @@ public class RiskGameTest {
         String[] attackableCountries = game.getAttackableCountries(game.getCountries().get(0).getName());
         assertNotEquals(attackableCountries,null);
     }
+
+    @Test
+    public void setupMapTest() throws Exception {
+        // Normal Map
+        game = new RiskGame();
+        game.setupMap("resources/WorldMap.json");
+        assertEquals(game.getCountries().size(),42);
+
+        // Custom Map
+        game = new RiskGame();
+        game.setupMap("resources/CustomMapTest.json");
+        assertEquals(game.getCountries().size(),10);
+    }
+
 }
