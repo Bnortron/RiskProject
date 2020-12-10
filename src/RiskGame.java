@@ -1214,6 +1214,7 @@ public class RiskGame implements Serializable
                     if(c.getName().equals(fC) && c.getTroops() > 2){ //if the fortifiable country has more than 2 troops
                         setFortifiedCountry(fC); //set country to be fortified
                         setFortifiedCountryName(fC);
+                        
                         //Transfer Troops Until Random Country Has 2
                         if(cCountry.getTroops() == 2){ //If Country Has 2 Troops
                             break;
