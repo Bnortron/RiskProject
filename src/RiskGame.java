@@ -42,6 +42,8 @@ public class RiskGame implements Serializable
     private ArrayList<Country> countries;
     private ArrayList<Continent> continents;
     private boolean validMap = false;
+    private Boolean customMapLoaded = false;
+    private int customMapCountries;
 
     // For Reinforcement Phase
     private boolean reinforcementPhaseActive = false;
@@ -112,6 +114,15 @@ public class RiskGame implements Serializable
         System.out.println("Amount of players: " + names.size());
     }
 
+    void setCustomMapLoaded()
+    {
+        customMapLoaded = true;
+    }
+
+    Boolean getCustomMapLoaded()
+    {
+        return customMapLoaded;
+    }
     /**
      * Sets up the players, turn order, the map (loads countries/continents/adjacencies from text file), & deployment phase (randomly assigns countries to each player, & troops randomly to those countries)
      *
@@ -127,7 +138,7 @@ public class RiskGame implements Serializable
         System.out.println("Players: " + playerAmount);
         for(int i=0; i<playerAmount; ++i)
         {
-            Player p = new Player(playerList.get(i), initialTroops,i, ai.get(i));
+            Player p = new Player(playerList.get(i), initialTroops, ai.get(i));
             players.add(p);
             if(players.get(i).isAI())
             {
@@ -141,7 +152,11 @@ public class RiskGame implements Serializable
         // Set current turn
         currentPlayer = players.get(0);
         System.out.println("Turn Order:");
-        for(Player p:players){ System.out.println(p.getName()); System.out.println(p.isAI()); }
+        for(int i=0;i<players.size();++i)
+        {
+            players.get(i).setTurnPosition(i);
+            System.out.println(players.get(i));
+        }
 
         // Set Countries & Continents
         // Set up countries
@@ -157,6 +172,49 @@ public class RiskGame implements Serializable
 
         // Assign Countries & Troops
         assignCountriesTroops();
+
+        // Start in reinforcement stage
+        setReinforcementAmount();
+    }
+
+    /**
+     * Sets up the players, turn order, the map (loads countries/continents/adjacencies from text file), & deployment phase (randomly assigns countries to each player, & troops randomly to those countries)
+     * For a custom map selection
+     *
+     * @author Braden Norton
+     * @author Braxton Martin
+     * @author Tyler Leung
+     *
+     * @param ai: ArrayList of booleans that represent whether a given player is designated as an AI
+     */
+    void initializeCustomGame(ArrayList<String> playerList, ArrayList<Boolean> ai)
+    {
+        // Create Players
+        System.out.println("Players: " + playerAmount);
+        for(int i=0; i<playerAmount; ++i)
+        {
+            Player p = new Player(playerList.get(i), initialTroops,ai.get(i));
+            players.add(p);
+            if(players.get(i).isAI())
+            {
+                System.out.println("Player " + players.get(i).getName() + " is AI.");
+            }
+        }
+
+        // Shuffle player names to establish random turn order
+        Collections.shuffle(players);
+
+        // Set current turn
+        currentPlayer = players.get(0);
+        System.out.println("Turn Order:");
+        for(int i=0;i<players.size();++i)
+        {
+            players.get(i).setTurnPosition(i);
+            System.out.println(players.get(i).getName());
+        }
+
+        // Assign Countries & Troops
+        assignCustomCountriesTroops();
 
         // Start in reinforcement stage
         setReinforcementAmount();
@@ -298,6 +356,38 @@ public class RiskGame implements Serializable
                 if(totalCountries > 0){
                     p.addCapturedCountry(tempList.get(totalCountries-1));
                     totalCountries--;
+                }
+            }
+        }
+        for(Player p : players){
+            int assignTroops = p.getTroops();
+            while (assignTroops != 0){
+                for(Country c : p.getCapturedCountries()){
+                    if(assignTroops > 0){
+                        c.addTroops(1);
+                        assignTroops--;
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Assign Countries To Player and Assign Troops to Each Country for a custom map
+     *
+     * @author Tyler Leung, Braden Norton
+     */
+    private void assignCustomCountriesTroops(){
+        ArrayList<Country> tempList = new ArrayList<>();
+        tempList = countries;
+        customMapCountries = tempList.size();
+        Collections.shuffle(tempList); //Randomly Shuffle List
+
+        while (customMapCountries != 0){
+            for(Player p : players){
+                if(customMapCountries > 0){
+                    p.addCapturedCountry(tempList.get(customMapCountries -1));
+                    customMapCountries--;
                 }
             }
         }

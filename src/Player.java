@@ -18,9 +18,8 @@ public class Player implements Serializable
      *
      * @param name
      * @param troops
-     * @param turnPosition
      */
-    public Player(String name, int troops, int turnPosition, boolean ai)
+    public Player(String name, int troops,  boolean ai)
     {
         this.name = name;
         this.troops = troops;
@@ -131,4 +130,8 @@ public class Player implements Serializable
         return AI;
     }
 
+    void setTurnPosition(int n)
+    {
+        this.turnPosition = n;
+    }
 }

@@ -180,8 +180,10 @@ class LoadController implements ActionListener
         // Get Save File
         String loadFile = view.loadGame(type);
 
+        System.out.println("File: "+ loadFile);
+
         // Load Model
-        if(!loadFile.equals("No path selected"))
+        if(!loadFile.equals("No path selected") && type.equals("saved"))
         {
             // Read File
             objectReader = new ObjectInputStream(new FileInputStream(loadFile));
@@ -189,26 +191,23 @@ class LoadController implements ActionListener
             objectReader.close();
 
             // Initialize Game
-            if(type.equals("saved"))
-            {
-                start = new BoardGUI(loadModel.getPlayers(), loadModel.getCurrentPlayer());
-                start.boardActionListener(new BoardController(loadModel, start), new BoardController(loadModel, start));
-            }
-            else if(type.equals("custom"))
-            {
-                // Create the custom map
-                model.setupMap(loadFile);
-
-                // Open PlayerAmountGUI
-                customMap = new PlayerAmountGUI();
-                customMap.playerAmountActionListener(new PlayerAmountController(model, customMap));
-
-                // Close menuGUI
-                view.dispose();
-            }
-
+            start = new BoardGUI(loadModel.getPlayers(), loadModel.getCurrentPlayer());
+            start.boardActionListener(new BoardController(loadModel, start), new BoardController(loadModel, start));
 
             // Close loadGUI
+            view.dispose();
+        }
+        else if(!loadFile.equals("No path selected") && type.equals("custom"))
+        {
+            // Create the custom map
+            model.setupMap(loadFile);
+            model.setCustomMapLoaded();
+
+            // Open PlayerAmountGUI
+            customMap = new PlayerAmountGUI();
+            customMap.playerAmountActionListener(new PlayerAmountController(model, customMap));
+
+            // Close menuGUI
             view.dispose();
         }
         else
@@ -328,7 +327,14 @@ class PlayerNameController implements ActionListener
             System.out.println("Submit selected");
 
             // Initialize Game
-            model.initializeGame(view.getNames(), view.getAI());
+            if(model.getCustomMapLoaded())
+            {
+                model.initializeCustomGame(view.getNames(), view.getAI());
+            }
+            else
+            {
+                model.initializeGame(view.getNames(), view.getAI());
+            }
 
             // Initialize View
             view.dispose();
