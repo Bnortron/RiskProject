@@ -1,4 +1,4 @@
-package src;
+//package src;
 import junit.framework.*;
 import org.junit.Test;
 
