@@ -90,43 +90,35 @@ public class RiskGame implements Serializable
         countries = new ArrayList<>();
     }
 
-    /**
-     *
-     * @return list of countries on the map
-     */
     public ArrayList<Country> getCountries(){
         return countries;
     }
 
-    /**
-     *
-     * @return player whos turn is active
-     */
     public Player getCurrentPlayer(){
         return currentPlayer;
     }
 
-    /**
-     *
-     * @return list of all players in the game
-     */
     ArrayList<Player> getPlayers()
     {
         return players;
     }
 
     /**
-     * If custom map is selected then this sets a boolean to true
+     * Adds player names to an array list as Strings
+     *
+     * @param s: player name
      */
+    void addPlayer(String s)
+    {
+        names.add(s);
+        System.out.println("Amount of players: " + names.size());
+    }
+
     void setCustomMapLoaded()
     {
         customMapLoaded = true;
     }
 
-    /**
-     *
-     * @return True if custom map is selected/loaded, false otherwise
-     */
     Boolean getCustomMapLoaded()
     {
         return customMapLoaded;
@@ -335,12 +327,8 @@ public class RiskGame implements Serializable
         e.printStackTrace();
     }
 }
+    
 
-
-    /**
-     * Checks if the custom map entered is valid
-     * if valid, boolean check = true
-     */
     public void checkMap(){
         if(continents.size()<0){
             if(countries.size()>players.size()){
@@ -674,34 +662,27 @@ public class RiskGame implements Serializable
         else if(players == 6) {initialTroops = 20;}
     }
 
-    /**
-     *
-     * @return amount of players as int
-     */
     public int getPlayerAmount()
     {
         return playerAmount;
     }
 
-    /**
-     *
-     * @return returns the player whos turn is currently active
-     */
+    public ArrayList<String> getNames()
+    {
+        return names;
+    }
+
     public Player getCurrentTurn()
     {
         return currentPlayer;
     }
 
-    /**
-     *
-     * @return list of continents
-     */
     public ArrayList<Continent> getContinents(){ return continents; }
 
     /**
-     * Calculates the amount of bonus troops a player recieves for owning an entire continent
+     * Reinforcement Getters & Setters
      *
-     * @param p Current Player
+     *
      */
     public void continentBonus(Player p)
     {
@@ -723,11 +704,6 @@ public class RiskGame implements Serializable
         }
     }
 
-    /**
-     * Gets the amount of bonus troops a player receives for owning a certain amount of countries
-     *
-     * @param p
-     */
     public void countryBonus(Player p)
     {
         if(p.getCapturedCountries().size() < 12)
@@ -742,9 +718,6 @@ public class RiskGame implements Serializable
         }
     }
 
-    /**
-     * Sets the total bonus troops that a player gets from their continent and country bonus
-     */
     void setReinforcementAmount()
     {
         // Enabled ReinforcementPhase
@@ -760,9 +733,6 @@ public class RiskGame implements Serializable
         this.totalBonus = currentPlayer.getCountryBonus() + currentPlayer.getContinentBonus();
     }
 
-    /**
-     * @return Reinforcement options as a list for selection from a Combo Box
-     */
     ArrayList<String> getReinforcementAmount()
     {
         ArrayList<String> temp = new ArrayList<>();
@@ -775,28 +745,16 @@ public class RiskGame implements Serializable
         return temp;
     }
 
-    /**
-     *
-     * @return return the amount of bonus troops left to place
-     */
     int getRemainingReinforcements()
     {
         return totalBonus;
     }
 
-    /**
-     *
-     * @return name of country that was reinforced
-     */
     String getReinforcedCountry()
     {
         return rCountry;
     }
 
-    /**
-     *
-     * @return true if reinforcement phase is active
-     */
     Boolean reinforcementPhaseActive()
     {
         return reinforcementPhaseActive;
@@ -807,41 +765,18 @@ public class RiskGame implements Serializable
      *
      *
      */
-    /**
-     *
-     * @return list of countries that the current player owns
-     */
     public ArrayList<Country> getCurrentPlayerOC(){return currentPlayer.getCapturedCountries();}
 
-    /**
-     *
-     * @return Name of attacking player
-     */
     public String getAttackingPlayer(){ return aCountry.getOwner().getName(); }
 
-    /**
-     *
-     * @return Name of defending player
-     */
     public String getDefendingPlayer(){ return dCountry.getOwner().getName(); }
 
-    /**
-     *
-     * @return Amount of troops used to attack
-     */
+    // Get amount of troops used to attack
     public int getAttackerTroops(){return aTroops;}
 
-    /**
-     *
-     * @return Amount of troops used to defend
-     */
+    // Get amount of troops in defending country
     public int getDefenderTroops() {return dTroops;}
 
-    /**
-     * Gets the amount of troops in a country
-     * @param s Name of country we want the troop amount for
-     * @return amount of troops in country s
-     */
     int getTroopsByName(String s)
     {
         for(Country c: countries)
@@ -852,29 +787,19 @@ public class RiskGame implements Serializable
         return 0;
     }
 
-    /**
-     * Sets the attacking country by name
-     * @param s Name of country
-     */
     void setAttackCountry(String s)
     {
         for(Country c: countries){if(c.getName().equals(s)){this.aCountry = c;}}
     }
 
-    /**
-     * Sets the defending country by name
-     * @param s Name of country
-     */
     void setDefendCountry(String s)
     {
         for(Country c: countries){if(c.getName().equals(s)){this.dCountry = c;}}
         dCountryOwner = this.dCountry.getOwner();
     }
 
-    // Get attack country name
     public String getAttacker(){return aCountry.getName();}
 
-    // Get defending country name
     public String getDefender(){return dCountry.getName();}
 
     // Get Troop Amount in Att Country
@@ -883,10 +808,8 @@ public class RiskGame implements Serializable
     // Get Troop Amount in Def Country
     public int getDCountryTroops() {return dCountry.getTroops();}
 
-    // Sets the amount of troops in att country
     void setACountryTroops() {aTroops = aCountry.getTroops();}
 
-    // Sets the amount of troops in def country
     void setDCountryTroops() {dTroops = dCountry.getTroops();}
 
     // Set amount of dice/troops attacker is using (from GUI input)
@@ -971,19 +894,14 @@ public class RiskGame implements Serializable
         else{return d1;} // Troops = 1
     }
 
-    // Returns att dice amount
     int getAttDiceAmount() { return aDice; }
 
-    // Return def dice amount
     int getDefDiceAmount() { return dDice; }
 
-    // Return amount of troops att country lost
     int getAttLosses() { return attLoss; }
 
-    // Returns amount of troops def country lost
     int getDefLosses() { return defLoss; }
 
-    // Returns the owner of the defending country
     Player getDefendingCountryOwner()
     {
         return dCountryOwner;
@@ -1032,19 +950,16 @@ public class RiskGame implements Serializable
         return arr;
     }
 
-    // Return the attacker rolls
     int getARolls(int i)
     {
         return aRolls.get(i);
     }
 
-    // Returns the defender rolls
     int getDRolls(int i)
     {
         return dRolls.get(i);
     }
 
-    // Returns true if Attacker took ownership of defending country
     boolean getAttackResult()
     {
         return successfulAttack;
@@ -1087,11 +1002,6 @@ public class RiskGame implements Serializable
         return temp;
     }
 
-    /**
-     *
-     * @param s Name of owned country that we want to fortify from
-     * @return list of countries that can be fortified from a selected country
-     */
     ArrayList<String> getFortifiableCountries(String s)
     {
         getAttackableCountries(s);
@@ -1099,34 +1009,29 @@ public class RiskGame implements Serializable
         return ownedAdjCountries;
     }
 
-    // Return the amount of troops to fortify country by
     int getFortifiedAmount() { return fortifyAmount; }
+
+    void setFortifiedAmount(int i) { fortifyAmount = i;}
 
     // Set fortifying country name to var
     void setCurrentCountryName(String s) {ccName = s;}
 
-    // Set fortified country name to var
     void setFortifiedCountryName(String s){fcName = s;}
 
-    // Set fortifying country to var
     void setCurrentCountry(String s)
     {
         for(Country c: countries){if(c.getName().equals(s)){this.cCountry = c;}}
     }
 
-    // Set fortified country to var
     void setFortifiedCountry(String s)
     {
         for(Country c: countries){if(c.getName().equals(s)){this.fCountry = c;}}
     }
 
-    // Return name of fortifying country
     String getCurrentCountryName(){ return ccName; }
 
-    // Return name of fortified country
     String getFortifiedCountryName() { return fcName; }
 
-    // Return true if fortify was completed
     Boolean fortifyStageActive() { return fortifyStageActive; }
 
     /**
