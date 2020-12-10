@@ -921,6 +921,7 @@ public class RiskGame implements Serializable
     {
         ArrayList<String> acList = new ArrayList<>();
         ownedAdjCountries = new ArrayList<>();
+
         for(int i=0; i<getCurrentPlayerOC().size(); ++i)
         {
             if(getCurrentPlayerOC().get(i).getName().equals(s))
@@ -1198,6 +1199,7 @@ public class RiskGame implements Serializable
         
         //Find All Adjacent Country
         ArrayList<String> fortifiableCountries = getFortifiableCountries(fortifyCountry);
+
         //Check If Random Country Has Less Than 2 Troops
         setCurrentCountry(fortifyCountry);
         System.out.println(cCountry);
@@ -1213,7 +1215,10 @@ public class RiskGame implements Serializable
                             break;
                         }else {
                             fCountry.addTroops(1);
+                            fcName = fCountry.getName();
+
                             cCountry.removeTroops(1);
+                            ccName = cCountry.getName();
                         }
                     }
                 }

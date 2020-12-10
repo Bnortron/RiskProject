@@ -1406,6 +1406,17 @@ class BoardGUI extends JFrame
     }
 
     /**
+     *
+     */
+    void newTurn()
+    {
+        reinforce.setEnabled(true);
+        attack.setEnabled(false);
+        fortify.setEnabled(false);
+        endTurn.setEnabled(false);
+    }
+
+    /**
      * Enables other phase buttons once reinforcement phase is complete
      *
      * @author Braden Norton
@@ -1483,6 +1494,7 @@ class BoardGUI extends JFrame
         boardPanel.add(boardGUI(cpName));
         boardPanel.add(mapStateGUI());
         add(boardPanel);
+        newTurn();
         revalidate();
     }
 
@@ -2431,7 +2443,10 @@ class FortifyGUI extends JFrame
         adjModel.clear();
         for(int i=0; i<a.size(); ++i)
         {
-            adjModel.addElement(a.get(i));
+            if(!a.get(i).equals(getOwnedListValue()))
+            {
+                adjModel.addElement(a.get(i));
+            }
         }
     }
 

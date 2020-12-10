@@ -876,12 +876,18 @@ class aiPhaseController implements ActionListener{
             if(model.getAttackResult())
             {
                 board.updateTurnArea(model.getAttackingPlayer()+" has claimed: " + model.getDefender());
-            }  
+            }
+
+            // Fortify Stage
             model.aiFortify();
             board.updateTurnArea("\n"+"Fortify: " + model.getCurrentCountryName()+" fortified "+model.getFortifiedCountryName()+" by "+model.getFortifiedAmount());
             board.updateTurnArea("Troops in "+model.getCurrentCountryName()+": "+model.getTroopsByName(model.getCurrentCountryName()));
             board.updateTurnArea("Troops in "+model.getFortifiedCountryName()+": "+model.getTroopsByName(model.getFortifiedCountryName()));
+
+            // End turn
+            // Update Model
             model.nextTurn();
-        } 
+
+        }
     }
 }
