@@ -951,18 +951,8 @@ public class RiskGame implements Serializable
         int numAICountry = currentPlayer.numCapturedCountries();
         Random rnd = new Random();
         String randomCountry =null;
-        Boolean check = false;
-        while(!check){
         int rndNum = rnd.nextInt(numAICountry);
         randomCountry = currentPlayer.getCapturedCountries().get(rndNum).getName();
-        for(Country c: currentPlayer.getCapturedCountries()){
-            check=true;
-            if(randomCountry.equals(c.getName())){
-                check=false;
-                break;
-            } 
-        }
-        }
         return randomCountry;
     }
 
